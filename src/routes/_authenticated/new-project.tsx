@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +15,9 @@ import {
   AGENT_TEMPLATE,
   ROADMAP_TEMPLATE,
 } from "@/lib/project-templates";
+import { generateProjectContent } from "@/lib/ai-generation.functions";
 import { toast } from "sonner";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { Sparkles, ArrowLeft, Check, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/new-project")({
   head: () => ({ meta: [{ title: "Nuovo progetto — Da Idea ad App" }] }),
@@ -25,6 +27,8 @@ export const Route = createFileRoute("/_authenticated/new-project")({
 function NewProjectPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [steps, setSteps] = useState<Array<{ label: string; status: "todo" | "doing" | "done" }>>([]);
+  const generate = useServerFn(generateProjectContent);
   const [form, setForm] = useState({
     title: "",
     idea_description: "",
@@ -39,9 +43,23 @@ function NewProjectPage() {
 
   const set = <K extends keyof typeof form>(k: K, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const initialSteps = () => [
+    { label: "Stiamo trasformando la tua idea in un progetto operativo…", status: "doing" as const },
+    { label: "Scheda progetto generata", status: "todo" as const },
+    { label: "Agenti AI creati", status: "todo" as const },
+    { label: "Prompt operativi pronti", status: "todo" as const },
+    { label: "Roadmap costruita", status: "todo" as const },
+  ];
+  const advance = (i: number) =>
+    setSteps((prev) =>
+      prev.map((s, idx) => (idx < i ? { ...s, status: "done" } : idx === i ? { ...s, status: "doing" } : s)),
+    );
+  const finishAll = () => setSteps((prev) => prev.map((s) => ({ ...s, status: "done" })));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
+    setSteps(initialSteps());
     try {
       const { data: userRes } = await supabase.auth.getUser();
       if (!userRes.user) throw new Error("Non autenticato");
@@ -52,37 +70,76 @@ function NewProjectPage() {
         .single();
       if (error || !project) throw error ?? new Error("Errore creazione");
 
-      const analysis = ANALYSIS_TEMPLATE(project);
-      const agents = AGENT_TEMPLATE(project.idea_description ?? project.title).map((a) => ({
-        ...a,
-        project_id: project.id,
-      }));
-      const roadmap = ROADMAP_TEMPLATE.map((r, i) => ({
-        ...r,
-        project_id: project.id,
-        status: "todo",
-        priority: i,
-      }));
-      const prompts = agents.map((a) => ({
-        project_id: project.id,
-        category: "Progettazione app",
-        title: `Prompt ${a.name}`,
-        prompt_text: a.prompt_text,
-        recommended_tool: "ChatGPT / Claude",
-      }));
+      // Try AI generation; fall back to templates on any failure.
+      let analysis: ReturnType<typeof ANALYSIS_TEMPLATE>;
+      let agents: Array<{ project_id: string; name: string; role: string; when_to_use: string; expected_output: string; prompt_text: string }>;
+      let prompts: Array<{ project_id: string; category: string; title: string; prompt_text: string; recommended_tool: string }>;
+      let roadmap: Array<{ project_id: string; title: string; description: string; status: string; priority: number }>;
+      let usedAi = false;
 
-      await Promise.all([
-        supabase.from("project_analysis").insert({ project_id: project.id, ...analysis }),
-        supabase.from("agents").insert(agents),
-        supabase.from("roadmap_items").insert(roadmap),
-        supabase.from("prompts").insert(prompts),
-      ]);
+      try {
+        const ai = await generate({
+          data: {
+            title: form.title,
+            idea_description: form.idea_description,
+            target: form.target,
+            problem: form.problem,
+            solution: form.solution,
+            product_type: form.product_type,
+            experience_level: form.experience_level,
+            existing_tools: form.existing_tools,
+            urgency: form.urgency,
+          },
+        });
+        analysis = ai.project_analysis;
+        agents = ai.agents.map((a) => ({ project_id: project.id, ...a }));
+        prompts = ai.prompts.map((p) => ({ project_id: project.id, ...p }));
+        roadmap = ai.roadmap_items.map((r, i) => ({
+          project_id: project.id,
+          title: r.title,
+          description: r.description,
+          status: "todo",
+          priority: typeof r.priority === "number" ? r.priority : i,
+        }));
+        usedAi = true;
+      } catch (aiErr) {
+        console.error("AI generation failed, falling back to templates", aiErr);
+        toast.message("L'AI non ha risposto: uso una struttura base. Potrai rigenerare in seguito.");
+        analysis = ANALYSIS_TEMPLATE(project);
+        const agentTpl = AGENT_TEMPLATE(project.idea_description ?? project.title);
+        agents = agentTpl.map((a) => ({ project_id: project.id, ...a }));
+        prompts = agentTpl.map((a) => ({
+          project_id: project.id,
+          category: "Progettazione app",
+          title: `Prompt ${a.name}`,
+          prompt_text: a.prompt_text,
+          recommended_tool: "ChatGPT / Claude",
+        }));
+        roadmap = ROADMAP_TEMPLATE.map((r, i) => ({
+          project_id: project.id,
+          title: r.title,
+          description: r.description,
+          status: "todo",
+          priority: i,
+        }));
+      }
 
-      toast.success("Progetto creato!");
+      advance(1);
+      await supabase.from("project_analysis").insert({ project_id: project.id, ...analysis });
+      advance(2);
+      await supabase.from("agents").insert(agents);
+      advance(3);
+      await supabase.from("prompts").insert(prompts);
+      advance(4);
+      await supabase.from("roadmap_items").insert(roadmap);
+      finishAll();
+
+      toast.success(usedAi ? "Progetto generato con AI!" : "Progetto creato!");
       navigate({ to: "/projects/$id", params: { id: project.id } });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Errore";
       toast.error(message);
+      setSteps([]);
     } finally {
       setBusy(false);
     }
@@ -108,6 +165,23 @@ function NewProjectPage() {
       </p>
 
       <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+        {busy && steps.length > 0 && (
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+            {steps.map((s, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm">
+                {s.status === "done" ? (
+                  <Check className="size-4 text-primary shrink-0" />
+                ) : s.status === "doing" ? (
+                  <Loader2 className="size-4 text-primary animate-spin shrink-0" />
+                ) : (
+                  <span className="size-4 rounded-full border border-border shrink-0" />
+                )}
+                <span className={s.status === "todo" ? "text-muted-foreground" : ""}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <Field label="Titolo del progetto" required>
           <Input value={form.title} onChange={(e) => set("title", e.target.value)} required maxLength={120} />
         </Field>
