@@ -25,6 +25,7 @@ import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCheckoutAgenteRouteImport } from './routes/_authenticated/checkout-agente'
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -111,6 +112,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCheckoutAgenteRoute =
+  AuthenticatedCheckoutAgenteRouteImport.update({
+    id: '/checkout-agente',
+    path: '/checkout-agente',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedWorkbookProjectIdRoute =
   AuthenticatedWorkbookProjectIdRouteImport.update({
     id: '/workbook/$projectId',
@@ -152,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
@@ -174,6 +182,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
@@ -198,6 +207,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/_authenticated/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/checkout-agente'
     | '/dashboard'
     | '/library'
     | '/my-path'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/checkout-agente'
     | '/dashboard'
     | '/library'
     | '/my-path'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/_authenticated/checkout-agente'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
     | '/_authenticated/my-path'
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/checkout-agente': {
+      id: '/_authenticated/checkout-agente'
+      path: '/checkout-agente'
+      fullPath: '/checkout-agente'
+      preLoaderRoute: typeof AuthenticatedCheckoutAgenteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/workbook/$projectId': {
       id: '/_authenticated/workbook/$projectId'
       path: '/workbook/$projectId'
@@ -447,6 +467,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCheckoutAgenteRoute: typeof AuthenticatedCheckoutAgenteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
@@ -459,6 +480,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCheckoutAgenteRoute: AuthenticatedCheckoutAgenteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
@@ -490,3 +512,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
