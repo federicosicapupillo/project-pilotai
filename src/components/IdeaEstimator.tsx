@@ -8,6 +8,7 @@ import { IdeaGenerator } from "@/components/IdeaGenerator";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
+  Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 
@@ -29,6 +30,59 @@ type PriceBand =
   | "197€–497€"
   | "500€+"
   | "Abbonamento mensile";
+
+type BudgetBand =
+  | ""
+  | "0€ – 100€"
+  | "100€ – 300€"
+  | "300€ – 700€"
+  | "700€ – 1.500€"
+  | "1.500€ – 3.000€"
+  | "3.000€+"
+  | "Non lo so ancora";
+
+const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; min: number; max: number }[] = [
+  { label: "0€ – 100€",        min: 0,    max: 100 },
+  { label: "100€ – 300€",      min: 100,  max: 300 },
+  { label: "300€ – 700€",      min: 300,  max: 700 },
+  { label: "700€ – 1.500€",    min: 700,  max: 1500 },
+  { label: "1.500€ – 3.000€",  min: 1500, max: 3000 },
+  { label: "3.000€+",          min: 3000, max: 6000 },
+  { label: "Non lo so ancora", min: 0,    max: 0 },
+];
+
+const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
+  "Landing page":   { label: "100€ – 300€",     min: 100,  max: 300 },
+  "Web app":        { label: "300€ – 700€",     min: 300,  max: 700 },
+  "App interna":    { label: "300€ – 700€",     min: 300,  max: 700 },
+  "CRM":            { label: "700€ – 1.500€",   min: 700,  max: 1500 },
+  "Dashboard":      { label: "700€ – 1.500€",   min: 700,  max: 1500 },
+  "Gestionale":     { label: "700€ – 1.500€",   min: 700,  max: 1500 },
+  "Marketplace":    { label: "1.500€ – 3.000€", min: 1500, max: 3000 },
+  "App con AI":     { label: "1.500€ – 3.000€", min: 1500, max: 3000 },
+};
+
+type BudgetFit = "Dentro il budget" | "Al limite del budget" | "Fuori budget, da semplificare";
+
+function getBudget(band: BudgetBand) {
+  return BUDGET_OPTIONS.find((b) => b.label === band) ?? null;
+}
+
+function recommendedBudget(projectType: string, difficulty: Difficulty) {
+  const base = RECOMMENDED_BY_TYPE[projectType] ?? RECOMMENDED_BY_TYPE["Web app"];
+  // Bump for advanced/complex projects with heavy features
+  if (difficulty === "Complessa") return { label: "3.000€+", min: 3000, max: 6000 };
+  if (difficulty === "Avanzata" && base.max < 1500) {
+    return { label: "700€ – 1.500€", min: 700, max: 1500 };
+  }
+  return base;
+}
+
+function budgetFit(insertedMax: number, rec: { min: number; max: number }): BudgetFit {
+  if (insertedMax >= rec.min) return "Dentro il budget";
+  if (insertedMax >= rec.min * 0.5) return "Al limite del budget";
+  return "Fuori budget, da semplificare";
+}
 
 type Estimate = {
   hoursLow: number;
