@@ -55,7 +55,8 @@ function Index() {
           </div>
         </section>
 
-        {/* IDEA → ORE — blocco interattivo subito sotto la hero */}
+        {/* IDEA → ORE / COSTI / POTENZIALE — calcolatore interattivo subito sotto la hero */}
+        <div id="calcolatore" />
         <IdeaEstimator />
 
         {/* STEPS — 4 card subito sotto la hero */}
