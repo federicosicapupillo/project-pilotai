@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { APP_ROADMAP_PHASES, PHASE_WEIGHT, type AppRoadmapPhase } from "./app-roadmap";
+import { APP_ROADMAP_PHASES, PHASE_WEIGHT, buildFallbackRoadmap, type AppRoadmapPhase } from "./app-roadmap";
 
 const InputSchema = z.object({
   title: z.string().min(1).max(200),
@@ -15,12 +15,10 @@ const InputSchema = z.object({
   urgency: z.string().max(40).optional().default(""),
 });
 
-const PhaseEnum = z.enum(APP_ROADMAP_PHASES as unknown as [string, ...string[]]);
-
 const StepSchema = z.object({
   title: z.string(),
   description: z.string(),
-  phase: PhaseEnum,
+  phase: z.string(),
   recommended_agent: z.string(),
   recommended_tool: z.string(),
   prompt_text: z.string(),
@@ -31,6 +29,14 @@ const StepSchema = z.object({
 const OutputSchema = z.object({
   steps: z.array(StepSchema),
 });
+
+type RoadmapDto = z.infer<typeof StepSchema> & {
+  phase: AppRoadmapPhase;
+  order_index: number;
+  priority: number;
+  status: "todo";
+  progress_weight: number;
+};
 
 const SYSTEM_PROMPT = `Sei un Product Manager esperto di app no-code, agenti AI, Lovable, Supabase e validazione MVP.
 Devi creare una roadmap OPERATIVA personalizzata per costruire l'app dell'utente, passo passo.
@@ -78,6 +84,46 @@ Per ogni step produci:
 Mantieni un ORDINE LOGICO: le fasi devono comparire in successione. La roadmap deve coprire tutte e 10 le fasi se possibile.`;
 }
 
+function normalizePhase(phase: string | null | undefined, index: number): AppRoadmapPhase {
+  const exact = APP_ROADMAP_PHASES.find((p) => p === phase);
+  if (exact) return exact;
+
+  const normalized = String(phase ?? "").toLowerCase().trim();
+  const fuzzy = APP_ROADMAP_PHASES.find((p) => normalized.includes(p.toLowerCase()) || p.toLowerCase().includes(normalized));
+  return fuzzy ?? APP_ROADMAP_PHASES[Math.min(index, APP_ROADMAP_PHASES.length - 1)];
+}
+
+function toClientRoadmap(steps: z.infer<typeof StepSchema>[]): RoadmapDto[] {
+  return steps.map((s, i) => {
+    const phase = normalizePhase(s.phase, i);
+    return {
+      ...s,
+      phase,
+      order_index: i,
+      priority: i,
+      status: "todo" as const,
+      progress_weight: PHASE_WEIGHT[phase] ?? 1,
+    };
+  });
+}
+
+function fallbackRoadmap(data: z.infer<typeof InputSchema>): RoadmapDto[] {
+  return buildFallbackRoadmap({ title: data.title, idea_description: data.idea_description }).map((s, i) => ({
+    title: s.title,
+    description: s.description ?? "",
+    phase: normalizePhase(s.phase, i),
+    recommended_agent: s.recommended_agent ?? "Agente Stratega",
+    recommended_tool: s.recommended_tool ?? "ChatGPT",
+    prompt_text: s.prompt_text ?? "",
+    expected_output: s.expected_output ?? "",
+    checklist_items: Array.isArray(s.checklist_items) ? s.checklist_items.map(String) : [],
+    order_index: s.order_index,
+    priority: s.priority,
+    status: "todo",
+    progress_weight: s.progress_weight,
+  }));
+}
+
 export const generateAppRoadmap = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
@@ -88,19 +134,18 @@ export const generateAppRoadmap = createServerFn({ method: "POST" })
     const gateway = createLovableAiGatewayProvider(key);
     const model = gateway("google/gemini-3-flash-preview");
 
-    const { object } = await generateObject({
-      model,
-      system: SYSTEM_PROMPT,
-      prompt: buildUserPrompt(data),
-      schema: OutputSchema,
-    });
+    try {
+      const { object } = await generateObject({
+        model,
+        system: SYSTEM_PROMPT,
+        prompt: buildUserPrompt(data),
+        schema: OutputSchema,
+      });
 
-    // Enrich each step with order_index + progress_weight (server-side, deterministic).
-    return object.steps.map((s, i) => ({
-      ...s,
-      order_index: i,
-      priority: i,
-      status: "todo" as const,
-      progress_weight: PHASE_WEIGHT[s.phase as AppRoadmapPhase] ?? 1,
-    }));
+      if (!object.steps.length) throw new Error("Roadmap AI vuota");
+      return toClientRoadmap(object.steps);
+    } catch (error) {
+      console.error("AI roadmap generation failed; returning deterministic fallback", error);
+      return fallbackRoadmap(data);
+    }
   });
