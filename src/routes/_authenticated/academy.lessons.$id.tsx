@@ -26,39 +26,102 @@ type WBField =
   | "idea" | "target" | "problem" | "solution" | "mvp"
   | "decisions" | "next_steps" | "bugs_found" | "agents_used";
 
-const REQUIRED_BY_LESSON: Record<string, { field: WBField; label: string }[]> = {
-  "1-1": [{ field: "decisions", label: "Decisioni (ruolo di regista + cosa deleghi)" }],
-  "1-2": [{ field: "mvp", label: "MVP (classificazione funzioni costruibili/no)" }],
-  "1-3": [{ field: "next_steps", label: "Roadmap (le 5 fasi del prodotto)" }],
-  "1-4": [{ field: "decisions", label: "Decisioni (le tue 5 regole personali)" }],
-
-  "2-1": [{ field: "idea", label: "Idea in una frase (≤20 parole)" }],
-  "2-2": [{ field: "target", label: "Target principale + nicchia" }],
-  "2-3": [
-    { field: "problem", label: "Problema concreto" },
-    { field: "solution", label: "Soluzione proposta" },
-  ],
-  "2-4": [{ field: "mvp", label: "Prima versione semplificata (≤3 funzioni)" }],
-
-  "3-1": [{ field: "decisions", label: "Mappa competitor (diretti, indiretti, manuali)" }],
-  "3-2": [{ field: "decisions", label: "Prove di domanda raccolte" }],
-  "3-3": [{ field: "bugs_found", label: "Rischi e assunzioni da verificare" }],
-  "3-4": [{ field: "target", label: "Nicchia iniziale scelta" }],
-
-  "4-1": [{ field: "mvp", label: "Definizione MVP (ipotesi + comportamento)" }],
-  "4-2": [{ field: "mvp", label: "Funzioni must-have (≤5)" }],
-  "4-3": [{ field: "decisions", label: "Lista NOT NOW (≥10 voci)" }],
-  "4-4": [{ field: "next_steps", label: "Roadmap di 5–7 step con date" }],
+type FieldCheckStatus = "ok" | "missing" | "invalid";
+type FieldCheckResult = { status: FieldCheckStatus; reason?: string };
+type WBRequirement = {
+  field: WBField;
+  label: string;
+  hint: string;
+  validate?: (v: unknown) => FieldCheckResult;
 };
 
-function isFieldFilled(wb: Record<string, unknown> | null | undefined, field: WBField): boolean {
-  if (!wb) return false;
-  const v = wb[field];
-  if (v == null) return false;
-  if (typeof v === "string") return v.trim().length >= 10;
-  if (Array.isArray(v)) return v.filter((x) => (typeof x === "string" ? x.trim() : x)).length > 0;
-  if (typeof v === "object") return Object.keys(v as object).length > 0;
-  return false;
+// ---- Validators -------------------------------------------------------------
+const wordCount = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
+const lineCount = (s: string) =>
+  s.split(/\n|•|—|;|\u2022/).map((l) => l.trim()).filter((l) => l.length > 2).length;
+
+const filledText = (min = 10) => (v: unknown): FieldCheckResult => {
+  if (typeof v !== "string" || !v.trim()) return { status: "missing" };
+  if (v.trim().length < min) return { status: "invalid", reason: `Troppo breve (min ~${min} caratteri).` };
+  return { status: "ok" };
+};
+
+const filledArray = (min = 1) => (v: unknown): FieldCheckResult => {
+  const arr = Array.isArray(v) ? v.filter((x) => (typeof x === "string" ? x.trim() : x)) : [];
+  if (arr.length === 0) return { status: "missing" };
+  if (arr.length < min) return { status: "invalid", reason: `Servono almeno ${min} voci (ora ${arr.length}).` };
+  return { status: "ok" };
+};
+
+const filledObjectOrArray = (v: unknown): FieldCheckResult => {
+  if (Array.isArray(v) && v.length > 0) return { status: "ok" };
+  if (v && typeof v === "object" && Object.keys(v as object).length > 0) return { status: "ok" };
+  if (typeof v === "string" && v.trim().length >= 10) return { status: "ok" };
+  return { status: "missing" };
+};
+
+const ideaSentence = (v: unknown): FieldCheckResult => {
+  if (typeof v !== "string" || !v.trim()) return { status: "missing" };
+  const w = wordCount(v);
+  if (w > 20) return { status: "invalid", reason: `Frase troppo lunga: ${w} parole (max 20).` };
+  if (w < 5) return { status: "invalid", reason: `Frase troppo corta: ${w} parole.` };
+  return { status: "ok" };
+};
+
+const mvpMaxFunctions = (max: number) => (v: unknown): FieldCheckResult => {
+  if (Array.isArray(v)) {
+    const n = v.filter(Boolean).length;
+    if (n === 0) return { status: "missing" };
+    if (n > max) return { status: "invalid", reason: `${n} funzioni elencate, max ${max}.` };
+    return { status: "ok" };
+  }
+  if (typeof v !== "string" || !v.trim()) return { status: "missing" };
+  const n = lineCount(v);
+  if (n === 0) return { status: "missing" };
+  if (n > max) return { status: "invalid", reason: `${n} funzioni rilevate, max ${max}.` };
+  return { status: "ok" };
+};
+
+const minLines = (min: number, max?: number) => (v: unknown): FieldCheckResult => {
+  const n = Array.isArray(v) ? v.filter(Boolean).length
+    : typeof v === "string" ? lineCount(v) : 0;
+  if (n === 0) return { status: "missing" };
+  if (n < min) return { status: "invalid", reason: `Servono almeno ${min} voci (ora ${n}).` };
+  if (max && n > max) return { status: "invalid", reason: `Massimo ${max} voci (ora ${n}). Tagliane.` };
+  return { status: "ok" };
+};
+
+// ---- Mapping ----------------------------------------------------------------
+const REQUIRED_BY_LESSON: Record<string, WBRequirement[]> = {
+  "1-1": [{ field: "decisions", label: "Ruolo di regista + cosa deleghi", hint: "Sezione Decisioni", validate: filledObjectOrArray }],
+  "1-2": [{ field: "mvp", label: "Classificazione funzioni costruibili/no", hint: "Sezione MVP", validate: filledText(40) }],
+  "1-3": [{ field: "next_steps", label: "Le 5 fasi del prodotto", hint: "Sezione Roadmap", validate: minLines(5) }],
+  "1-4": [{ field: "decisions", label: "Le tue 5 regole personali", hint: "Sezione Decisioni / Note operative", validate: minLines(5) }],
+
+  "2-1": [{ field: "idea", label: "Idea in una frase (≤20 parole)", hint: "Sezione Idea", validate: ideaSentence }],
+  "2-2": [{ field: "target", label: "Target principale + nicchia", hint: "Sezione Target", validate: filledText(20) }],
+  "2-3": [
+    { field: "problem", label: "Problema concreto", hint: "Sezione Problema", validate: filledText(20) },
+    { field: "solution", label: "Soluzione proposta (max 3 punti)", hint: "Sezione Soluzione", validate: filledText(20) },
+  ],
+  "2-4": [{ field: "mvp", label: "Prima versione semplificata (≤3 funzioni)", hint: "Sezione MVP", validate: mvpMaxFunctions(3) }],
+
+  "3-1": [{ field: "decisions", label: "Mappa competitor (≥3 voci)", hint: "Sezione Decisioni / Competitor", validate: minLines(3) }],
+  "3-2": [{ field: "decisions", label: "Prove di domanda (≥3)", hint: "Sezione Decisioni / Validazione", validate: minLines(3) }],
+  "3-3": [{ field: "bugs_found", label: "Rischi e assunzioni (≥5)", hint: "Sezione Rischi", validate: minLines(5) }],
+  "3-4": [{ field: "target", label: "Nicchia iniziale scelta", hint: "Sezione Target", validate: filledText(20) }],
+
+  "4-1": [{ field: "mvp", label: "Definizione MVP (ipotesi + comportamento)", hint: "Sezione MVP", validate: filledText(40) }],
+  "4-2": [{ field: "mvp", label: "Funzioni must-have (≤5)", hint: "Sezione MVP", validate: mvpMaxFunctions(5) }],
+  "4-3": [{ field: "decisions", label: "Lista NOT NOW (≥10 voci)", hint: "Sezione Decisioni / Fuori scope", validate: minLines(10) }],
+  "4-4": [{ field: "next_steps", label: "Roadmap di 5–7 step", hint: "Sezione Roadmap", validate: minLines(5, 7) }],
+};
+
+function checkRequirement(wb: Record<string, unknown> | null | undefined, req: WBRequirement): FieldCheckResult {
+  if (!wb) return { status: "missing" };
+  const v = wb[req.field];
+  if (req.validate) return req.validate(v);
+  return filledObjectOrArray(v);
 }
 // ---------------------------------------------------------------------------
 
