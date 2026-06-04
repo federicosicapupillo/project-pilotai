@@ -20,6 +20,7 @@ import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
 import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
+import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
 import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
@@ -78,6 +79,12 @@ const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
   path: '/academy',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWorkbookProjectIdRoute =
+  AuthenticatedWorkbookProjectIdRouteImport.update({
+    id: '/workbook/$projectId',
+    path: '/workbook/$projectId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   id: '/projects/$id',
   path: '/projects/$id',
@@ -108,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesByTo {
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
@@ -140,6 +149,7 @@ export interface FileRoutesById {
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
   '/_authenticated/tools': typeof AuthenticatedToolsRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/new-project'
     | '/tools'
     | '/projects/$id'
+    | '/workbook/$projectId'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/new-project'
     | '/tools'
     | '/projects/$id'
+    | '/workbook/$projectId'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
   id:
@@ -188,6 +200,7 @@ export interface FileRouteTypes {
     | '/_authenticated/new-project'
     | '/_authenticated/tools'
     | '/_authenticated/projects/$id'
+    | '/_authenticated/workbook/$projectId'
     | '/_authenticated/academy/lessons/$id'
     | '/_authenticated/academy/modules/$id'
   fileRoutesById: FileRoutesById
@@ -278,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcademyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/workbook/$projectId': {
+      id: '/_authenticated/workbook/$projectId'
+      path: '/workbook/$projectId'
+      fullPath: '/workbook/$projectId'
+      preLoaderRoute: typeof AuthenticatedWorkbookProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/projects/$id': {
       id: '/_authenticated/projects/$id'
       path: '/projects/$id'
@@ -324,6 +344,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
   AuthenticatedToolsRoute: typeof AuthenticatedToolsRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
+  AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -335,6 +356,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
   AuthenticatedToolsRoute: AuthenticatedToolsRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
+  AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
