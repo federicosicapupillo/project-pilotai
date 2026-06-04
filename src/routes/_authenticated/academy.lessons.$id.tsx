@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import {
   ArrowLeft, ArrowRight, Target, Bot, Wrench, ClipboardCopy, ListChecks,
-  PlayCircle, CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle,
+  PlayCircle, CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle, ShieldCheck, XCircle,
 } from "lucide-react";
 import { ToolBadge } from "@/components/ToolBadge";
 import { ActiveProjectBox } from "@/components/ActiveProjectBox";
@@ -153,6 +153,17 @@ function LessonPage() {
     },
   });
 
+  // Live Workbook for the active project — used to verify required fields are saved before completion.
+  const { data: workbook } = useQuery({
+    queryKey: ["workbook-check", active?.id],
+    enabled: !!active?.id,
+    queryFn: async () => {
+      const { data: wb } = await supabase
+        .from("project_workbook").select("*").eq("project_id", active!.id).maybeSingle();
+      return wb as Record<string, unknown> | null;
+    },
+  });
+
   useEffect(() => {
     if (data?.progress?.notes) setNotes(data.progress.notes);
   }, [data?.progress?.notes]);
@@ -204,6 +215,18 @@ function LessonPage() {
   const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : null;
   const isCompleted = data.progress?.status === "completed";
   const isInProgress = data.progress?.status === "in_progress";
+
+  // ---- Workbook save-check (modules 1–4) ---------------------------------
+  const key = mod ? `${mod.order_index}-${lesson.order_index}` : "";
+  const requiredFields = REQUIRED_BY_LESSON[key] ?? [];
+  const requirementsActive = requiredFields.length > 0;
+  const fieldStatus = requiredFields.map((r) => ({
+    ...r,
+    ok: isFieldFilled(workbook, r.field),
+  }));
+  const allFieldsOk = fieldStatus.every((f) => f.ok);
+  const completionBlocked = requirementsActive && (!active || !allFieldsOk) && !isCompleted;
+  // -----------------------------------------------------------------------
 
   // Effective sync state: prefer live mutation stage, otherwise derive from DB progress
   const effectiveStage: "not_started" | "saving" | "syncing" | "in_progress" | "synced" | "error" =
@@ -364,6 +387,56 @@ function LessonPage() {
         </div>
       )}
 
+      {requirementsActive && (
+        <div className={`glass-card rounded-xl p-6 mb-6 border ${allFieldsOk ? "border-primary/30" : "border-amber-500/30"}`}>
+          <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+              <ShieldCheck className="size-3.5 text-primary" /> Controllo salvataggio Workbook
+            </div>
+            {active && (
+              <Link
+                to="/workbook/$projectId"
+                params={{ projectId: active.id }}
+                className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+              >
+                Apri Workbook <ArrowRight className="size-3" />
+              </Link>
+            )}
+          </div>
+          {!active ? (
+            <p className="text-sm text-muted-foreground">
+              Seleziona un progetto attivo per verificare i campi salvati nel Workbook prima di completare la lezione.
+            </p>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground mb-3">
+                Prima di segnare questa lezione come completata, verifico che tu abbia davvero salvato l'output nel Workbook del progetto <span className="text-foreground/90 font-medium">"{active.title}"</span>.
+              </p>
+              <ul className="space-y-2">
+                {fieldStatus.map((f) => (
+                  <li key={f.field + f.label} className="flex items-start gap-3 text-sm">
+                    {f.ok ? (
+                      <CheckCircle2 className="size-4 mt-0.5 text-primary shrink-0" />
+                    ) : (
+                      <XCircle className="size-4 mt-0.5 text-amber-400 shrink-0" />
+                    )}
+                    <span className={f.ok ? "text-foreground" : "text-foreground/90"}>
+                      {f.label}
+                      {!f.ok && <span className="text-amber-300/90"> — manca nel Workbook</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {!allFieldsOk && (
+                <p className="text-xs text-amber-300/90 mt-3">
+                  Apri il Workbook, compila i campi mancanti, salva, poi torna qui e potrai segnare la lezione come completata.
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
       <div className="glass-card rounded-xl p-6 mb-6">
         <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
           <FileText className="size-3.5 text-primary" /> Le tue note
@@ -406,7 +479,8 @@ function LessonPage() {
             if (next) navigate({ to: "/academy/lessons/$id", params: { id: next.id } });
             else navigate({ to: "/academy/modules/$id", params: { id: lesson.module_id } });
           }}
-          disabled={saveMutation.isPending}
+          disabled={saveMutation.isPending || completionBlocked}
+          title={completionBlocked ? "Completa prima il salvataggio nel Workbook" : undefined}
         >
           <CheckCircle2 className="size-4" /> {isCompleted ? "Già completata — continua" : "Segna come completata"}
         </Button>
