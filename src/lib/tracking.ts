@@ -54,7 +54,7 @@ export async function trackEvent(eventName: string, metadata?: Record<string, un
       utm_campaign: utm.utm_campaign ?? null,
       utm_content: utm.utm_content ?? null,
       utm_creator: utm.utm_creator ?? null,
-      metadata: metadata ?? null,
+      metadata: (metadata ?? null) as never,
     });
   } catch {
     /* swallow tracking errors */
