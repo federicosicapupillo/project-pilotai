@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -15,18 +15,9 @@ export const Route = createFileRoute("/_authenticated/projects/$id")({
   component: ProjectPage,
 });
 
-type StatusValue = "todo" | "in_progress" | "done";
-const STATUS_LABEL: Record<StatusValue, string> = {
-  todo: "Da fare",
-  in_progress: "In corso",
-  done: "Completato",
-};
-const STATUS_ORDER: StatusValue[] = ["todo", "in_progress", "done"];
-
 function ProjectPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const _qc = useQueryClient();
 
   const { data: project } = useQuery({
     queryKey: ["project", id],
@@ -130,7 +121,7 @@ function ProjectPage() {
           <TabsTrigger value="stack"><Layers className="size-4" /> Stack</TabsTrigger>
           <TabsTrigger value="agents"><Users className="size-4" /> Agenti</TabsTrigger>
           <TabsTrigger value="prompts"><Sparkles className="size-4" /> Prompt</TabsTrigger>
-          <TabsTrigger value="roadmap"><ListChecks className="size-4" /> Roadmap</TabsTrigger>
+          <TabsTrigger value="roadmap"><ListChecks className="size-4" /> Roadmap App</TabsTrigger>
         </TabsList>
 
         <TabsContent value="scheda" className="mt-6">
