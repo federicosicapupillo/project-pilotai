@@ -328,6 +328,16 @@ function RiskBadge({ level }: { level: string }) {
 }
 
 function EarningsSection({ idea }: { idea: GeneratedIdea }) {
+  const revenue = parseRange(idea.earning_range);
+  const costs = parseRange(idea.monthly_cost);
+  const isSavings = /risparm/i.test(idea.earning_range);
+  const net = revenue && costs && !isSavings
+    ? {
+        low: Math.max(0, revenue.low - costs.high),
+        high: Math.max(0, revenue.high - costs.low),
+      }
+    : null;
+  const fmtRange = (r: { low: number; high: number }) => `${r.low.toLocaleString("it-IT")}€ – ${r.high.toLocaleString("it-IT")}€/mese`;
   return (
     <div
       className="mt-4 rounded-xl border border-primary/40 p-4"
@@ -338,15 +348,38 @@ function EarningsSection({ idea }: { idea: GeneratedIdea }) {
     >
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-primary font-semibold">
-            <Euro className="size-3" /> Potenziale guadagno indicativo
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-primary font-semibold">
+              <Euro className="size-3" /> {isSavings ? "Risparmio mensile indicativo" : "Potenziale profitto netto indicativo"}
+            </div>
+            <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full border border-primary/40 bg-primary/10 text-primary">
+              Stima indicativa
+            </span>
           </div>
           <div className="font-display font-semibold text-2xl mt-1 gradient-text">
-            {idea.earning_range}
+            {net ? fmtRange(net) : idea.earning_range}
           </div>
+          {net && (
+            <p className="text-[10px] text-muted-foreground mt-1 max-w-md">
+              Stima calcolata sottraendo i costi mensili stimati dai ricavi potenziali. Non rappresenta una promessa di guadagno.
+            </p>
+          )}
         </div>
         <RiskBadge level={idea.commercial_risk} />
       </div>
+
+      {net && (
+        <div className="grid sm:grid-cols-2 gap-2 mt-3">
+          <div className="rounded-lg border border-border/60 bg-background/40 p-2.5">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Ricavi potenziali</div>
+            <div className="text-sm font-medium text-foreground/90 mt-0.5">{idea.earning_range}</div>
+          </div>
+          <div className="rounded-lg border border-border/60 bg-background/40 p-2.5">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Costi mensili stimati</div>
+            <div className="text-sm font-medium text-foreground/90 mt-0.5">{idea.monthly_cost}</div>
+          </div>
+        </div>
+      )}
 
       {idea.suggested_price && (
         <div className="mt-3 flex items-center gap-2 text-xs">
@@ -374,10 +407,21 @@ function EarningsSection({ idea }: { idea: GeneratedIdea }) {
       )}
 
       <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
-        Questa non è una promessa di guadagno. È una stima indicativa basata sulle informazioni inserite, sul modello di ricavo ipotizzato e sul tipo di mercato. Il risultato reale dipende da esecuzione, prezzo, traffico, vendita, qualità del prodotto e domanda reale.
+        Il profitto netto è una stima indicativa. Il risultato reale dipende da mercato, prezzo, traffico, capacità di vendita, qualità dell'offerta, costi degli strumenti e continuità nell'esecuzione.
       </p>
     </div>
   );
+}
+
+/** Parse strings like "300€ – 1.000€/mese" or "50€-250€/mese" into { low, high }. */
+function parseRange(s: string): { low: number; high: number } | null {
+  if (!s) return null;
+  const nums = Array.from(s.matchAll(/(\d[\d.\s]*)\s*€/g)).map((m) =>
+    parseInt(m[1].replace(/[.\s]/g, ""), 10),
+  ).filter((n) => Number.isFinite(n));
+  if (nums.length === 0) return null;
+  if (nums.length === 1) return { low: nums[0], high: nums[0] };
+  return { low: Math.min(nums[0], nums[1]), high: Math.max(nums[0], nums[1]) };
 }
 
 function ScenarioBox({ label, value, tone }: { label: string; value: string; tone: "muted" | "primary" }) {
