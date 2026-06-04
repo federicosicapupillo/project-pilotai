@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_access: {
+        Row: {
+          accesso_agente_ai: boolean
+          amount_cents: number | null
+          created_at: string
+          currency: string | null
+          email: string | null
+          id: string
+          idea: string | null
+          paid_at: string | null
+          payment_status: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accesso_agente_ai?: boolean
+          amount_cents?: number | null
+          created_at?: string
+          currency?: string | null
+          email?: string | null
+          id?: string
+          idea?: string | null
+          paid_at?: string | null
+          payment_status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accesso_agente_ai?: boolean
+          amount_cents?: number | null
+          created_at?: string
+          currency?: string | null
+          email?: string | null
+          id?: string
+          idea?: string | null
+          paid_at?: string | null
+          payment_status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       agent_library: {
         Row: {
           base_prompt: string | null
