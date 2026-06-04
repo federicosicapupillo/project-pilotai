@@ -78,7 +78,22 @@ function NewProjectPage() {
       let analysis: ReturnType<typeof ANALYSIS_TEMPLATE>;
       let agents: Array<{ project_id: string; name: string; role: string; when_to_use: string; expected_output: string; prompt_text: string }>;
       let prompts: Array<{ project_id: string; category: string; title: string; prompt_text: string; recommended_tool: string }>;
-      let roadmap: Array<Record<string, unknown>>;
+      type RoadmapInsert = {
+        project_id: string;
+        title: string;
+        description: string | null;
+        phase: string | null;
+        order_index: number;
+        priority: number;
+        status: string;
+        recommended_agent: string | null;
+        recommended_tool: string | null;
+        prompt_text: string | null;
+        expected_output: string | null;
+        checklist_items: string[];
+        progress_weight: number;
+      };
+      let roadmap: RoadmapInsert[];
       let usedAi = false;
 
       try {
@@ -149,13 +164,27 @@ function NewProjectPage() {
           recommended_tool: s.recommended_tool,
           prompt_text: s.prompt_text,
           expected_output: s.expected_output,
-          checklist_items: s.checklist_items,
+          checklist_items: s.checklist_items as string[],
           progress_weight: s.progress_weight,
         }));
       } catch (e) {
         console.error("AI roadmap failed, using fallback", e);
         const fb = buildFallbackRoadmap({ title: form.title, idea_description: form.idea_description });
-        roadmap = fb.map((s) => ({ project_id: project.id, ...s }));
+        roadmap = fb.map((s) => ({
+          project_id: project.id,
+          title: s.title,
+          description: s.description,
+          phase: s.phase,
+          order_index: s.order_index,
+          priority: s.priority,
+          status: String(s.status),
+          recommended_agent: s.recommended_agent,
+          recommended_tool: s.recommended_tool,
+          prompt_text: s.prompt_text,
+          expected_output: s.expected_output,
+          checklist_items: s.checklist_items as string[],
+          progress_weight: s.progress_weight,
+        }));
       }
       await supabase.from("roadmap_items").insert(roadmap);
       finishAll();
