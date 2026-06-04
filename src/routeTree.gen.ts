@@ -18,6 +18,7 @@ import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
+import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
 
 const MethodRoute = MethodRouteImport.update({
   id: '/method',
@@ -63,26 +64,34 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   path: '/projects/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAcademyModulesIdRoute =
+  AuthenticatedAcademyModulesIdRouteImport.update({
+    id: '/modules/$id',
+    path: '/modules/$id',
+    getParentRoute: () => AuthenticatedAcademyRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
-  '/academy': typeof AuthenticatedAcademyRoute
+  '/academy': typeof AuthenticatedAcademyRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
-  '/academy': typeof AuthenticatedAcademyRoute
+  '/academy': typeof AuthenticatedAcademyRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -90,11 +99,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
-  '/_authenticated/academy': typeof AuthenticatedAcademyRoute
+  '/_authenticated/academy': typeof AuthenticatedAcademyRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/new-project'
     | '/projects/$id'
+    | '/academy/modules/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/new-project'
     | '/projects/$id'
+    | '/academy/modules/$id'
   id:
     | '__root__'
     | '/'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
     | '/_authenticated/library'
     | '/_authenticated/new-project'
     | '/_authenticated/projects/$id'
+    | '/_authenticated/academy/modules/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -202,11 +215,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/academy/modules/$id': {
+      id: '/_authenticated/academy/modules/$id'
+      path: '/modules/$id'
+      fullPath: '/academy/modules/$id'
+      preLoaderRoute: typeof AuthenticatedAcademyModulesIdRouteImport
+      parentRoute: typeof AuthenticatedAcademyRoute
+    }
   }
 }
 
+interface AuthenticatedAcademyRouteChildren {
+  AuthenticatedAcademyModulesIdRoute: typeof AuthenticatedAcademyModulesIdRoute
+}
+
+const AuthenticatedAcademyRouteChildren: AuthenticatedAcademyRouteChildren = {
+  AuthenticatedAcademyModulesIdRoute: AuthenticatedAcademyModulesIdRoute,
+}
+
+const AuthenticatedAcademyRouteWithChildren =
+  AuthenticatedAcademyRoute._addFileChildren(AuthenticatedAcademyRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRoute
+  AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
@@ -214,7 +245,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAcademyRoute: AuthenticatedAcademyRoute,
+  AuthenticatedAcademyRoute: AuthenticatedAcademyRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
