@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -12,44 +13,12 @@ import {
   Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
-
-type Difficulty = "Semplice" | "Media" | "Avanzata" | "Complessa";
-type RevenueModel =
-  | "Non lo so ancora"
-  | "Abbonamento"
-  | "Vendita una tantum"
-  | "Commissione"
-  | "Lead generation"
-  | "Servizio premium"
-  | "Uso interno per risparmiare tempo"
-  | "Licenza B2B"
-  | "Altro";
-type PriceBand =
-  | "Non lo so"
-  | "9€–29€"
-  | "49€–97€"
-  | "197€–497€"
-  | "500€+"
-  | "Abbonamento mensile";
-
-type BudgetBand =
-  | ""
-  | "0€ – 100€"
-  | "100€ – 300€"
-  | "300€ – 700€"
-  | "700€ – 1.500€"
-  | "1.500€ – 3.000€"
-  | "3.000€+"
-  | "Non lo so ancora";
-
-const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; display: string; min: number; max: number }[] = [
-  { label: "100€ – 300€",      display: "100–300 €",      min: 100,  max: 300 },
-  { label: "300€ – 700€",      display: "300–700 €",      min: 300,  max: 700 },
-  { label: "700€ – 1.500€",    display: "700–1.500 €",    min: 700,  max: 1500 },
-  { label: "1.500€ – 3.000€",  display: "1.500–3.000 €",  min: 1500, max: 3000 },
-  { label: "3.000€+",          display: "3.000 €+",       min: 3000, max: 6000 },
-  { label: "Non lo so ancora", display: "Non lo so ancora", min: 0,    max: 0 },
-];
+import {
+  classify, getBudget, fmt, BUDGET_OPTIONS,
+  saveIdeaParams,
+  type Difficulty, type RevenueModel, type PriceBand,
+  type BudgetBand, type Estimate,
+} from "@/lib/idea-estimate";
 
 const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
   "Landing page":   { label: "100€ – 300€",     min: 100,  max: 300 },
