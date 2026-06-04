@@ -90,7 +90,7 @@ export function IdeaEstimator() {
       localStorage.setItem(STORAGE_KEY, idea.trim());
       localStorage.setItem(REDIRECT_KEY, "/new-project");
     }
-    navigate({ to: "/new-project" });
+    navigate({ to: "/pricing" });
   };
 
   return (
