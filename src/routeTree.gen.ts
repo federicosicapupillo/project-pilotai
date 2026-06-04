@@ -9,22 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AgentsRouteImport } from './routes/agents'
+import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
 import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authenticated/new-project'
 import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
-import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
 import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
 
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MethodRoute = MethodRouteImport.update({
   id: '/method',
   path: '/method',
@@ -35,6 +40,16 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademyRoute = AcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -43,11 +58,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedToolsRoute = AuthenticatedToolsRouteImport.update({
-  id: '/tools',
-  path: '/tools',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedNewProjectRoute = AuthenticatedNewProjectRouteImport.update({
   id: '/new-project',
@@ -69,16 +79,6 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAgentsRoute = AuthenticatedAgentsRouteImport.update({
-  id: '/agents',
-  path: '/agents',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
-  id: '/academy',
-  path: '/academy',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedWorkbookProjectIdRoute =
   AuthenticatedWorkbookProjectIdRouteImport.update({
     id: '/workbook/$projectId',
@@ -92,28 +92,28 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
 } as any)
 const AuthenticatedAcademyModulesIdRoute =
   AuthenticatedAcademyModulesIdRouteImport.update({
-    id: '/modules/$id',
-    path: '/modules/$id',
-    getParentRoute: () => AuthenticatedAcademyRoute,
+    id: '/academy/modules/$id',
+    path: '/academy/modules/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAcademyLessonsIdRoute =
   AuthenticatedAcademyLessonsIdRouteImport.update({
-    id: '/lessons/$id',
-    path: '/lessons/$id',
-    getParentRoute: () => AuthenticatedAcademyRoute,
+    id: '/academy/lessons/$id',
+    path: '/academy/lessons/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
+  '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
-  '/academy': typeof AuthenticatedAcademyRouteWithChildren
-  '/agents': typeof AuthenticatedAgentsRoute
+  '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
-  '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -121,15 +121,15 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
+  '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
-  '/academy': typeof AuthenticatedAcademyRouteWithChildren
-  '/agents': typeof AuthenticatedAgentsRoute
+  '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
-  '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -139,15 +139,15 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/academy': typeof AcademyRoute
+  '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
-  '/_authenticated/academy': typeof AuthenticatedAcademyRouteWithChildren
-  '/_authenticated/agents': typeof AuthenticatedAgentsRoute
+  '/tools': typeof ToolsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
-  '/_authenticated/tools': typeof AuthenticatedToolsRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -157,15 +157,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
-    | '/method'
     | '/academy'
     | '/agents'
+    | '/auth'
+    | '/method'
+    | '/tools'
     | '/dashboard'
     | '/library'
     | '/my-path'
     | '/new-project'
-    | '/tools'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
@@ -173,15 +173,15 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
-    | '/method'
     | '/academy'
     | '/agents'
+    | '/auth'
+    | '/method'
+    | '/tools'
     | '/dashboard'
     | '/library'
     | '/my-path'
     | '/new-project'
-    | '/tools'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
@@ -190,15 +190,15 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/academy'
+    | '/agents'
     | '/auth'
     | '/method'
-    | '/_authenticated/academy'
-    | '/_authenticated/agents'
+    | '/tools'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
     | '/_authenticated/my-path'
     | '/_authenticated/new-project'
-    | '/_authenticated/tools'
     | '/_authenticated/projects/$id'
     | '/_authenticated/workbook/$projectId'
     | '/_authenticated/academy/lessons/$id'
@@ -208,12 +208,22 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AcademyRoute: typeof AcademyRoute
+  AgentsRoute: typeof AgentsRoute
   AuthRoute: typeof AuthRoute
   MethodRoute: typeof MethodRoute
+  ToolsRoute: typeof ToolsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/method': {
       id: '/method'
       path: '/method'
@@ -226,6 +236,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academy': {
+      id: '/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AcademyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -241,13 +265,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/tools': {
-      id: '/_authenticated/tools'
-      path: '/tools'
-      fullPath: '/tools'
-      preLoaderRoute: typeof AuthenticatedToolsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/new-project': {
       id: '/_authenticated/new-project'
@@ -277,20 +294,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/agents': {
-      id: '/_authenticated/agents'
-      path: '/agents'
-      fullPath: '/agents'
-      preLoaderRoute: typeof AuthenticatedAgentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/academy': {
-      id: '/_authenticated/academy'
-      path: '/academy'
-      fullPath: '/academy'
-      preLoaderRoute: typeof AuthenticatedAcademyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/workbook/$projectId': {
       id: '/_authenticated/workbook/$projectId'
       path: '/workbook/$projectId'
@@ -307,56 +310,41 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/academy/modules/$id': {
       id: '/_authenticated/academy/modules/$id'
-      path: '/modules/$id'
+      path: '/academy/modules/$id'
       fullPath: '/academy/modules/$id'
       preLoaderRoute: typeof AuthenticatedAcademyModulesIdRouteImport
-      parentRoute: typeof AuthenticatedAcademyRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/academy/lessons/$id': {
       id: '/_authenticated/academy/lessons/$id'
-      path: '/lessons/$id'
+      path: '/academy/lessons/$id'
       fullPath: '/academy/lessons/$id'
       preLoaderRoute: typeof AuthenticatedAcademyLessonsIdRouteImport
-      parentRoute: typeof AuthenticatedAcademyRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-interface AuthenticatedAcademyRouteChildren {
-  AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
-  AuthenticatedAcademyModulesIdRoute: typeof AuthenticatedAcademyModulesIdRoute
-}
-
-const AuthenticatedAcademyRouteChildren: AuthenticatedAcademyRouteChildren = {
-  AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
-  AuthenticatedAcademyModulesIdRoute: AuthenticatedAcademyModulesIdRoute,
-}
-
-const AuthenticatedAcademyRouteWithChildren =
-  AuthenticatedAcademyRoute._addFileChildren(AuthenticatedAcademyRouteChildren)
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRouteWithChildren
-  AuthenticatedAgentsRoute: typeof AuthenticatedAgentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
-  AuthenticatedToolsRoute: typeof AuthenticatedToolsRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
+  AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
+  AuthenticatedAcademyModulesIdRoute: typeof AuthenticatedAcademyModulesIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAcademyRoute: AuthenticatedAcademyRouteWithChildren,
-  AuthenticatedAgentsRoute: AuthenticatedAgentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
-  AuthenticatedToolsRoute: AuthenticatedToolsRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
+  AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
+  AuthenticatedAcademyModulesIdRoute: AuthenticatedAcademyModulesIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -365,8 +353,11 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AcademyRoute: AcademyRoute,
+  AgentsRoute: AgentsRoute,
   AuthRoute: AuthRoute,
   MethodRoute: MethodRoute,
+  ToolsRoute: ToolsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
