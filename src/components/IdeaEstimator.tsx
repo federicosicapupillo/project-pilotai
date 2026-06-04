@@ -8,6 +8,7 @@ import { IdeaGenerator } from "@/components/IdeaGenerator";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
+  Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 
@@ -29,6 +30,59 @@ type PriceBand =
   | "197€–497€"
   | "500€+"
   | "Abbonamento mensile";
+
+type BudgetBand =
+  | ""
+  | "0€ – 100€"
+  | "100€ – 300€"
+  | "300€ – 700€"
+  | "700€ – 1.500€"
+  | "1.500€ – 3.000€"
+  | "3.000€+"
+  | "Non lo so ancora";
+
+const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; min: number; max: number }[] = [
+  { label: "0€ – 100€",        min: 0,    max: 100 },
+  { label: "100€ – 300€",      min: 100,  max: 300 },
+  { label: "300€ – 700€",      min: 300,  max: 700 },
+  { label: "700€ – 1.500€",    min: 700,  max: 1500 },
+  { label: "1.500€ – 3.000€",  min: 1500, max: 3000 },
+  { label: "3.000€+",          min: 3000, max: 6000 },
+  { label: "Non lo so ancora", min: 0,    max: 0 },
+];
+
+const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
+  "Landing page":   { label: "100€ – 300€",     min: 100,  max: 300 },
+  "Web app":        { label: "300€ – 700€",     min: 300,  max: 700 },
+  "App interna":    { label: "300€ – 700€",     min: 300,  max: 700 },
+  "CRM":            { label: "700€ – 1.500€",   min: 700,  max: 1500 },
+  "Dashboard":      { label: "700€ – 1.500€",   min: 700,  max: 1500 },
+  "Gestionale":     { label: "700€ – 1.500€",   min: 700,  max: 1500 },
+  "Marketplace":    { label: "1.500€ – 3.000€", min: 1500, max: 3000 },
+  "App con AI":     { label: "1.500€ – 3.000€", min: 1500, max: 3000 },
+};
+
+type BudgetFit = "Dentro il budget" | "Al limite del budget" | "Fuori budget, da semplificare";
+
+function getBudget(band: BudgetBand) {
+  return BUDGET_OPTIONS.find((b) => b.label === band) ?? null;
+}
+
+function recommendedBudget(projectType: string, difficulty: Difficulty) {
+  const base = RECOMMENDED_BY_TYPE[projectType] ?? RECOMMENDED_BY_TYPE["Web app"];
+  // Bump for advanced/complex projects with heavy features
+  if (difficulty === "Complessa") return { label: "3.000€+", min: 3000, max: 6000 };
+  if (difficulty === "Avanzata" && base.max < 1500) {
+    return { label: "700€ – 1.500€", min: 700, max: 1500 };
+  }
+  return base;
+}
+
+function budgetFit(insertedMax: number, rec: { min: number; max: number }): BudgetFit {
+  if (insertedMax >= rec.min) return "Dentro il budget";
+  if (insertedMax >= rec.min * 0.5) return "Al limite del budget";
+  return "Fuori budget, da semplificare";
+}
 
 type Estimate = {
   hoursLow: number;
@@ -198,6 +252,7 @@ export type IdeaEstimatorProps = { embed?: boolean };
 
 export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [idea, setIdea] = useState("");
+  const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
   const [revenue, setRevenue] = useState<RevenueModel>("Non lo so ancora");
   const [price, setPrice] = useState<PriceBand>("Non lo so");
@@ -255,24 +310,67 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             <Gauge className="size-3.5 text-primary" /> Calcolatore intelligente
           </div>
           <h2 className="font-display font-semibold text-2xl sm:text-3xl mt-2">
-            Scrivi la tua idea.{" "}
-            <span className="gradient-text">Stima ore, costi e potenziale economico.</span>
+            Hai un'idea per un'app?{" "}
+            <span className="gradient-text">Scopri ore, costi e budget consigliato.</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-2">
-            La nostra AI ti aiuta a stimare ore, difficoltà, costi, strumenti necessari e possibile modello di ricavo per creare la prima versione funzionante.
+            Scrivi la tua idea, inserisci il budget che vuoi dedicare al progetto e scopri quante ore servono, quanto potrebbe costare e quale potenziale economico potrebbe avere.
           </p>
         </>
       )}
 
       <div className={embed ? "space-y-3" : "mt-5 space-y-3"}>
-        <Textarea
-          value={idea}
-          onChange={(e) => setIdea(e.target.value)}
-          placeholder="Raccontami la tua idea…"
-          rows={5}
-          maxLength={2000}
-          className="text-base"
-        />
+        <div>
+          <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Raccontami la tua idea</label>
+          <Textarea
+            value={idea}
+            onChange={(e) => setIdea(e.target.value)}
+            placeholder="Esempio: voglio creare un'app per aiutare ristoratori a trovare personale extra per weekend e turni serali…"
+            rows={5}
+            maxLength={2000}
+            className="text-base mt-1"
+          />
+        </div>
+
+        {/* Budget operativo — campo evidenziato */}
+        <div
+          className="rounded-2xl p-4 sm:p-5 border border-primary/40 glow-soft"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+          }}
+        >
+          <div className="flex items-start gap-3">
+            <div className="size-10 rounded-lg gradient-bg grid place-items-center shrink-0">
+              <Euro className="size-5 text-primary-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-display font-semibold text-base">Inserisci il tuo budget</div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Indica il budget operativo per la prima versione funzionante. <strong className="text-foreground/90">Non includere il costo del corso.</strong>
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {BUDGET_OPTIONS.map((b) => {
+              const active = budget === b.label;
+              return (
+                <button
+                  key={b.label}
+                  type="button"
+                  onClick={() => setBudget(active ? "" : b.label)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    active
+                      ? "border-primary/70 bg-primary/20 text-primary font-medium"
+                      : "border-border/60 bg-background/40 text-foreground/80 hover:border-primary/40"
+                  }`}
+                >
+                  {b.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Domande facoltative */}
         <details className="rounded-lg border border-border/60 bg-background/30">
@@ -319,7 +417,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
 
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="hero" size="lg" onClick={onCalc} disabled={idea.trim().length < 8}>
-            <Wand2 className="size-4" /> Calcola ore, costi e potenziale
+            <Wand2 className="size-4" /> Calcola ore, costi e budget consigliato
           </Button>
           <p className="text-xs text-muted-foreground">
             Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.
@@ -330,7 +428,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         <IdeaGenerator onSelect={handleGeneratedIdea} />
       </div>
 
-      {result && <ResultCard result={result} onRoadmap={goToRoadmap} />}
+      {result && <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />}
     </div>
   );
 
@@ -343,9 +441,34 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   );
 }
 
-function ResultCard({ result, onRoadmap }: { result: Estimate; onRoadmap: () => void }) {
+function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: BudgetBand; onRoadmap: () => void }) {
   const breakEvenPrices = [29, 97, 297];
   const baseCost = Math.round((result.costAiLow + result.costAiHigh) / 2);
+
+  const inserted = getBudget(budget);
+  const rec = recommendedBudget(result.projectType, result.difficulty);
+  const hasBudget = !!inserted && budget !== "Non lo so ancora" && inserted.max > 0;
+  const fit: BudgetFit | null = hasBudget ? budgetFit(inserted!.max, rec) : null;
+
+  let budgetMsg = "Indica un budget per ricevere un confronto preciso con il budget consigliato.";
+  if (hasBudget) {
+    if (inserted!.max >= rec.max) {
+      budgetMsg = "Il budget permette di costruire una versione più solida, ma conviene comunque partire semplice.";
+    } else if (inserted!.max >= rec.min) {
+      budgetMsg = "Il budget è coerente con una prima versione funzionante del progetto.";
+    } else if (inserted!.max >= rec.min * 0.5) {
+      budgetMsg = "Il budget inserito potrebbe essere sufficiente per una versione molto semplificata. Per una prima versione più solida il budget consigliato è " + rec.label + ".";
+    } else {
+      budgetMsg = "Il budget inserito è basso rispetto alla complessità dell'idea. Puoi partire, ma conviene ridurre le funzioni iniziali.";
+    }
+  }
+
+  let consiglio = "Puoi costruire una prima versione funzionante con database, dashboard base e flusso utente principale.";
+  if (hasBudget && inserted!.max <= 300) {
+    consiglio = "Parti con una versione più semplice: landing + raccolta richieste + dashboard manuale. Evita subito login complessi, pagamenti, chat e notifiche.";
+  } else if (hasBudget && inserted!.max >= 1500) {
+    consiglio = "Puoi valutare una prima versione più completa con login, ruoli, dashboard, pagamenti o notifiche, solo se servono davvero.";
+  }
 
   return (
     <div
@@ -365,6 +488,28 @@ function ResultCard({ result, onRoadmap }: { result: Estimate; onRoadmap: () => 
 
       {/* Difficulty bar */}
       <DifficultyBar level={result.difficulty} />
+
+      {/* Budget */}
+      <Block icon={Euro} title="Budget operativo">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div className="rounded-xl p-3 border border-border/60 bg-background/40">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Budget inserito</div>
+            <div className="mt-1 font-display font-semibold text-base">
+              {hasBudget ? budget : "Non indicato"}
+            </div>
+          </div>
+          <div className="rounded-xl p-3 border border-primary/40 bg-primary/10">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Budget consigliato per partire</div>
+            <div className="mt-1 font-display font-semibold text-base gradient-text">{rec.label}</div>
+          </div>
+        </div>
+        {fit && (
+          <div className="mt-3">
+            <BudgetFitBadge fit={fit} />
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground mt-2">{budgetMsg}</p>
+      </Block>
 
       {/* Costi iniziali */}
       <Block icon={Wallet} title="Costo stimato per creare la prima versione">
@@ -466,9 +611,14 @@ function ResultCard({ result, onRoadmap }: { result: Estimate; onRoadmap: () => 
       <div className="flex items-start gap-2 rounded-xl bg-background/40 border border-border/60 p-3">
         <AlertCircle className="size-4 text-primary mt-0.5 shrink-0" />
         <p className="text-xs text-muted-foreground">
-          Questa non è una promessa di guadagno. È una stima indicativa basata sulle informazioni inserite, sul tipo di progetto, sui costi ipotizzati, sul target e sul possibile modello di ricavo. Il risultato reale dipende da mercato, prezzo, traffico, qualità dell'offerta, esecuzione e capacità di vendita.
+          Questa non è una promessa di guadagno. È una stima indicativa basata sulle informazioni inserite, sul budget, sul tipo di progetto, sul target e sul possibile modello di ricavo. Il risultato reale dipende da mercato, prezzo, traffico, qualità dell'offerta, esecuzione e capacità di vendita.
         </p>
       </div>
+
+      {/* Consiglio operativo */}
+      <Block icon={Lightbulb} title="Consiglio operativo">
+        <p className="text-sm text-foreground/90">{consiglio}</p>
+      </Block>
 
       {/* CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
@@ -539,5 +689,22 @@ function DifficultyBar({ level }: { level: Difficulty }) {
         />
       </div>
     </div>
+  );
+}
+
+function BudgetFitBadge({ fit }: { fit: BudgetFit }) {
+  let cls = "border-amber-500/40 bg-amber-500/15 text-amber-300";
+  let Icon = AlertTriangle;
+  if (fit === "Dentro il budget") {
+    cls = "border-emerald-500/40 bg-emerald-500/15 text-emerald-300";
+    Icon = CheckCircle2;
+  } else if (fit === "Fuori budget, da semplificare") {
+    cls = "border-rose-500/40 bg-rose-500/15 text-rose-300";
+    Icon = XCircle;
+  }
+  return (
+    <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border ${cls}`}>
+      <Icon className="size-3.5" /> {fit}
+    </span>
   );
 }
