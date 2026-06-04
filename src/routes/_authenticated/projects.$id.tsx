@@ -125,6 +125,12 @@ function ProjectPage() {
         </TabsList>
 
         <TabsContent value="scheda" className="mt-6">
+          <div className="glass-card rounded-xl p-5 mb-4 border border-primary/20">
+            <h3 className="font-display font-semibold text-base">Cos'è la prima versione dell'app?</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Non devi costruire subito l'app perfetta. La prima versione (chiamata anche MVP) serve a creare qualcosa di semplice, funzionante e testabile. Contiene solo le funzioni indispensabili per capire se la tua idea può davvero funzionare.
+            </p>
+          </div>
           <div className="grid md:grid-cols-2 gap-4">
             <SchedaBlock title="Target utenti" content={analysis?.target_users} />
             <SchedaBlock title="Problema risolto" content={analysis?.main_problem} />
