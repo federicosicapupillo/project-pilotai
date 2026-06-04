@@ -41,13 +41,13 @@ type BudgetBand =
   | "3.000€+"
   | "Non lo so ancora";
 
-const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; min: number; max: number }[] = [
-  { label: "100€ – 300€",      min: 100,  max: 300 },
-  { label: "300€ – 700€",      min: 300,  max: 700 },
-  { label: "700€ – 1.500€",    min: 700,  max: 1500 },
-  { label: "1.500€ – 3.000€",  min: 1500, max: 3000 },
-  { label: "3.000€+",          min: 3000, max: 6000 },
-  { label: "Non lo so ancora", min: 0,    max: 0 },
+const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; display: string; min: number; max: number }[] = [
+  { label: "100€ – 300€",      display: "100–300 €",      min: 100,  max: 300 },
+  { label: "300€ – 700€",      display: "300–700 €",      min: 300,  max: 700 },
+  { label: "700€ – 1.500€",    display: "700–1.500 €",    min: 700,  max: 1500 },
+  { label: "1.500€ – 3.000€",  display: "1.500–3.000 €",  min: 1500, max: 3000 },
+  { label: "3.000€+",          display: "3.000 €+",       min: 3000, max: 6000 },
+  { label: "Non lo so ancora", display: "Non lo so ancora", min: 0,    max: 0 },
 ];
 
 const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
@@ -333,57 +333,112 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
 
         {/* Budget operativo — campo evidenziato */}
         <div
-          className="rounded-2xl p-4 sm:p-5 border border-primary/40 glow-soft"
+          className="relative rounded-3xl p-5 sm:p-7 border border-primary/30 overflow-hidden"
           style={{
             background:
-              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+              "linear-gradient(160deg, color-mix(in oklab, var(--primary) 8%, hsl(222 47% 6%)) 0%, hsl(222 47% 5%) 60%, color-mix(in oklab, var(--accent) 6%, hsl(222 47% 6%)) 100%)",
+            boxShadow:
+              "0 0 0 1px color-mix(in oklab, var(--primary) 18%, transparent), 0 20px 60px -30px color-mix(in oklab, var(--primary) 60%, transparent), 0 8px 30px -20px color-mix(in oklab, var(--accent) 50%, transparent)",
           }}
         >
-          <div className="flex items-start gap-3">
-            <div className="size-10 rounded-lg gradient-bg grid place-items-center shrink-0">
-              <Euro className="size-5 text-primary-foreground" />
+          {/* soft neon ambient blobs */}
+          <div className="pointer-events-none absolute -top-24 -left-16 size-56 rounded-full bg-primary/20 blur-3xl" aria-hidden />
+          <div className="pointer-events-none absolute -bottom-24 -right-16 size-56 rounded-full bg-accent/15 blur-3xl" aria-hidden />
+
+          <div className="relative flex items-start gap-4">
+            <div
+              className="relative size-12 rounded-2xl grid place-items-center shrink-0"
+              style={{
+                background: "linear-gradient(135deg, hsl(265 85% 60%), hsl(320 75% 60%))",
+                boxShadow: "0 0 24px -4px hsl(265 85% 60% / 0.55), inset 0 1px 0 hsl(0 0% 100% / 0.18)",
+              }}
+            >
+              <Euro className="size-6 text-white" strokeWidth={2.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-display font-semibold text-base">Inserisci il tuo budget</div>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Indica il budget operativo per la prima versione funzionante. <strong className="text-foreground/90">Non includere il costo del corso.</strong>
+              <div className="font-display font-semibold text-lg sm:text-xl tracking-tight">Inserisci il tuo budget</div>
+              <div className="mt-1.5 h-px w-12 bg-gradient-to-r from-primary/60 to-transparent" aria-hidden />
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                Indica il budget operativo per la prima versione funzionante. <strong className="text-foreground/95 font-medium">Non includere il costo del corso.</strong>
               </p>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-            {BUDGET_OPTIONS.map((b) => {
+
+          <div className="relative mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {BUDGET_OPTIONS.filter((b) => b.label !== "Non lo so ancora").map((b) => {
               const active = budget === b.label;
-              const isUnsure = b.label === "Non lo so ancora";
               return (
                 <button
                   key={b.label}
                   type="button"
                   onClick={() => setBudget(active ? "" : b.label)}
-                  className={`relative group text-sm font-medium px-3 py-3 rounded-xl border transition-all duration-200 overflow-hidden ${
+                  className={`relative h-16 rounded-xl border transition-all duration-200 grid place-items-center text-center px-2 ${
                     active
-                      ? "border-primary/70 text-foreground shadow-[0_8px_24px_-12px_hsl(var(--primary)/0.6)] -translate-y-0.5"
-                      : "border-border/60 bg-background/40 text-foreground/85 hover:border-primary/50 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_-12px_hsl(var(--primary)/0.45)]"
-                  } ${isUnsure ? "col-span-2 sm:col-span-3 lg:col-span-6" : ""}`}
+                      ? "border-primary/70 -translate-y-0.5"
+                      : "border-white/[0.06] bg-white/[0.02] hover:border-primary/40 hover:bg-white/[0.04] hover:-translate-y-0.5"
+                  }`}
                   style={
                     active
-                      ? { background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--accent) 18%, transparent))" }
+                      ? {
+                          background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 12%, transparent))",
+                          boxShadow: "0 0 0 1px hsl(var(--primary) / 0.5), 0 10px 30px -12px hsl(var(--primary) / 0.55)",
+                        }
                       : undefined
                   }
+                  aria-pressed={active}
                 >
                   {active && (
-                    <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary glow-soft" aria-hidden />
+                    <span className="absolute top-2 right-2 size-1.5 rounded-full bg-primary shadow-[0_0_8px_2px_hsl(var(--primary)/0.7)]" aria-hidden />
                   )}
-                  <span className={active ? "gradient-text font-semibold" : ""}>{b.label}</span>
+                  <span className={`font-display font-semibold text-[15px] sm:text-base whitespace-nowrap tracking-tight ${active ? "text-white" : "text-foreground/90"}`}>
+                    {b.display}
+                  </span>
                 </button>
               );
             })}
           </div>
+
+          {/* Non lo so ancora — full width */}
+          {(() => {
+            const b = BUDGET_OPTIONS.find((o) => o.label === "Non lo so ancora")!;
+            const active = budget === b.label;
+            return (
+              <button
+                type="button"
+                onClick={() => setBudget(active ? "" : b.label)}
+                className={`relative mt-3 w-full h-12 rounded-xl border transition-all duration-200 grid place-items-center text-center ${
+                  active
+                    ? "border-primary/60"
+                    : "border-white/[0.06] bg-white/[0.02] hover:border-primary/35 hover:bg-white/[0.04]"
+                }`}
+                style={
+                  active
+                    ? {
+                        background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+                        boxShadow: "0 0 0 1px hsl(var(--primary) / 0.45), 0 8px 24px -14px hsl(var(--primary) / 0.5)",
+                      }
+                    : undefined
+                }
+                aria-pressed={active}
+              >
+                <span className={`text-sm font-medium ${active ? "text-white" : "text-muted-foreground"}`}>
+                  {b.display}
+                </span>
+              </button>
+            );
+          })()}
         </div>
 
         {/* Domande facoltative */}
-        <details className="rounded-lg border border-border/60 bg-background/30">
-          <summary className="cursor-pointer text-xs px-3 py-2 text-muted-foreground hover:text-foreground">
-            Aggiungi dettagli facoltativi per una stima più precisa
+        <details className="group rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-primary/30 hover:bg-white/[0.04] transition-colors [&_summary::-webkit-details-marker]:hidden">
+          <summary className="cursor-pointer text-sm px-4 py-3 text-muted-foreground hover:text-foreground flex items-center gap-2 list-none">
+            <span
+              className="inline-grid place-items-center size-5 rounded-md border border-white/10 bg-white/[0.03] text-primary transition-transform group-open:rotate-90"
+              aria-hidden
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1.5L6.5 5L3 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </span>
+            <span>Aggiungi dettagli facoltativi per una stima più precisa</span>
           </summary>
           <div className="grid sm:grid-cols-3 gap-3 p-3 pt-1">
             <div>
