@@ -1,0 +1,233 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import {
+  ArrowLeft, ArrowRight, Target, Bot, Wrench, ClipboardCopy, ListChecks,
+  PlayCircle, CheckCircle2, FileText, Sparkles,
+} from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
+  head: () => ({ meta: [{ title: "Lezione — Academy" }] }),
+  component: LessonPage,
+});
+
+function LessonPage() {
+  const { id } = Route.useParams();
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const [notes, setNotes] = useState("");
+  const [checks, setChecks] = useState<Record<number, boolean>>({});
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["lesson", id],
+    queryFn: async () => {
+      const { data: lesson, error } = await supabase.from("course_lessons").select("*").eq("id", id).single();
+      if (error) throw error;
+      const { data: mod } = await supabase.from("course_modules").select("*").eq("id", lesson.module_id).single();
+      const { data: siblings } = await supabase.from("course_lessons").select("id, order_index").eq("module_id", lesson.module_id).order("order_index");
+      const { data: progress } = await supabase.from("user_lesson_progress").select("*").eq("lesson_id", id).maybeSingle();
+      return { lesson, mod, siblings: siblings ?? [], progress };
+    },
+  });
+
+  useEffect(() => {
+    if (data?.progress?.notes) setNotes(data.progress.notes);
+  }, [data?.progress?.notes]);
+
+  const saveMutation = useMutation({
+    mutationFn: async (status: "in_progress" | "completed") => {
+      if (!user) throw new Error("Non autenticato");
+      const payload = {
+        user_id: user.id,
+        lesson_id: id,
+        status,
+        notes,
+        completed_at: status === "completed" ? new Date().toISOString() : null,
+      };
+      const { error } = await supabase.from("user_lesson_progress").upsert(payload, { onConflict: "user_id,lesson_id" });
+      if (error) throw error;
+    },
+    onSuccess: (_, status) => {
+      toast.success(status === "completed" ? "Lezione completata!" : "Note salvate");
+      qc.invalidateQueries({ queryKey: ["lesson", id] });
+      qc.invalidateQueries({ queryKey: ["academy-overview"] });
+      qc.invalidateQueries({ queryKey: ["module"] });
+      qc.invalidateQueries({ queryKey: ["my-path"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  if (isLoading) return <div className="max-w-4xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
+  if (!data?.lesson) return <div className="max-w-4xl mx-auto px-6 py-10">Lezione non trovata.</div>;
+
+  const { lesson, mod, siblings } = data;
+  const checklist: string[] = (lesson.checklist_items as string[] | null) ?? [];
+  const tools: string[] = (lesson.recommended_tools as string[] | null) ?? [];
+  const idx = siblings.findIndex((s) => s.id === id);
+  const prev = idx > 0 ? siblings[idx - 1] : null;
+  const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : null;
+  const isCompleted = data.progress?.status === "completed";
+
+  const copyPrompt = async () => {
+    if (!lesson.prompt_text) return;
+    await navigator.clipboard.writeText(lesson.prompt_text);
+    toast.success("Prompt copiato!");
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-10">
+      <Link
+        to="/academy/modules/$id"
+        params={{ id: lesson.module_id }}
+        className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-4"
+      >
+        <ArrowLeft className="size-4" /> {mod?.title}
+      </Link>
+
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <div>
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Lezione {lesson.order_index}</span>
+          <h1 className="text-3xl font-display font-semibold mt-1">{lesson.title}</h1>
+          <p className="text-muted-foreground mt-2">{lesson.description}</p>
+        </div>
+        {isCompleted && (
+          <span className="shrink-0 inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-primary/15 text-primary border border-primary/30">
+            <CheckCircle2 className="size-3.5" /> Completata
+          </span>
+        )}
+      </div>
+
+      <div className="glass-card rounded-xl p-6 mb-6">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+          <PlayCircle className="size-3.5 text-primary" /> Video lezione
+        </div>
+        <div className="aspect-video rounded-lg bg-secondary/50 border border-border/50 grid place-items-center">
+          <div className="text-center">
+            <PlayCircle className="size-12 text-primary/60 mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">Video lezione (placeholder)</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="glass-card rounded-xl p-6 mb-6">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
+          <Target className="size-3.5 text-primary" /> Obiettivo
+        </div>
+        <p>{lesson.objective}</p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <div className="glass-card rounded-xl p-5">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            <Bot className="size-3.5 text-primary" /> Agente da usare
+          </div>
+          <p className="font-display font-semibold">{lesson.recommended_agent ?? "—"}</p>
+          <Link to="/agents" className="text-xs text-primary hover:underline mt-2 inline-flex items-center gap-1">
+            Vedi nella libreria <ArrowRight className="size-3" />
+          </Link>
+        </div>
+        <div className="glass-card rounded-xl p-5">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            <Wrench className="size-3.5 text-primary" /> Tool da aprire
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {tools.map((t) => (
+              <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-secondary/60">{t}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {lesson.prompt_text && (
+        <div className="glass-card rounded-xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+              <Sparkles className="size-3.5 text-primary" /> Prompt pronto
+            </div>
+            <Button variant="ghost" size="sm" onClick={copyPrompt}>
+              <ClipboardCopy className="size-4" /> Copia
+            </Button>
+          </div>
+          <pre className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-4 font-sans">{lesson.prompt_text}</pre>
+        </div>
+      )}
+
+      {lesson.exercise_text && (
+        <div className="glass-card rounded-xl p-6 mb-6">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            <FileText className="size-3.5 text-primary" /> Esercizio pratico
+          </div>
+          <p>{lesson.exercise_text}</p>
+        </div>
+      )}
+
+      {checklist.length > 0 && (
+        <div className="glass-card rounded-xl p-6 mb-6">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+            <ListChecks className="size-3.5 text-primary" /> Checklist di completamento
+          </div>
+          <ul className="space-y-2">
+            {checklist.map((c, i) => (
+              <li key={i}>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="mt-1 size-4 accent-primary cursor-pointer"
+                    checked={!!checks[i]}
+                    onChange={(e) => setChecks((p) => ({ ...p, [i]: e.target.checked }))}
+                  />
+                  <span className={checks[i] ? "line-through text-muted-foreground" : ""}>{c}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="glass-card rounded-xl p-6 mb-6">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+          <FileText className="size-3.5 text-primary" /> Le tue note
+        </div>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Scrivi qui le tue note, i risultati ottenuti, le idee venute fuori…"
+          rows={5}
+        />
+        <div className="flex justify-end mt-3">
+          <Button variant="ghost" size="sm" onClick={() => saveMutation.mutate("in_progress")} disabled={saveMutation.isPending}>
+            Salva note
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 pt-2">
+        <div>
+          {prev && (
+            <Link to="/academy/lessons/$id" params={{ id: prev.id }}>
+              <Button variant="ghost"><ArrowLeft className="size-4" /> Precedente</Button>
+            </Link>
+          )}
+        </div>
+        <Button
+          variant="hero"
+          size="lg"
+          onClick={async () => {
+            await saveMutation.mutateAsync("completed");
+            if (next) navigate({ to: "/academy/lessons/$id", params: { id: next.id } });
+            else navigate({ to: "/academy/modules/$id", params: { id: lesson.module_id } });
+          }}
+          disabled={saveMutation.isPending}
+        >
+          <CheckCircle2 className="size-4" /> {isCompleted ? "Già completata — continua" : "Segna come completata"}
+        </Button>
+      </div>
+    </div>
+  );
+}

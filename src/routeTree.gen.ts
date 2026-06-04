@@ -19,6 +19,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
+import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
 
 const MethodRoute = MethodRouteImport.update({
   id: '/method',
@@ -70,6 +71,12 @@ const AuthenticatedAcademyModulesIdRoute =
     path: '/modules/$id',
     getParentRoute: () => AuthenticatedAcademyRoute,
   } as any)
+const AuthenticatedAcademyLessonsIdRoute =
+  AuthenticatedAcademyLessonsIdRouteImport.update({
+    id: '/lessons/$id',
+    path: '/lessons/$id',
+    getParentRoute: () => AuthenticatedAcademyRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/library': typeof AuthenticatedLibraryRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRoutesByTo {
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/library': typeof AuthenticatedLibraryRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRoutesById {
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRouteTypes {
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/new-project'
     | '/projects/$id'
+    | '/academy/lessons/$id'
     | '/academy/modules/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/new-project'
     | '/projects/$id'
+    | '/academy/lessons/$id'
     | '/academy/modules/$id'
   id:
     | '__root__'
@@ -140,6 +152,7 @@ export interface FileRouteTypes {
     | '/_authenticated/library'
     | '/_authenticated/new-project'
     | '/_authenticated/projects/$id'
+    | '/_authenticated/academy/lessons/$id'
     | '/_authenticated/academy/modules/$id'
   fileRoutesById: FileRoutesById
 }
@@ -222,14 +235,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcademyModulesIdRouteImport
       parentRoute: typeof AuthenticatedAcademyRoute
     }
+    '/_authenticated/academy/lessons/$id': {
+      id: '/_authenticated/academy/lessons/$id'
+      path: '/lessons/$id'
+      fullPath: '/academy/lessons/$id'
+      preLoaderRoute: typeof AuthenticatedAcademyLessonsIdRouteImport
+      parentRoute: typeof AuthenticatedAcademyRoute
+    }
   }
 }
 
 interface AuthenticatedAcademyRouteChildren {
+  AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
   AuthenticatedAcademyModulesIdRoute: typeof AuthenticatedAcademyModulesIdRoute
 }
 
 const AuthenticatedAcademyRouteChildren: AuthenticatedAcademyRouteChildren = {
+  AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
   AuthenticatedAcademyModulesIdRoute: AuthenticatedAcademyModulesIdRoute,
 }
 
