@@ -22,6 +22,7 @@ const OutputSchema = z.object({
   difficulty_reason: z.string(),
   estimated_hours: z.string(),
   integrations: z.array(z.string()),
+  max_revenue: z.string(),
 });
 
 export type IdeaSummary = z.infer<typeof OutputSchema>;
@@ -51,7 +52,15 @@ FORMATO OUTPUT (JSON, tutti i campi obbligatori):
 - difficulty: string, uno tra "Facile", "Medio", "Avanzato"
 - difficulty_reason: string (1 frase)
 - estimated_hours: string (es. "8 - 14 ore guidate")
-- integrations: array di stringhe (vuoto [] se non servono)`;
+- integrations: array di stringhe (vuoto [] se non servono)
+- max_revenue: string nel formato "Fino a X€/mese" (solo massimale, MAI un range). Stima realistica e credibile per una PRIMA VERSIONE funzionante, mai oltre 10.000€/mese.
+  Linee guida:
+  • Utility semplice per utenti privati: 300€ - 1.000€/mese
+  • Tool per professionisti o piccole attività: 1.000€ - 3.000€/mese
+  • App che risolve un problema operativo per aziende, ristoranti, consulenti, agenti immobiliari, artigiani o studi professionali: 2.000€ - 5.000€/mese
+  • Gestionale, automazione AI o strumento B2B con abbonamento: 3.000€ - 8.000€/mese
+  • Marketplace con domanda e offerta chiare: 5.000€ - 10.000€/mese
+  Scegli UN singolo importo realistico nella fascia giusta e restituiscilo come "Fino a X€/mese" (es. "Fino a 2.500€/mese").`;
 
 export const generateIdeaSummary = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
