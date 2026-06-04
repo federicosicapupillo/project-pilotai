@@ -28,6 +28,7 @@ import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutAgenteRouteImport } from './routes/_authenticated/checkout-agente'
+import { Route as AuthenticatedAgenteAiRouteImport } from './routes/_authenticated/agente-ai'
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -130,6 +131,11 @@ const AuthenticatedCheckoutAgenteRoute =
     path: '/checkout-agente',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAgenteAiRoute = AuthenticatedAgenteAiRouteImport.update({
+  id: '/agente-ai',
+  path: '/agente-ai',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedWorkbookProjectIdRoute =
   AuthenticatedWorkbookProjectIdRouteImport.update({
     id: '/workbook/$projectId',
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/agente-ai': typeof AuthenticatedAgenteAiRoute
   '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/agente-ai': typeof AuthenticatedAgenteAiRoute
   '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/_authenticated/agente-ai': typeof AuthenticatedAgenteAiRoute
   '/_authenticated/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/agente-ai'
     | '/checkout-agente'
     | '/dashboard'
     | '/library'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/agente-ai'
     | '/checkout-agente'
     | '/dashboard'
     | '/library'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/_authenticated/agente-ai'
     | '/_authenticated/checkout-agente'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
@@ -468,6 +480,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCheckoutAgenteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/agente-ai': {
+      id: '/_authenticated/agente-ai'
+      path: '/agente-ai'
+      fullPath: '/agente-ai'
+      preLoaderRoute: typeof AuthenticatedAgenteAiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/workbook/$projectId': {
       id: '/_authenticated/workbook/$projectId'
       path: '/workbook/$projectId'
@@ -507,6 +526,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAgenteAiRoute: typeof AuthenticatedAgenteAiRoute
   AuthenticatedCheckoutAgenteRoute: typeof AuthenticatedCheckoutAgenteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
@@ -520,6 +540,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAgenteAiRoute: AuthenticatedAgenteAiRoute,
   AuthenticatedCheckoutAgenteRoute: AuthenticatedCheckoutAgenteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
