@@ -526,7 +526,13 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         </div>
 
         {/* Non hai ancora un'idea? */}
-        <IdeaGenerator onSelect={handleGeneratedIdea} />
+        <IdeaGenerator
+          onSelect={handleGeneratedIdea}
+          presetBudget={budget}
+          presetTarget={target || targetChoice}
+          presetRevenue={revenue}
+          presetPrice={price}
+        />
       </div>
 
       {result && <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />}
