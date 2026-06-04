@@ -10,7 +10,7 @@ import { generateAppIdeas, type GeneratedIdea } from "@/lib/idea-generator.funct
 import { trackEvent } from "@/lib/tracking";
 import {
   Sparkles, Wand2, Lightbulb, Loader2, ArrowRight, Users, AlertTriangle,
-  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info,
+  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info, Euro, Scale, Tag, Calculator,
 } from "lucide-react";
 
 type Step = "form" | "loading" | "results";
@@ -314,6 +314,8 @@ function IdeaCard({ idea, onSelect }: { idea: GeneratedIdea; onSelect: () => voi
         <p className="text-foreground/90">{idea.revenue_model}</p>
       </div>
 
+      <EarningsSection idea={idea} />
+
       {idea.tools?.length > 0 && (
         <div className="mt-3">
           <div className="flex items-center gap-1.5 text-muted-foreground uppercase tracking-wider text-[10px] mb-1.5">
@@ -394,5 +396,79 @@ function BudgetBadge({ fit }: { fit: string }) {
     <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full border ${cls} whitespace-nowrap`}>
       {icon} {label}
     </span>
+  );
+}
+
+function RiskBadge({ level }: { level: string }) {
+  const l = (level || "").toLowerCase();
+  let cls = "border-amber-500/40 bg-amber-500/15 text-amber-300";
+  if (l.includes("bass")) cls = "border-emerald-500/40 bg-emerald-500/15 text-emerald-300";
+  else if (l.includes("alt")) cls = "border-rose-500/40 bg-rose-500/15 text-rose-300";
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full border ${cls} whitespace-nowrap`}>
+      <Scale className="size-3" /> Rischio commerciale: {level || "Medio"}
+    </span>
+  );
+}
+
+function EarningsSection({ idea }: { idea: GeneratedIdea }) {
+  return (
+    <div
+      className="mt-4 rounded-xl border border-primary/40 p-4"
+      style={{
+        background:
+          "linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+      }}
+    >
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-primary font-semibold">
+            <Euro className="size-3" /> Potenziale guadagno indicativo
+          </div>
+          <div className="font-display font-semibold text-2xl mt-1 gradient-text">
+            {idea.earning_range}
+          </div>
+        </div>
+        <RiskBadge level={idea.commercial_risk} />
+      </div>
+
+      {idea.suggested_price && (
+        <div className="mt-3 flex items-center gap-2 text-xs">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-background/40 border border-border/60">
+            <Tag className="size-3 text-primary" /> Prezzo consigliato: <strong className="text-foreground">{idea.suggested_price}</strong>
+          </span>
+        </div>
+      )}
+
+      <div className="grid sm:grid-cols-3 gap-2 mt-3">
+        <ScenarioBox label="Prudente" value={idea.scenario_prudent} tone="muted" />
+        <ScenarioBox label="Realistico" value={idea.scenario_realistic} tone="primary" />
+        <ScenarioBox label="Alto (se validato)" value={idea.scenario_high} tone="muted" />
+      </div>
+
+      {idea.break_even && (
+        <div className="mt-3 rounded-lg border border-primary/30 bg-background/40 p-2.5 text-xs flex gap-2">
+          <Calculator className="size-3.5 text-primary mt-0.5 shrink-0" />
+          <span><strong className="text-primary">Punto di pareggio:</strong> <span className="text-foreground/90">{idea.break_even}</span></span>
+        </div>
+      )}
+
+      {idea.earning_explanation && (
+        <p className="text-xs text-foreground/80 mt-2">{idea.earning_explanation}</p>
+      )}
+
+      <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
+        Questa non è una promessa di guadagno. È una stima indicativa basata sulle informazioni inserite, sul modello di ricavo ipotizzato e sul tipo di mercato. Il risultato reale dipende da esecuzione, prezzo, traffico, vendita, qualità del prodotto e domanda reale.
+      </p>
+    </div>
+  );
+}
+
+function ScenarioBox({ label, value, tone }: { label: string; value: string; tone: "muted" | "primary" }) {
+  return (
+    <div className={`rounded-lg p-2 border ${tone === "primary" ? "border-primary/40 bg-primary/10" : "border-border/60 bg-background/40"}`}>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-xs font-medium text-foreground/90 mt-0.5">{value}</div>
+    </div>
   );
 }
