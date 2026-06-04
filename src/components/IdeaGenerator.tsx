@@ -377,3 +377,22 @@ function Stat({ icon: Icon, label, value }: { icon: React.ComponentType<{ classN
     </div>
   );
 }
+
+function BudgetBadge({ fit }: { fit: string }) {
+  const f = (fit || "").toLowerCase();
+  let icon = <CheckCircle2 className="size-3" />;
+  let cls = "border-emerald-500/40 bg-emerald-500/15 text-emerald-300";
+  let label = fit || "Compatibilità budget";
+  if (f.includes("limite")) {
+    icon = <AlertTriangle className="size-3" />;
+    cls = "border-amber-500/40 bg-amber-500/15 text-amber-300";
+  } else if (f.includes("fuori")) {
+    icon = <XCircle className="size-3" />;
+    cls = "border-rose-500/40 bg-rose-500/15 text-rose-300";
+  }
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full border ${cls} whitespace-nowrap`}>
+      {icon} {label}
+    </span>
+  );
+}
