@@ -443,31 +443,64 @@ export type Database = {
       }
       roadmap_items: {
         Row: {
+          checklist_items: Json
+          completed_at: string | null
           created_at: string
           description: string | null
+          expected_output: string | null
           id: string
+          order_index: number
+          phase: string | null
           priority: number
+          progress_weight: number
           project_id: string
+          prompt_text: string | null
+          recommended_agent: string | null
+          recommended_tool: string | null
           status: string
           title: string
+          updated_at: string
+          user_notes: string | null
         }
         Insert: {
+          checklist_items?: Json
+          completed_at?: string | null
           created_at?: string
           description?: string | null
+          expected_output?: string | null
           id?: string
+          order_index?: number
+          phase?: string | null
           priority?: number
+          progress_weight?: number
           project_id: string
+          prompt_text?: string | null
+          recommended_agent?: string | null
+          recommended_tool?: string | null
           status?: string
           title: string
+          updated_at?: string
+          user_notes?: string | null
         }
         Update: {
+          checklist_items?: Json
+          completed_at?: string | null
           created_at?: string
           description?: string | null
+          expected_output?: string | null
           id?: string
+          order_index?: number
+          phase?: string | null
           priority?: number
+          progress_weight?: number
           project_id?: string
+          prompt_text?: string | null
+          recommended_agent?: string | null
+          recommended_tool?: string | null
           status?: string
           title?: string
+          updated_at?: string
+          user_notes?: string | null
         }
         Relationships: [
           {
