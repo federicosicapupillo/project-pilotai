@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Bot, ClipboardCopy } from "lucide-react";
+import { AgentIcon } from "@/components/AgentIcon";
+import { ToolBadge } from "@/components/ToolBadge";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/agents")({
@@ -14,7 +16,7 @@ function AgentsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["agent-library"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("agent_library").select("*").order("name");
+      const { data, error } = await supabase.from("agent_library").select("*").order("sort_order").order("name");
       if (error) throw error;
       return data;
     },
@@ -38,9 +40,14 @@ function AgentsPage() {
         {data?.map((a) => (
           <div key={a.id} className="glass-card rounded-xl p-6">
             <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <h3 className="font-display font-semibold text-lg">Agente {a.name}</h3>
-                <p className="text-sm text-muted-foreground mt-0.5">{a.role}</p>
+              <div className="flex items-start gap-3 min-w-0">
+                <div className="size-10 rounded-xl gradient-bg grid place-items-center glow-soft text-primary-foreground shrink-0">
+                  <AgentIcon name={a.icon} size={18} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-display font-semibold text-lg leading-tight">Agente {a.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5">{a.role}</p>
+                </div>
               </div>
               {a.course_phase && (
                 <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-secondary/60 text-muted-foreground shrink-0">
@@ -61,7 +68,7 @@ function AgentsPage() {
                 <dt className="text-xs uppercase tracking-wider text-muted-foreground mt-3">Tool consigliati</dt>
                 <dd className="flex flex-wrap gap-1.5">
                   {(a.recommended_tools as string[]).map((t) => (
-                    <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-secondary/60">{t}</span>
+                    <ToolBadge key={t} name={t} size="sm" />
                   ))}
                 </dd>
               </>)}
