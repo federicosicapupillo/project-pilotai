@@ -11,27 +11,27 @@ const InputSchema = z.object({
 });
 
 const IdeaSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  target: z.string(),
-  problem: z.string(),
-  why_interesting: z.string(),
-  mvp: z.string(),
-  essential_features: z.array(z.string()),
-  hours_estimate: z.string(),
-  difficulty: z.string(),
-  initial_cost: z.string(),
-  monthly_cost: z.string(),
-  potential: z.string(),
-  revenue_model: z.string(),
-  tools: z.array(z.string()),
-  agents: z.array(z.string()),
-  main_risk: z.string(),
-  next_step: z.string(),
+  name: z.string().default(""),
+  description: z.string().default(""),
+  target: z.string().default(""),
+  problem: z.string().default(""),
+  why_interesting: z.string().default(""),
+  mvp: z.string().default(""),
+  essential_features: z.array(z.string()).default([]),
+  hours_estimate: z.string().default(""),
+  difficulty: z.string().default(""),
+  initial_cost: z.string().default(""),
+  monthly_cost: z.string().default(""),
+  potential: z.string().default(""),
+  revenue_model: z.string().default(""),
+  tools: z.array(z.string()).default([]),
+  agents: z.array(z.string()).default([]),
+  main_risk: z.string().default(""),
+  next_step: z.string().default(""),
 });
 
 const OutputSchema = z.object({
-  ideas: z.array(IdeaSchema).min(3).max(3),
+  ideas: z.array(IdeaSchema).min(1).max(5),
 });
 
 export type GeneratedIdea = z.infer<typeof IdeaSchema>;
@@ -92,7 +92,10 @@ export const generateAppIdeas = createServerFn({ method: "POST" })
       system: SYSTEM_PROMPT,
       prompt: buildPrompt(data),
       schema: OutputSchema,
+      mode: "json",
     });
 
-    return object;
+    // Ensure we always return 3 ideas for the UI (pad or trim).
+    const ideas = object.ideas.slice(0, 3);
+    return { ideas };
   });
