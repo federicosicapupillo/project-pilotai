@@ -41,7 +41,7 @@ function Index() {
               prompt operativi e una roadmap personalizzata per trasformare la tua idea in una prima app reale.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/auth">
+              <Link to="/pricing">
                 <Button variant="hero" size="xl">Inizia il tuo progetto <ArrowRight className="size-4" /></Button>
               </Link>
               <Link to="/method">
@@ -185,7 +185,7 @@ function Index() {
               <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
                 Tu guidi la visione, gli agenti AI ti accompagnano passo passo: scheda progetto, prompt e roadmap personalizzata in pochi minuti.
               </p>
-              <Link to="/auth" className="inline-block mt-8">
+              <Link to="/pricing" className="inline-block mt-8">
                 <Button variant="hero" size="xl">Inizia il tuo progetto <ArrowRight className="size-4" /></Button>
               </Link>
             </div>
