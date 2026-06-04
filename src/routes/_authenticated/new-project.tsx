@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,23 @@ function NewProjectPage() {
     existing_tools: "",
     experience_level: "beginner",
   });
+
+  // Prefill from landing-page idea estimator, if present.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const draft = localStorage.getItem("draft_idea_description");
+    if (draft && draft.trim()) {
+      setForm((f) => {
+        if (f.idea_description.trim()) return f;
+        return {
+          ...f,
+          idea_description: draft,
+          title: f.title || draft.slice(0, 60),
+        };
+      });
+      localStorage.removeItem("draft_idea_description");
+    }
+  }, []);
 
   const set = <K extends keyof typeof form>(k: K, v: string) => setForm((f) => ({ ...f, [k]: v }));
 

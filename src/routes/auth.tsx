@@ -28,7 +28,16 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const consumeRedirect = (): string | null => {
+    if (typeof window === "undefined") return null;
+    const v = localStorage.getItem("post_auth_redirect");
+    if (v) localStorage.removeItem("post_auth_redirect");
+    return v;
+  };
+
   if (!loading && user) {
+    const target = consumeRedirect();
+    if (target === "/new-project") return <Navigate to="/new-project" replace />;
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -39,7 +48,9 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Bentornato!");
-    navigate({ to: "/dashboard" });
+    const target = consumeRedirect();
+    if (target === "/new-project") navigate({ to: "/new-project" });
+    else navigate({ to: "/dashboard" });
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -57,7 +68,9 @@ function AuthPage() {
     if (error) return toast.error(error.message);
     if (data.session) {
       toast.success("Account creato!");
-      navigate({ to: "/dashboard" });
+      const target = consumeRedirect();
+      if (target === "/new-project") navigate({ to: "/new-project" });
+      else navigate({ to: "/dashboard" });
     } else {
       toast.success("Account creato! Controlla la tua email per confermare, poi accedi.");
     }
