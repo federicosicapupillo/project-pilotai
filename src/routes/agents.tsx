@@ -7,7 +7,7 @@ import { AgentIcon } from "@/components/AgentIcon";
 import { ToolBadge } from "@/components/ToolBadge";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/agents")({
+export const Route = createFileRoute("/agents")({
   head: () => ({ meta: [{ title: "Libreria Agenti — Da Idea ad App" }] }),
   component: AgentsPage,
 });

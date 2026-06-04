@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { GraduationCap, ArrowRight, CheckCircle2, Circle, PlayCircle } from "lucide-react";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 
-export const Route = createFileRoute("/_authenticated/academy")({
+export const Route = createFileRoute("/academy")({
   head: () => ({ meta: [{ title: "Academy — Da Idea ad App" }] }),
   component: AcademyPage,
 });

@@ -5,7 +5,7 @@ import { Wrench, ExternalLink } from "lucide-react";
 import { ToolIcon } from "@/components/ToolIcon";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 
-export const Route = createFileRoute("/_authenticated/tools")({
+export const Route = createFileRoute("/tools")({
   head: () => ({ meta: [{ title: "Tool Stack — Da Idea ad App" }] }),
   component: ToolsPage,
 });
