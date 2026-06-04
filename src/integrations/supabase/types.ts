@@ -100,6 +100,45 @@ export type Database = {
           },
         ]
       }
+      conversion_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          id: string
+          metadata: Json | null
+          project_id: string | null
+          source: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_creator: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          source?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_creator?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          source?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_creator?: string | null
+        }
+        Relationships: []
+      }
       course_lessons: {
         Row: {
           checklist_items: Json | null
@@ -198,18 +237,45 @@ export type Database = {
           email: string | null
           id: string
           name: string | null
+          plan: string
+          plan_expires_at: string | null
+          plan_started_at: string | null
+          plan_status: string
+          referrer: string | null
+          source: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_creator: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id: string
           name?: string | null
+          plan?: string
+          plan_expires_at?: string | null
+          plan_started_at?: string | null
+          plan_status?: string
+          referrer?: string | null
+          source?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_creator?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
           name?: string | null
+          plan?: string
+          plan_expires_at?: string | null
+          plan_started_at?: string | null
+          plan_status?: string
+          referrer?: string | null
+          source?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_creator?: string | null
         }
         Relationships: []
       }
@@ -625,6 +691,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          currency: string | null
+          expires_at: string | null
+          id: string
+          plan: string
+          price_paid: number | null
+          source: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_creator: string | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          expires_at?: string | null
+          id?: string
+          plan: string
+          price_paid?: number | null
+          source?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_creator?: string | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          expires_at?: string | null
+          id?: string
+          plan?: string
+          price_paid?: number | null
+          source?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_creator?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
