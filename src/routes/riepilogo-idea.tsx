@@ -99,11 +99,10 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
 
   const goToRoadmap = () => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("pending_plan", "roadmap");
-      localStorage.setItem("post_auth_redirect", "/new-project");
+      localStorage.setItem("post_auth_redirect", "/checkout-agente");
     }
-    void trackEvent("riepilogo_cta_roadmap_29");
-    navigate({ to: "/prezzi" });
+    void trackEvent("riepilogo_cta_attiva_agente_29");
+    navigate({ to: "/checkout-agente" });
   };
 
   return (
@@ -336,12 +335,11 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
                 Vuoi iniziare a costruire questa app?
               </h2>
               <p className="text-sm sm:text-base text-foreground/85 mt-3 max-w-2xl">
-                Attiva il tuo agente AI personale e trasforma questa analisi nel primo piano operativo
-                per creare la tua app.
+                Attiva il tuo agente AI personale e trasforma questa analisi nel primo piano operativo per creare la tua prima app.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <Button variant="hero" size="xl" onClick={goToRoadmap}>
-                  Attiva il mio agente AI <ArrowRight className="size-4" />
+                  Attiva il mio agente AI - 29€ <ArrowRight className="size-4" />
                 </Button>
                 <Link to="/method">
                   <Button variant="glass" size="xl">
@@ -349,7 +347,7 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
                   </Button>
                 </Link>
               </div>
-              <p className="text-xs text-foreground/70 mt-4">Accesso iniziale da 29€</p>
+              <p className="text-xs text-foreground/70 mt-4">Pagamento sicuro. Accesso immediato dopo l'acquisto.</p>
             </div>
 
             <p className="text-[11px] text-muted-foreground flex items-start gap-1.5 px-2">

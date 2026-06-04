@@ -13,6 +13,8 @@ import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as RiepilogoIdeaRouteImport } from './routes/riepilogo-idea'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrezziRouteImport } from './routes/prezzi'
+import { Route as PagamentoSuccessoRouteImport } from './routes/pagamento-successo'
+import { Route as PagamentoAnnullatoRouteImport } from './routes/pagamento-annullato'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalizzaIdeaRouteImport } from './routes/analizza-idea'
@@ -25,8 +27,11 @@ import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCheckoutAgenteRouteImport } from './routes/_authenticated/checkout-agente'
+import { Route as AuthenticatedAgenteAiRouteImport } from './routes/_authenticated/agente-ai'
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
 import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
 
@@ -48,6 +53,16 @@ const PricingRoute = PricingRouteImport.update({
 const PrezziRoute = PrezziRouteImport.update({
   id: '/prezzi',
   path: '/prezzi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagamentoSuccessoRoute = PagamentoSuccessoRouteImport.update({
+  id: '/pagamento-successo',
+  path: '/pagamento-successo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagamentoAnnullatoRoute = PagamentoAnnullatoRouteImport.update({
+  id: '/pagamento-annullato',
+  path: '/pagamento-annullato',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodRoute = MethodRouteImport.update({
@@ -110,6 +125,17 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCheckoutAgenteRoute =
+  AuthenticatedCheckoutAgenteRouteImport.update({
+    id: '/checkout-agente',
+    path: '/checkout-agente',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAgenteAiRoute = AuthenticatedAgenteAiRouteImport.update({
+  id: '/agente-ai',
+  path: '/agente-ai',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedWorkbookProjectIdRoute =
   AuthenticatedWorkbookProjectIdRouteImport.update({
     id: '/workbook/$projectId',
@@ -121,6 +147,12 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   path: '/projects/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAcademyModulesIdRoute =
   AuthenticatedAcademyModulesIdRouteImport.update({
     id: '/academy/modules/$id',
@@ -141,10 +173,14 @@ export interface FileRoutesByFullPath {
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pagamento-annullato': typeof PagamentoAnnullatoRoute
+  '/pagamento-successo': typeof PagamentoSuccessoRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/agente-ai': typeof AuthenticatedAgenteAiRoute
+  '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
@@ -154,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -162,10 +199,14 @@ export interface FileRoutesByTo {
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pagamento-annullato': typeof PagamentoAnnullatoRoute
+  '/pagamento-successo': typeof PagamentoSuccessoRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/agente-ai': typeof AuthenticatedAgenteAiRoute
+  '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
@@ -175,6 +216,7 @@ export interface FileRoutesByTo {
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -185,10 +227,14 @@ export interface FileRoutesById {
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pagamento-annullato': typeof PagamentoAnnullatoRoute
+  '/pagamento-successo': typeof PagamentoSuccessoRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
+  '/_authenticated/agente-ai': typeof AuthenticatedAgenteAiRoute
+  '/_authenticated/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
@@ -198,6 +244,7 @@ export interface FileRoutesById {
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -208,10 +255,14 @@ export interface FileRouteTypes {
     | '/analizza-idea'
     | '/auth'
     | '/method'
+    | '/pagamento-annullato'
+    | '/pagamento-successo'
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/agente-ai'
+    | '/checkout-agente'
     | '/dashboard'
     | '/library'
     | '/my-path'
@@ -221,6 +272,7 @@ export interface FileRouteTypes {
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -229,10 +281,14 @@ export interface FileRouteTypes {
     | '/analizza-idea'
     | '/auth'
     | '/method'
+    | '/pagamento-annullato'
+    | '/pagamento-successo'
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/agente-ai'
+    | '/checkout-agente'
     | '/dashboard'
     | '/library'
     | '/my-path'
@@ -242,6 +298,7 @@ export interface FileRouteTypes {
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -251,10 +308,14 @@ export interface FileRouteTypes {
     | '/analizza-idea'
     | '/auth'
     | '/method'
+    | '/pagamento-annullato'
+    | '/pagamento-successo'
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
     | '/tools'
+    | '/_authenticated/agente-ai'
+    | '/_authenticated/checkout-agente'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
     | '/_authenticated/my-path'
@@ -264,6 +325,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workbook/$projectId'
     | '/_authenticated/academy/lessons/$id'
     | '/_authenticated/academy/modules/$id'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -274,10 +336,13 @@ export interface RootRouteChildren {
   AnalizzaIdeaRoute: typeof AnalizzaIdeaRoute
   AuthRoute: typeof AuthRoute
   MethodRoute: typeof MethodRoute
+  PagamentoAnnullatoRoute: typeof PagamentoAnnullatoRoute
+  PagamentoSuccessoRoute: typeof PagamentoSuccessoRoute
   PrezziRoute: typeof PrezziRoute
   PricingRoute: typeof PricingRoute
   RiepilogoIdeaRoute: typeof RiepilogoIdeaRoute
   ToolsRoute: typeof ToolsRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -308,6 +373,20 @@ declare module '@tanstack/react-router' {
       path: '/prezzi'
       fullPath: '/prezzi'
       preLoaderRoute: typeof PrezziRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pagamento-successo': {
+      id: '/pagamento-successo'
+      path: '/pagamento-successo'
+      fullPath: '/pagamento-successo'
+      preLoaderRoute: typeof PagamentoSuccessoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pagamento-annullato': {
+      id: '/pagamento-annullato'
+      path: '/pagamento-annullato'
+      fullPath: '/pagamento-annullato'
+      preLoaderRoute: typeof PagamentoAnnullatoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/method': {
@@ -394,6 +473,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/checkout-agente': {
+      id: '/_authenticated/checkout-agente'
+      path: '/checkout-agente'
+      fullPath: '/checkout-agente'
+      preLoaderRoute: typeof AuthenticatedCheckoutAgenteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/agente-ai': {
+      id: '/_authenticated/agente-ai'
+      path: '/agente-ai'
+      fullPath: '/agente-ai'
+      preLoaderRoute: typeof AuthenticatedAgenteAiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/workbook/$projectId': {
       id: '/_authenticated/workbook/$projectId'
       path: '/workbook/$projectId'
@@ -407,6 +500,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/$id'
       preLoaderRoute: typeof AuthenticatedProjectsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/academy/modules/$id': {
       id: '/_authenticated/academy/modules/$id'
@@ -426,6 +526,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAgenteAiRoute: typeof AuthenticatedAgenteAiRoute
+  AuthenticatedCheckoutAgenteRoute: typeof AuthenticatedCheckoutAgenteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
@@ -438,6 +540,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAgenteAiRoute: AuthenticatedAgenteAiRoute,
+  AuthenticatedCheckoutAgenteRoute: AuthenticatedCheckoutAgenteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
@@ -460,10 +564,13 @@ const rootRouteChildren: RootRouteChildren = {
   AnalizzaIdeaRoute: AnalizzaIdeaRoute,
   AuthRoute: AuthRoute,
   MethodRoute: MethodRoute,
+  PagamentoAnnullatoRoute: PagamentoAnnullatoRoute,
+  PagamentoSuccessoRoute: PagamentoSuccessoRoute,
   PrezziRoute: PrezziRoute,
   PricingRoute: PricingRoute,
   RiepilogoIdeaRoute: RiepilogoIdeaRoute,
   ToolsRoute: ToolsRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
