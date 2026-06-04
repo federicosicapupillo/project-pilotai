@@ -380,7 +380,7 @@ function Section({
   );
 }
 
-function DifficultyBadge({ level }: { level: "Facile" | "Medio" | "Avanzato" }) {
+function DifficultyBadge({ level }: { level: string }) {
   const color =
     level === "Facile"
       ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
