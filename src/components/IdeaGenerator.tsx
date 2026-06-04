@@ -337,8 +337,6 @@ function EarningsSection({ idea }: { idea: GeneratedIdea }) {
         high: Math.max(0, revenue.high - costs.low),
       }
     : null;
-  const fmtEur = (n: number) =>
-    n >= 1000 ? `${(n / 1000).toLocaleString("it-IT", { maximumFractionDigits: 1 })}.000€`.replace(".000€", n % 1000 === 0 ? ".000€" : `${n}€`) : `${n}€`;
   const fmtRange = (r: { low: number; high: number }) => `${r.low.toLocaleString("it-IT")}€ – ${r.high.toLocaleString("it-IT")}€/mese`;
   return (
     <div
