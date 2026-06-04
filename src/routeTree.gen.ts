@@ -18,6 +18,7 @@ import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRoadmapSuccessRouteImport } from './routes/_authenticated/roadmap-success'
 import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authenticated/new-project'
 import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
@@ -71,6 +72,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoadmapSuccessRoute =
+  AuthenticatedRoadmapSuccessRouteImport.update({
+    id: '/roadmap-success',
+    path: '/roadmap-success',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNewProjectRoute = AuthenticatedNewProjectRouteImport.update({
   id: '/new-project',
   path: '/new-project',
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
+  '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -146,6 +154,7 @@ export interface FileRoutesByTo {
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
+  '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -166,6 +175,7 @@ export interface FileRoutesById {
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
+  '/_authenticated/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/my-path'
     | '/new-project'
+    | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/my-path'
     | '/new-project'
+    | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
@@ -223,6 +235,7 @@ export interface FileRouteTypes {
     | '/_authenticated/library'
     | '/_authenticated/my-path'
     | '/_authenticated/new-project'
+    | '/_authenticated/roadmap-success'
     | '/_authenticated/projects/$id'
     | '/_authenticated/workbook/$projectId'
     | '/_authenticated/academy/lessons/$id'
@@ -306,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/roadmap-success': {
+      id: '/_authenticated/roadmap-success'
+      path: '/roadmap-success'
+      fullPath: '/roadmap-success'
+      preLoaderRoute: typeof AuthenticatedRoadmapSuccessRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/new-project': {
       id: '/_authenticated/new-project'
       path: '/new-project'
@@ -370,6 +390,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
+  AuthenticatedRoadmapSuccessRoute: typeof AuthenticatedRoadmapSuccessRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
   AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
@@ -381,6 +402,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
+  AuthenticatedRoadmapSuccessRoute: AuthenticatedRoadmapSuccessRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
   AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
@@ -404,3 +426,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
