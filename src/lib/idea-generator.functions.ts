@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 
 const InputSchema = z.object({
@@ -10,28 +10,41 @@ const InputSchema = z.object({
   interests: z.string().max(400).optional().default(""),
 });
 
+const textField = z.preprocess((value) => {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return "";
+}, z.string());
+
+const stringList = z.preprocess((value) => {
+  if (Array.isArray(value)) return value.map((item) => String(item)).filter(Boolean);
+  if (typeof value === "string") return value.split(/[\n,;]+/).map((item) => item.trim()).filter(Boolean);
+  return [];
+}, z.array(z.string()));
+
 const IdeaSchema = z.object({
-  name: z.string().default(""),
-  description: z.string().default(""),
-  target: z.string().default(""),
-  problem: z.string().default(""),
-  why_interesting: z.string().default(""),
-  mvp: z.string().default(""),
-  essential_features: z.array(z.string()).default([]),
-  hours_estimate: z.string().default(""),
-  difficulty: z.string().default(""),
-  initial_cost: z.string().default(""),
-  monthly_cost: z.string().default(""),
-  potential: z.string().default(""),
-  revenue_model: z.string().default(""),
-  tools: z.array(z.string()).default([]),
-  agents: z.array(z.string()).default([]),
-  main_risk: z.string().default(""),
-  next_step: z.string().default(""),
+  name: textField,
+  description: textField,
+  target: textField,
+  problem: textField,
+  why_interesting: textField,
+  mvp: textField,
+  essential_features: stringList,
+  hours_estimate: textField,
+  difficulty: textField,
+  initial_cost: textField,
+  monthly_cost: textField,
+  potential: textField,
+  revenue_model: textField,
+  tools: stringList,
+  agents: stringList,
+  main_risk: textField,
+  next_step: textField,
 });
 
 const OutputSchema = z.object({
-  ideas: z.array(IdeaSchema).min(1).max(5),
+  ideas: z.array(IdeaSchema).default([]),
 });
 
 export type GeneratedIdea = z.infer<typeof IdeaSchema>;
