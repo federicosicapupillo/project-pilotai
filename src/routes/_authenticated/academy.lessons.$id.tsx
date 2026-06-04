@@ -16,6 +16,74 @@ export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
   component: LessonPage,
 });
 
+type SyncArgs = {
+  userId: string;
+  completedLesson: { id: string; title: string; module_id: string; order_index: number; recommended_agent: string | null };
+  currentModule: { id: string; title: string; order_index: number } | null;
+  siblings: { id: string; order_index: number; title: string }[];
+};
+
+function uniq(arr: string[]): string[] {
+  return Array.from(new Set(arr.map((s) => s.trim()).filter(Boolean)));
+}
+
+async function syncWorkbooksOnCompletion({ userId, completedLesson, currentModule, siblings }: SyncArgs) {
+  // Find next lesson: prefer in-module, fallback to next module's first lesson
+  const idx = siblings.findIndex((s) => s.id === completedLesson.id);
+  let nextTitle: string | null = null;
+  let nextModuleTitle: string | null = null;
+  if (idx >= 0 && idx < siblings.length - 1) {
+    nextTitle = siblings[idx + 1].title;
+    nextModuleTitle = currentModule?.title ?? null;
+  } else if (currentModule) {
+    const { data: nextMod } = await supabase
+      .from("course_modules").select("id, title, order_index")
+      .gt("order_index", currentModule.order_index).order("order_index").limit(1).maybeSingle();
+    if (nextMod) {
+      const { data: firstLesson } = await supabase
+        .from("course_lessons").select("title").eq("module_id", nextMod.id)
+        .order("order_index").limit(1).maybeSingle();
+      if (firstLesson) { nextTitle = firstLesson.title; nextModuleTitle = nextMod.title; }
+    }
+  }
+
+  const completedLabel = `✓ ${completedLesson.title}`;
+  const nextLabel = nextTitle ? `→ ${nextTitle}${nextModuleTitle ? ` (${nextModuleTitle})` : ""}` : null;
+
+  const { data: projects } = await supabase
+    .from("projects").select("id").eq("user_id", userId);
+  if (!projects?.length) return;
+
+  await Promise.all(projects.map(async (p) => {
+    const { data: wb } = await supabase
+      .from("project_workbook").select("*").eq("project_id", p.id).maybeSingle();
+
+    const prevNext = Array.isArray(wb?.next_steps) ? (wb!.next_steps as string[]) : [];
+    const prevAgents = Array.isArray(wb?.agents_used) ? (wb!.agents_used as string[]) : [];
+    const prevPrompts = Array.isArray(wb?.prompts_used) ? (wb!.prompts_used as string[]) : [];
+
+    // Remove any prior entry that referenced the now-completed lesson
+    const cleaned = prevNext.filter((s) =>
+      !s.includes(completedLesson.title) || s.startsWith("✓")
+    );
+    const withCompleted = uniq([completedLabel, ...cleaned]);
+    const finalNext = nextLabel ? uniq([nextLabel, ...withCompleted.filter((s) => s !== nextLabel)]) : withCompleted;
+
+    const finalAgents = completedLesson.recommended_agent
+      ? uniq([...prevAgents, completedLesson.recommended_agent])
+      : prevAgents;
+
+    const payload = {
+      user_id: userId,
+      project_id: p.id,
+      next_steps: finalNext,
+      agents_used: finalAgents,
+      prompts_used: prevPrompts,
+    };
+    await supabase.from("project_workbook").upsert(payload, { onConflict: "project_id" });
+  }));
+}
+
 function LessonPage() {
   const { id } = Route.useParams();
   const { user } = useAuth();
@@ -30,7 +98,7 @@ function LessonPage() {
       const { data: lesson, error } = await supabase.from("course_lessons").select("*").eq("id", id).single();
       if (error) throw error;
       const { data: mod } = await supabase.from("course_modules").select("*").eq("id", lesson.module_id).single();
-      const { data: siblings } = await supabase.from("course_lessons").select("id, order_index").eq("module_id", lesson.module_id).order("order_index");
+      const { data: siblings } = await supabase.from("course_lessons").select("id, order_index, title").eq("module_id", lesson.module_id).order("order_index");
       const { data: progress } = await supabase.from("user_lesson_progress").select("*").eq("lesson_id", id).maybeSingle();
       return { lesson, mod, siblings: siblings ?? [], progress };
     },
@@ -52,6 +120,14 @@ function LessonPage() {
       };
       const { error } = await supabase.from("user_lesson_progress").upsert(payload, { onConflict: "user_id,lesson_id" });
       if (error) throw error;
+      if (status === "completed" && data?.lesson) {
+        await syncWorkbooksOnCompletion({
+          userId: user.id,
+          completedLesson: data.lesson,
+          currentModule: data.mod,
+          siblings: data.siblings,
+        });
+      }
     },
     onSuccess: (_, status) => {
       toast.success(status === "completed" ? "Lezione completata!" : "Note salvate");
@@ -59,6 +135,7 @@ function LessonPage() {
       qc.invalidateQueries({ queryKey: ["academy-overview"] });
       qc.invalidateQueries({ queryKey: ["module"] });
       qc.invalidateQueries({ queryKey: ["my-path"] });
+      qc.invalidateQueries({ queryKey: ["workbook"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
