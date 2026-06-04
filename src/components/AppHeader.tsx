@@ -4,12 +4,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
-const links = [
+const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/", label: "Home" },
   { to: "/method", label: "Metodo" },
   { to: "/dashboard", label: "Dashboard", auth: true },
   { to: "/library", label: "Libreria prompt", auth: true },
-] as const;
+];
 
 export function AppHeader() {
   const { user } = useAuth();
@@ -41,7 +41,7 @@ export function AppHeader() {
               return (
                 <Link
                   key={l.to}
-                  to={l.to}
+                  to={l.to as never}
                   className={
                     "px-3 py-2 rounded-md text-sm transition-colors " +
                     (active
