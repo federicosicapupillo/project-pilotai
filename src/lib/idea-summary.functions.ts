@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 
 const InputSchema = z.object({
@@ -71,12 +71,32 @@ Tipo progetto suggerito dal sistema: ${data.projectType || "non specificato"}
 
 Genera un riepilogo strutturato, coerente, specifico per QUESTA idea.`;
 
-    const { object } = await generateObject({
+    const { text } = await generateText({
       model,
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + "\n\nRispondi SOLO con JSON valido, senza testo extra né markdown.",
       prompt,
-      schema: OutputSchema,
     });
 
-    return object;
+    const parsed = extractJSON(text);
+    return OutputSchema.parse(parsed);
   });
+
+function extractJSON(raw: string): unknown {
+  let cleaned = raw
+    .replace(/^```json\s*/im, "")
+    .replace(/^```\s*/im, "")
+    .replace(/```\s*$/im, "")
+    .trim();
+
+  if (!cleaned.startsWith("{") && !cleaned.startsWith("[")) {
+    const objStart = cleaned.indexOf("{");
+    const objEnd = cleaned.lastIndexOf("}");
+    if (objStart !== -1 && objEnd > objStart) {
+      cleaned = cleaned.slice(objStart, objEnd + 1);
+    } else {
+      throw new Error("No valid JSON found in AI response");
+    }
+  }
+
+  return JSON.parse(cleaned);
+}
