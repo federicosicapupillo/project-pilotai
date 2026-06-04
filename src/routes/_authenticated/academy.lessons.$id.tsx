@@ -19,6 +19,49 @@ export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
   component: LessonPage,
 });
 
+// ---- Workbook save-check (modules 1–4) -------------------------------------
+// For each (module_order, lesson_order) we declare which Workbook fields the
+// user must have filled before the lesson can be marked completed.
+type WBField =
+  | "idea" | "target" | "problem" | "solution" | "mvp"
+  | "decisions" | "next_steps" | "bugs_found" | "agents_used";
+
+const REQUIRED_BY_LESSON: Record<string, { field: WBField; label: string }[]> = {
+  "1-1": [{ field: "decisions", label: "Decisioni (ruolo di regista + cosa deleghi)" }],
+  "1-2": [{ field: "mvp", label: "MVP (classificazione funzioni costruibili/no)" }],
+  "1-3": [{ field: "next_steps", label: "Roadmap (le 5 fasi del prodotto)" }],
+  "1-4": [{ field: "decisions", label: "Decisioni (le tue 5 regole personali)" }],
+
+  "2-1": [{ field: "idea", label: "Idea in una frase (≤20 parole)" }],
+  "2-2": [{ field: "target", label: "Target principale + nicchia" }],
+  "2-3": [
+    { field: "problem", label: "Problema concreto" },
+    { field: "solution", label: "Soluzione proposta" },
+  ],
+  "2-4": [{ field: "mvp", label: "Prima versione semplificata (≤3 funzioni)" }],
+
+  "3-1": [{ field: "decisions", label: "Mappa competitor (diretti, indiretti, manuali)" }],
+  "3-2": [{ field: "decisions", label: "Prove di domanda raccolte" }],
+  "3-3": [{ field: "bugs_found", label: "Rischi e assunzioni da verificare" }],
+  "3-4": [{ field: "target", label: "Nicchia iniziale scelta" }],
+
+  "4-1": [{ field: "mvp", label: "Definizione MVP (ipotesi + comportamento)" }],
+  "4-2": [{ field: "mvp", label: "Funzioni must-have (≤5)" }],
+  "4-3": [{ field: "decisions", label: "Lista NOT NOW (≥10 voci)" }],
+  "4-4": [{ field: "next_steps", label: "Roadmap di 5–7 step con date" }],
+};
+
+function isFieldFilled(wb: Record<string, unknown> | null | undefined, field: WBField): boolean {
+  if (!wb) return false;
+  const v = wb[field];
+  if (v == null) return false;
+  if (typeof v === "string") return v.trim().length >= 10;
+  if (Array.isArray(v)) return v.filter((x) => (typeof x === "string" ? x.trim() : x)).length > 0;
+  if (typeof v === "object") return Object.keys(v as object).length > 0;
+  return false;
+}
+// ---------------------------------------------------------------------------
+
 type SyncArgs = {
   userId: string;
   completedLesson: { id: string; title: string; module_id: string; order_index: number; recommended_agent: string | null };
