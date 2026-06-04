@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { ToolBadge } from "@/components/ToolBadge";
 import {
-  APP_ROADMAP_PHASES, computeProgress, nextActionableStep, type RoadmapItem,
+  APP_ROADMAP_PHASES, computeProgress, nextActionableStep, phaseLabel, type RoadmapItem,
 } from "@/lib/app-roadmap";
 
 type Status = "todo" | "in_progress" | "done";

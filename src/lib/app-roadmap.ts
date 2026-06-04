@@ -29,6 +29,25 @@ export const PHASE_WEIGHT: Record<AppRoadmapPhase, number> = {
   "Demo e lancio beta": 1,
 };
 
+/** User-facing label per phase. Internal keys stay stable; only labels change. */
+export const PHASE_LABEL: Record<AppRoadmapPhase, string> = {
+  "Chiarezza idea": "Chiarezza idea",
+  "Validazione": "Validazione",
+  "MVP": "Prima versione dell'app (MVP)",
+  "Schermate e flussi": "Schermate e flussi",
+  "Database e dati": "Database e dati",
+  "Costruzione con Lovable": "Costruzione con Lovable",
+  "Backend e sicurezza": "Backend e sicurezza",
+  "Test e bug": "Test e bug",
+  "Grafica e presentazione": "Grafica e presentazione",
+  "Demo e lancio beta": "Demo e lancio beta",
+};
+
+export function phaseLabel(phase: string | null | undefined): string {
+  if (!phase) return "";
+  return (PHASE_LABEL as Record<string, string>)[phase] ?? phase;
+}
+
 export type RoadmapStatus = "todo" | "in_progress" | "done";
 
 export type RoadmapItem = {
@@ -126,29 +145,29 @@ export function buildFallbackRoadmap(project: { title: string; idea_description?
       status: "todo",
       recommended_agent: "Agente MVP Specialist",
       recommended_tool: "ChatGPT",
-      prompt_text: `Agisci come MVP Specialist. Per il progetto "${idea}": definisci l'MVP in 4 righe, l'ipotesi da verificare, il comportamento dell'utente che mi dirà se l'ipotesi è vera, e cosa NON deve esserci.`,
-      expected_output: "Definizione MVP nel Workbook (sezione MVP).",
+      prompt_text: `Agisci come specialista della prima versione dell'app (MVP). Per il progetto "${idea}": definisci in 4 righe la prima versione, l'ipotesi da verificare, il comportamento dell'utente che mi dirà se l'ipotesi è vera, e cosa NON deve esserci.`,
+      expected_output: "Definizione della prima versione dell'app nel Workbook (sezione MVP).",
       checklist_items: ["Ipotesi scritta", "Comportamento osservabile definito", "Lista 'cosa non c'è'"],
     },
     {
       phase: "MVP",
-      title: "Scegli le funzioni must-have (max 5)",
+      title: "Scegli le funzioni essenziali (max 5)",
       description: "Classifica ogni funzione possibile in must-have / nice-to-have / future. Tieni ≤5 must-have.",
       status: "todo",
       recommended_agent: "Agente MVP Specialist",
       recommended_tool: "ChatGPT",
-      prompt_text: `Classifica le funzioni possibili di "${idea}" in must-have / nice-to-have / future. Max 5 must-have, ognuna giustificata rispetto all'ipotesi MVP.`,
+      prompt_text: `Classifica le funzioni possibili di "${idea}" in must-have / nice-to-have / future. Max 5 must-have, ognuna giustificata rispetto all'ipotesi della prima versione dell'app (MVP).`,
       expected_output: "Tabella funzioni nel Workbook + lista must-have ≤5.",
       checklist_items: ["≤5 must-have", "Ogni must-have giustificata"],
     },
     {
       phase: "Schermate e flussi",
       title: "Definisci le schermate principali",
-      description: "Elenca le schermate dell'MVP e cosa succede in ognuna.",
+      description: "Elenca le schermate della prima versione dell'app e cosa succede in ognuna.",
       status: "todo",
       recommended_agent: "Agente UX/UI Designer",
       recommended_tool: "ChatGPT",
-      prompt_text: `Agisci come UX Designer. Elenca le schermate principali dell'MVP "${idea}" (max 6). Per ognuna: nome, scopo, elementi chiave, azione principale dell'utente.`,
+      prompt_text: `Agisci come UX Designer. Elenca le schermate principali della prima versione dell'app "${idea}" (max 6). Per ognuna: nome, scopo, elementi chiave, azione principale dell'utente.`,
       expected_output: "Lista schermate con scopo e azione principale.",
       checklist_items: ["≤6 schermate", "Ogni schermata ha un'unica azione principale"],
     },
@@ -188,7 +207,7 @@ export function buildFallbackRoadmap(project: { title: string; idea_description?
     {
       phase: "Costruzione con Lovable",
       title: "Costruisci la prima schermata funzionante",
-      description: "Genera con Lovable la schermata principale dell'MVP e verifica che si apra.",
+      description: "Genera con Lovable la schermata principale della prima versione dell'app e verifica che si apra.",
       status: "todo",
       recommended_agent: "Agente Builder",
       recommended_tool: "Lovable",
@@ -221,7 +240,7 @@ export function buildFallbackRoadmap(project: { title: string; idea_description?
     {
       phase: "Test e bug",
       title: "Correggi i 3 bug più gravi",
-      description: "Risolvi solo i bug bloccanti dell'MVP. Rimanda il resto.",
+      description: "Risolvi solo i bug bloccanti della prima versione dell'app. Rimanda il resto.",
       status: "todo",
       recommended_agent: "Agente Debug",
       recommended_tool: "Lovable",
@@ -243,7 +262,7 @@ export function buildFallbackRoadmap(project: { title: string; idea_description?
     {
       phase: "Demo e lancio beta",
       title: "Prepara la demo (video o link)",
-      description: "Crea una demo da 60–90 secondi che mostri il valore dell'MVP.",
+      description: "Crea una demo da 60–90 secondi che mostri il valore della prima versione dell'app.",
       status: "todo",
       recommended_agent: "Agente Marketing",
       recommended_tool: "Runway",
