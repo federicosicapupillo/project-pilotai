@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateText, Output } from "ai";
+import { generateObject } from "ai";
 import { z } from "zod";
 
 const InputSchema = z.object({
@@ -99,12 +99,12 @@ export const generateProjectContent = createServerFn({ method: "POST" })
     const gateway = createLovableAiGatewayProvider(key);
     const model = gateway("google/gemini-3-flash-preview");
 
-    const { experimental_output } = await generateText({
+    const { object } = await generateObject({
       model,
       system: SYSTEM_PROMPT,
       prompt: buildUserPrompt(data),
-      experimental_output: Output.object({ schema: OutputSchema }),
+      schema: OutputSchema,
     });
 
-    return experimental_output as GeneratedProjectContent;
+    return object;
   });
