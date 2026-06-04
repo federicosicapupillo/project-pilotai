@@ -262,9 +262,12 @@ function IdeaCard({ idea, onSelect }: { idea: GeneratedIdea; onSelect: () => voi
           <div className="text-[10px] uppercase tracking-wider text-primary font-semibold">Idea</div>
           <h3 className="font-display font-semibold text-xl mt-0.5">{idea.name}</h3>
         </div>
-        <span className="text-[10px] px-2 py-1 rounded-full border border-border/60 bg-background/40 whitespace-nowrap">
-          {idea.difficulty}
-        </span>
+        <div className="flex flex-col items-end gap-1.5 shrink-0">
+          <BudgetBadge fit={idea.budget_fit} />
+          <span className="text-[10px] px-2 py-1 rounded-full border border-border/60 bg-background/40 whitespace-nowrap">
+            {idea.difficulty}
+          </span>
+        </div>
       </div>
       <p className="text-sm text-foreground/90 mt-2">{idea.description}</p>
 
@@ -281,6 +284,28 @@ function IdeaCard({ idea, onSelect }: { idea: GeneratedIdea; onSelect: () => voi
         <Stat icon={Repeat} label="Mensili" value={idea.monthly_cost} />
         <Stat icon={TrendingUp} label="Potenziale" value={idea.potential} />
       </div>
+
+      {idea.budget_note && (
+        <div className="mt-3 rounded-lg border border-primary/30 bg-primary/10 p-2 text-xs flex gap-2">
+          <Info className="size-3.5 text-primary mt-0.5 shrink-0" />
+          <span><strong className="text-primary">Budget:</strong> <span className="text-foreground/90">{idea.budget_note}</span></span>
+        </div>
+      )}
+
+      {idea.do_not_build_yet?.length > 0 && (
+        <div className="mt-3">
+          <div className="flex items-center gap-1.5 text-muted-foreground uppercase tracking-wider text-[10px] mb-1.5">
+            <MinusCircle className="size-3 text-primary" /> Cosa NON costruire subito
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {idea.do_not_build_yet.map((t) => (
+              <span key={t} className="text-xs px-2 py-1 rounded-full bg-background/40 border border-dashed border-border/60 text-foreground/70">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-3 text-xs">
         <div className="flex items-center gap-1.5 text-muted-foreground uppercase tracking-wider text-[10px] mb-1">
