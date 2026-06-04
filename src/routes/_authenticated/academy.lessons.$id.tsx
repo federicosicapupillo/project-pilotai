@@ -30,7 +30,7 @@ function LessonPage() {
       const { data: lesson, error } = await supabase.from("course_lessons").select("*").eq("id", id).single();
       if (error) throw error;
       const { data: mod } = await supabase.from("course_modules").select("*").eq("id", lesson.module_id).single();
-      const { data: siblings } = await supabase.from("course_lessons").select("id, order_index").eq("module_id", lesson.module_id).order("order_index");
+      const { data: siblings } = await supabase.from("course_lessons").select("id, order_index, title").eq("module_id", lesson.module_id).order("order_index");
       const { data: progress } = await supabase.from("user_lesson_progress").select("*").eq("lesson_id", id).maybeSingle();
       return { lesson, mod, siblings: siblings ?? [], progress };
     },
@@ -52,6 +52,14 @@ function LessonPage() {
       };
       const { error } = await supabase.from("user_lesson_progress").upsert(payload, { onConflict: "user_id,lesson_id" });
       if (error) throw error;
+      if (status === "completed" && data?.lesson) {
+        await syncWorkbooksOnCompletion({
+          userId: user.id,
+          completedLesson: data.lesson,
+          currentModule: data.mod,
+          siblings: data.siblings,
+        });
+      }
     },
     onSuccess: (_, status) => {
       toast.success(status === "completed" ? "Lezione completata!" : "Note salvate");
@@ -59,6 +67,7 @@ function LessonPage() {
       qc.invalidateQueries({ queryKey: ["academy-overview"] });
       qc.invalidateQueries({ queryKey: ["module"] });
       qc.invalidateQueries({ queryKey: ["my-path"] });
+      qc.invalidateQueries({ queryKey: ["workbook"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
