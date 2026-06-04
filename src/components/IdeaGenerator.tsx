@@ -10,7 +10,7 @@ import { generateAppIdeas, type GeneratedIdea } from "@/lib/idea-generator.funct
 import { trackEvent } from "@/lib/tracking";
 import {
   Sparkles, Wand2, Lightbulb, Loader2, ArrowRight, Users, AlertTriangle,
-  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info,
+  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info, Euro, Scale, Tag,
 } from "lucide-react";
 
 type Step = "form" | "loading" | "results";
@@ -313,6 +313,8 @@ function IdeaCard({ idea, onSelect }: { idea: GeneratedIdea; onSelect: () => voi
         </div>
         <p className="text-foreground/90">{idea.revenue_model}</p>
       </div>
+
+      <EarningsSection idea={idea} />
 
       {idea.tools?.length > 0 && (
         <div className="mt-3">
