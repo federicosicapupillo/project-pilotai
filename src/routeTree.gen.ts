@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AgentsRouteImport } from './routes/agents'
@@ -28,6 +29,11 @@ import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_aut
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
   path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodRoute = MethodRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/pricing'
     | '/tools'
     | '/dashboard'
     | '/library'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/pricing'
     | '/tools'
     | '/dashboard'
     | '/library'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/pricing'
     | '/tools'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
@@ -212,6 +224,7 @@ export interface RootRouteChildren {
   AgentsRoute: typeof AgentsRoute
   AuthRoute: typeof AuthRoute
   MethodRoute: typeof MethodRoute
+  PricingRoute: typeof PricingRoute
   ToolsRoute: typeof ToolsRoute
 }
 
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/tools'
       fullPath: '/tools'
       preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/method': {
@@ -357,6 +377,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgentsRoute: AgentsRoute,
   AuthRoute: AuthRoute,
   MethodRoute: MethodRoute,
+  PricingRoute: PricingRoute,
   ToolsRoute: ToolsRoute,
 }
 export const routeTree = rootRouteImport
