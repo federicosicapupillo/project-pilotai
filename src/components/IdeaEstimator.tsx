@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { ToolIcon } from "@/components/ToolIcon";
 import { IdeaGenerator } from "@/components/IdeaGenerator";
+import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
