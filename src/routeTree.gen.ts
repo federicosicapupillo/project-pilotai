@@ -14,6 +14,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrezziRouteImport } from './routes/prezzi'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AnalizzaIdeaRouteImport } from './routes/analizza-idea'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -51,6 +52,11 @@ const MethodRoute = MethodRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalizzaIdeaRoute = AnalizzaIdeaRouteImport.update({
+  id: '/analizza-idea',
+  path: '/analizza-idea',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsRoute = AgentsRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/academy': typeof AcademyRoute
   '/agents': typeof AgentsRoute
+  '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
   '/prezzi': typeof PrezziRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/academy': typeof AcademyRoute
   '/agents': typeof AgentsRoute
+  '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
   '/prezzi': typeof PrezziRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/academy': typeof AcademyRoute
   '/agents': typeof AgentsRoute
+  '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
   '/prezzi': typeof PrezziRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/'
     | '/academy'
     | '/agents'
+    | '/analizza-idea'
     | '/auth'
     | '/method'
     | '/prezzi'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/'
     | '/academy'
     | '/agents'
+    | '/analizza-idea'
     | '/auth'
     | '/method'
     | '/prezzi'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/academy'
     | '/agents'
+    | '/analizza-idea'
     | '/auth'
     | '/method'
     | '/prezzi'
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AcademyRoute: typeof AcademyRoute
   AgentsRoute: typeof AgentsRoute
+  AnalizzaIdeaRoute: typeof AnalizzaIdeaRoute
   AuthRoute: typeof AuthRoute
   MethodRoute: typeof MethodRoute
   PrezziRoute: typeof PrezziRoute
@@ -289,6 +302,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analizza-idea': {
+      id: '/analizza-idea'
+      path: '/analizza-idea'
+      fullPath: '/analizza-idea'
+      preLoaderRoute: typeof AnalizzaIdeaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents': {
@@ -417,6 +437,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AcademyRoute: AcademyRoute,
   AgentsRoute: AgentsRoute,
+  AnalizzaIdeaRoute: AnalizzaIdeaRoute,
   AuthRoute: AuthRoute,
   MethodRoute: MethodRoute,
   PrezziRoute: PrezziRoute,
@@ -426,3 +447,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
