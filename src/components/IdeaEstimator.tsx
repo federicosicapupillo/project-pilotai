@@ -42,7 +42,6 @@ type BudgetBand =
   | "Non lo so ancora";
 
 const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; min: number; max: number }[] = [
-  { label: "0€ – 100€",        min: 0,    max: 100 },
   { label: "100€ – 300€",      min: 100,  max: 300 },
   { label: "300€ – 700€",      min: 300,  max: 700 },
   { label: "700€ – 1.500€",    min: 700,  max: 1500 },
@@ -351,21 +350,30 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               </p>
             </div>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
             {BUDGET_OPTIONS.map((b) => {
               const active = budget === b.label;
+              const isUnsure = b.label === "Non lo so ancora";
               return (
                 <button
                   key={b.label}
                   type="button"
                   onClick={() => setBudget(active ? "" : b.label)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                  className={`relative group text-sm font-medium px-3 py-3 rounded-xl border transition-all duration-200 overflow-hidden ${
                     active
-                      ? "border-primary/70 bg-primary/20 text-primary font-medium"
-                      : "border-border/60 bg-background/40 text-foreground/80 hover:border-primary/40"
-                  }`}
+                      ? "border-primary/70 text-foreground shadow-[0_8px_24px_-12px_hsl(var(--primary)/0.6)] -translate-y-0.5"
+                      : "border-border/60 bg-background/40 text-foreground/85 hover:border-primary/50 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_-12px_hsl(var(--primary)/0.45)]"
+                  } ${isUnsure ? "col-span-2 sm:col-span-3 lg:col-span-6" : ""}`}
+                  style={
+                    active
+                      ? { background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--accent) 18%, transparent))" }
+                      : undefined
+                  }
                 >
-                  {b.label}
+                  {active && (
+                    <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary glow-soft" aria-hidden />
+                  )}
+                  <span className={active ? "gradient-text font-semibold" : ""}>{b.label}</span>
                 </button>
               );
             })}
