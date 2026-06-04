@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrezziRouteImport } from './routes/prezzi'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AgentsRouteImport } from './routes/agents'
@@ -34,6 +35,11 @@ const ToolsRoute = ToolsRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrezziRoute = PrezziRouteImport.update({
+  id: '/prezzi',
+  path: '/prezzi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodRoute = MethodRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/prezzi'
     | '/pricing'
     | '/tools'
     | '/dashboard'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/prezzi'
     | '/pricing'
     | '/tools'
     | '/dashboard'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/prezzi'
     | '/pricing'
     | '/tools'
     | '/_authenticated/dashboard'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   AgentsRoute: typeof AgentsRoute
   AuthRoute: typeof AuthRoute
   MethodRoute: typeof MethodRoute
+  PrezziRoute: typeof PrezziRoute
   PricingRoute: typeof PricingRoute
   ToolsRoute: typeof ToolsRoute
 }
@@ -242,6 +255,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prezzi': {
+      id: '/prezzi'
+      path: '/prezzi'
+      fullPath: '/prezzi'
+      preLoaderRoute: typeof PrezziRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/method': {
@@ -377,9 +397,20 @@ const rootRouteChildren: RootRouteChildren = {
   AgentsRoute: AgentsRoute,
   AuthRoute: AuthRoute,
   MethodRoute: MethodRoute,
+  PrezziRoute: PrezziRoute,
   PricingRoute: PricingRoute,
   ToolsRoute: ToolsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
