@@ -32,11 +32,12 @@ function Index() {
               <Sparkles className="size-3 text-primary" /> Metodo AI per non tecnici
             </div>
             <h1 className="mt-6 text-4xl sm:text-6xl lg:text-7xl font-display font-semibold tracking-tight leading-[1.05]">
-              Trasforma la tua <span className="gradient-text">idea</span> in una <span className="gradient-text">prima app</span> con agenti AI
+              Hai un'<span className="gradient-text">idea</span> per un'app?<br />
+              Scrivila e scopri in quanto <span className="gradient-text">tempo</span> puoi crearla.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Tu sei il regista. Una squadra di agenti AI ti aiuta a chiarire il progetto,
-              generare prompt operativi e costruire un MVP con strumenti no-code. Senza partire dal codice.
+              Da Idea ad App ti guida passo passo con agenti AI, strumenti no-code,
+              prompt operativi e una roadmap personalizzata per trasformare la tua idea in una prima app reale.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link to="/auth">
