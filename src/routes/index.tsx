@@ -4,7 +4,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import {
   Sparkles, ArrowRight, Users, Wand2, ListChecks, BookOpen,
-  Lightbulb, Rocket, Target, ShieldCheck, Layers, Zap,
+  Lightbulb, Rocket, Target, ShieldCheck, Layers, Zap, PenLine, FileText, Hammer,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -29,15 +29,14 @@ function Index() {
           <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
           <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-28 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
-              <Sparkles className="size-3 text-primary" /> Metodo AI-first per non-developer
+              <Sparkles className="size-3 text-primary" /> Metodo AI per non tecnici
             </div>
             <h1 className="mt-6 text-4xl sm:text-6xl lg:text-7xl font-display font-semibold tracking-tight leading-[1.05]">
-              Trasforma la tua <span className="gradient-text">idea</span><br />
-              in una <span className="gradient-text">prima app</span> con agenti AI
+              Trasforma la tua <span className="gradient-text">idea</span> in una <span className="gradient-text">prima app</span> con agenti AI
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Tu sei il regista. Una squadra di agenti AI ti aiuta a definire il progetto, generare prompt operativi
-              e costruire un MVP con strumenti no-code. Senza scrivere codice.
+              Tu sei il regista. Una squadra di agenti AI ti aiuta a chiarire il progetto,
+              generare prompt operativi e costruire un MVP con strumenti no-code. Senza partire dal codice.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link to="/auth">
@@ -53,8 +52,28 @@ function Index() {
           </div>
         </section>
 
+        {/* STEPS — 4 card subito sotto la hero */}
+        <Section title="Dall'idea all'MVP in 4 passi" eyebrow="Come funziona">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { icon: PenLine, title: "1. Inserisci la tua idea", desc: "Rispondi a poche domande guidate: cosa fai, per chi, quale problema risolvi." },
+              { icon: FileText, title: "2. Ottieni il progetto strutturato", desc: "Una scheda chiara: target, MVP, schermate, dati, rischi e cosa non costruire." },
+              { icon: Wand2, title: "3. Agenti AI e prompt pronti", desc: "Una squadra di agenti AI consigliati e prompt operativi da copiare e usare." },
+              { icon: Hammer, title: "4. Costruisci il tuo MVP", desc: "Segui la roadmap passo passo e realizza la prima versione con strumenti no-code." },
+            ].map((s) => (
+              <div key={s.title} className="glass-card rounded-xl p-6">
+                <div className="size-10 rounded-lg gradient-bg grid place-items-center glow-soft">
+                  <s.icon className="size-5 text-primary-foreground" />
+                </div>
+                <h3 className="font-display font-semibold text-lg mt-4">{s.title}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+
         {/* METODO */}
-        <Section title="Come funziona" eyebrow="Il metodo">
+        <Section title="Il metodo in dettaglio" eyebrow="Il metodo">
           <div className="grid md:grid-cols-3 gap-4">
             {[
               { icon: Lightbulb, title: "1. Descrivi l'idea", desc: "Rispondi a un form guidato: cosa fai, per chi, quale problema risolvi." },
