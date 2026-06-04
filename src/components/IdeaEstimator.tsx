@@ -102,6 +102,17 @@ type Estimate = {
   potentialLabel: "Basso" | "Medio" | "Alto";
   revenueIdeas: string[];
   signals: { ai: boolean; payments: boolean; chat: boolean; notifications: boolean; media: boolean; marketplace: boolean };
+  // Costi separati
+  costMinLow: number; costMinHigh: number;       // costo minimo per partire (validazione)
+  costRecLow: number; costRecHigh: number;       // budget consigliato per prima versione solida
+  monthlyEssLow: number; monthlyEssHigh: number; // stack essenziale
+  monthlyFullLow: number; monthlyFullHigh: number; // stack completo
+  // Scenari economici
+  scenarios: {
+    prudent:    { customers: number; price: number; revenue: number };
+    realistic:  { customers: number; price: number; revenue: number };
+    ambitious:  { customers: number; price: number; revenue: number };
+  };
 };
 
 const STORAGE_KEY = "draft_idea_description";
