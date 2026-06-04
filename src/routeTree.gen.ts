@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authenticated/new-project'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
 import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
@@ -55,6 +56,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAgentsRoute = AuthenticatedAgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
   id: '/academy',
   path: '/academy',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
   '/academy': typeof AuthenticatedAcademyRouteWithChildren
+  '/agents': typeof AuthenticatedAgentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
   '/academy': typeof AuthenticatedAcademyRouteWithChildren
+  '/agents': typeof AuthenticatedAgentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
   '/_authenticated/academy': typeof AuthenticatedAcademyRouteWithChildren
+  '/_authenticated/agents': typeof AuthenticatedAgentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/method'
     | '/academy'
+    | '/agents'
     | '/dashboard'
     | '/library'
     | '/new-project'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/method'
     | '/academy'
+    | '/agents'
     | '/dashboard'
     | '/library'
     | '/new-project'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/method'
     | '/_authenticated/academy'
+    | '/_authenticated/agents'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
     | '/_authenticated/new-project'
@@ -214,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/agents': {
+      id: '/_authenticated/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AuthenticatedAgentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/academy': {
       id: '/_authenticated/academy'
       path: '/academy'
@@ -260,6 +279,7 @@ const AuthenticatedAcademyRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRouteWithChildren
+  AuthenticatedAgentsRoute: typeof AuthenticatedAgentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
@@ -268,6 +288,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAcademyRoute: AuthenticatedAcademyRouteWithChildren,
+  AuthenticatedAgentsRoute: AuthenticatedAgentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
