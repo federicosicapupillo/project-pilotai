@@ -92,7 +92,6 @@ export const generateAppIdeas = createServerFn({ method: "POST" })
       system: SYSTEM_PROMPT,
       prompt: buildPrompt(data),
       schema: OutputSchema,
-      mode: "json",
     });
 
     // Ensure we always return 3 ideas for the UI (pad or trim).
