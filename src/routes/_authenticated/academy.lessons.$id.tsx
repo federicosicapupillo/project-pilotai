@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import {
   ArrowLeft, ArrowRight, Target, Bot, Wrench, ClipboardCopy, ListChecks,
-  PlayCircle, CheckCircle2, FileText, Sparkles,
+  PlayCircle, CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
@@ -91,6 +91,8 @@ function LessonPage() {
   const navigate = useNavigate();
   const [notes, setNotes] = useState("");
   const [checks, setChecks] = useState<Record<number, boolean>>({});
+  const [syncStage, setSyncStage] = useState<"idle" | "saving" | "syncing" | "synced" | "error">("idle");
+  const [syncedAt, setSyncedAt] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["lesson", id],
@@ -111,6 +113,7 @@ function LessonPage() {
   const saveMutation = useMutation({
     mutationFn: async (status: "in_progress" | "completed") => {
       if (!user) throw new Error("Non autenticato");
+      setSyncStage("saving");
       const payload = {
         user_id: user.id,
         lesson_id: id,
@@ -121,6 +124,7 @@ function LessonPage() {
       const { error } = await supabase.from("user_lesson_progress").upsert(payload, { onConflict: "user_id,lesson_id" });
       if (error) throw error;
       if (status === "completed" && data?.lesson) {
+        setSyncStage("syncing");
         await syncWorkbooksOnCompletion({
           userId: user.id,
           completedLesson: data.lesson,
@@ -131,13 +135,15 @@ function LessonPage() {
     },
     onSuccess: (_, status) => {
       toast.success(status === "completed" ? "Lezione completata!" : "Note salvate");
+      setSyncStage("synced");
+      setSyncedAt(new Date().toISOString());
       qc.invalidateQueries({ queryKey: ["lesson", id] });
       qc.invalidateQueries({ queryKey: ["academy-overview"] });
       qc.invalidateQueries({ queryKey: ["module"] });
       qc.invalidateQueries({ queryKey: ["my-path"] });
       qc.invalidateQueries({ queryKey: ["workbook"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => { setSyncStage("error"); toast.error(e.message); },
   });
 
   if (isLoading) return <div className="max-w-4xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
@@ -150,6 +156,29 @@ function LessonPage() {
   const prev = idx > 0 ? siblings[idx - 1] : null;
   const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : null;
   const isCompleted = data.progress?.status === "completed";
+  const isInProgress = data.progress?.status === "in_progress";
+
+  // Effective sync state: prefer live mutation stage, otherwise derive from DB progress
+  const effectiveStage: "not_started" | "saving" | "syncing" | "in_progress" | "synced" | "error" =
+    syncStage === "saving" || syncStage === "syncing" || syncStage === "error"
+      ? syncStage
+      : isCompleted
+        ? "synced"
+        : isInProgress
+          ? "in_progress"
+          : "not_started";
+
+  const lastSyncDate = syncedAt ?? data.progress?.completed_at ?? data.progress?.updated_at ?? null;
+  const stageMeta: Record<typeof effectiveStage, { label: string; cls: string; Icon: typeof CheckCircle2; spin?: boolean }> = {
+    not_started: { label: "Non iniziata", cls: "bg-secondary/60 text-muted-foreground border-border/60", Icon: Circle },
+    in_progress: { label: "In corso — non sincronizzata", cls: "bg-amber-500/15 text-amber-300 border-amber-500/30", Icon: RefreshCw },
+    saving: { label: "Invio in corso…", cls: "bg-blue-500/15 text-blue-300 border-blue-500/30", Icon: Loader2, spin: true },
+    syncing: { label: "Sincronizzo con il Workbook…", cls: "bg-blue-500/15 text-blue-300 border-blue-500/30", Icon: Loader2, spin: true },
+    synced: { label: "Sincronizzata con il Workbook", cls: "bg-primary/15 text-primary border-primary/30", Icon: CheckCircle2 },
+    error: { label: "Errore di sincronizzazione", cls: "bg-red-500/15 text-red-300 border-red-500/30", Icon: AlertCircle },
+  };
+  const stage = stageMeta[effectiveStage];
+  const StageIcon = stage.Icon;
 
   const copyPrompt = async () => {
     if (!lesson.prompt_text) return;
@@ -173,11 +202,16 @@ function LessonPage() {
           <h1 className="text-3xl font-display font-semibold mt-1">{lesson.title}</h1>
           <p className="text-muted-foreground mt-2">{lesson.description}</p>
         </div>
-        {isCompleted && (
-          <span className="shrink-0 inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-primary/15 text-primary border border-primary/30">
-            <CheckCircle2 className="size-3.5" /> Completata
+        <div className="shrink-0 flex flex-col items-end gap-1.5">
+          <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border ${stage.cls}`}>
+            <StageIcon className={`size-3.5 ${stage.spin ? "animate-spin" : ""}`} /> {stage.label}
           </span>
-        )}
+          {lastSyncDate && (effectiveStage === "synced" || effectiveStage === "in_progress") && (
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Ultimo agg.: {new Date(lastSyncDate).toLocaleString("it-IT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="glass-card rounded-xl p-6 mb-6">
