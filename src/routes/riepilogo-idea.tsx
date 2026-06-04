@@ -9,13 +9,14 @@ import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitB
 import {
   ArrowRight, Sparkles, Clock, Activity, Layers, Users, AlertCircle,
   Lightbulb, Target, Wrench, Bot, TrendingUp, Wallet, ListChecks, XCircle, Info, Loader2,
+  Monitor, Plug, Wand2,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import {
   classify, getBudget, fmt, loadIdeaParams,
   type Estimate, type IdeaParams,
 } from "@/lib/idea-estimate";
-import { generateProjectContent, type GeneratedProjectContent } from "@/lib/ai-generation.functions";
+import { generateIdeaSummary, type IdeaSummary } from "@/lib/idea-summary.functions";
 
 export const Route = createFileRoute("/riepilogo-idea")({
   head: () => ({
