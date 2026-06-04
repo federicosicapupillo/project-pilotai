@@ -14,7 +14,248 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agents: {
+        Row: {
+          created_at: string
+          expected_output: string | null
+          id: string
+          name: string
+          project_id: string
+          prompt_text: string | null
+          role: string | null
+          when_to_use: string | null
+        }
+        Insert: {
+          created_at?: string
+          expected_output?: string | null
+          id?: string
+          name: string
+          project_id: string
+          prompt_text?: string | null
+          role?: string | null
+          when_to_use?: string | null
+        }
+        Update: {
+          created_at?: string
+          expected_output?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+          prompt_text?: string | null
+          role?: string | null
+          when_to_use?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      project_analysis: {
+        Row: {
+          created_at: string
+          data_to_save: Json | null
+          id: string
+          main_features: Json | null
+          main_problem: string | null
+          mvp_version: string | null
+          not_to_build_now: Json | null
+          project_id: string
+          proposed_solution: string | null
+          required_screens: Json | null
+          risks: Json | null
+          target_users: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_to_save?: Json | null
+          id?: string
+          main_features?: Json | null
+          main_problem?: string | null
+          mvp_version?: string | null
+          not_to_build_now?: Json | null
+          project_id: string
+          proposed_solution?: string | null
+          required_screens?: Json | null
+          risks?: Json | null
+          target_users?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_to_save?: Json | null
+          id?: string
+          main_features?: Json | null
+          main_problem?: string | null
+          mvp_version?: string | null
+          not_to_build_now?: Json | null
+          project_id?: string
+          proposed_solution?: string | null
+          required_screens?: Json | null
+          risks?: Json | null
+          target_users?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_analysis_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string
+          existing_tools: string | null
+          experience_level: string | null
+          id: string
+          idea_description: string | null
+          problem: string | null
+          product_type: string | null
+          solution: string | null
+          status: string
+          target: string | null
+          title: string
+          updated_at: string
+          urgency: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          existing_tools?: string | null
+          experience_level?: string | null
+          id?: string
+          idea_description?: string | null
+          problem?: string | null
+          product_type?: string | null
+          solution?: string | null
+          status?: string
+          target?: string | null
+          title: string
+          updated_at?: string
+          urgency?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          existing_tools?: string | null
+          experience_level?: string | null
+          id?: string
+          idea_description?: string | null
+          problem?: string | null
+          product_type?: string | null
+          solution?: string | null
+          status?: string
+          target?: string | null
+          title?: string
+          updated_at?: string
+          urgency?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      prompts: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          project_id: string | null
+          prompt_text: string
+          recommended_tool: string | null
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          prompt_text: string
+          recommended_tool?: string | null
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          prompt_text?: string
+          recommended_tool?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roadmap_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          priority: number
+          project_id: string
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          priority?: number
+          project_id: string
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          priority?: number
+          project_id?: string
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roadmap_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
