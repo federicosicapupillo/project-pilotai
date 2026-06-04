@@ -3,6 +3,7 @@ import { generateText } from "ai";
 import { z } from "zod";
 
 const InputSchema = z.object({
+  budget: z.string().max(60).optional().default(""),
   sector: z.string().max(100).optional().default(""),
   appType: z.string().max(100).optional().default(""),
   complexity: z.string().max(40).optional().default(""),
@@ -31,10 +32,13 @@ const IdeaSchema = z.object({
   why_interesting: textField,
   mvp: textField,
   essential_features: stringList,
+  do_not_build_yet: stringList,
   hours_estimate: textField,
   difficulty: textField,
   initial_cost: textField,
   monthly_cost: textField,
+  budget_fit: textField,
+  budget_note: textField,
   potential: textField,
   revenue_model: textField,
   tools: stringList,
@@ -62,9 +66,26 @@ const FALLBACK_TOOLS = ["ChatGPT", "Lovable", "Supabase", "Perplexity", "Stripe"
 const FALLBACK_AGENTS = ["Agente Stratega", "Agente Product Manager", "Agente Prompt Engineer"];
 
 function buildPrompt(d: z.infer<typeof InputSchema>) {
-  return `Genera ESATTAMENTE 3 idee di app personalizzate per questo utente.
+  return `Genera ESATTAMENTE 3 idee di app personalizzate per questo utente, COERENTI con il suo budget operativo.
+
+IMPORTANTE — Budget: ${d.budget || "non specificato"}
+Il budget indicato NON include il costo del corso. È solo budget operativo per costruire, testare e lanciare la prima versione funzionante (strumenti, dominio, database, API, contenuti, lancio).
+
+Regole budget (rispettale rigorosamente):
+- 0€–100€: solo landing page, form raccolta contatti, mini dashboard manuale, strumenti interni semplici, validazione idea senza backend complesso. EVITA marketplace, chat, pagamenti, AI avanzata, notifiche SMS, app multiutente complesse.
+- 100€–300€: landing con form, dashboard base, archivio dati semplice, mini CRM, tool interno, prototipo con login semplice.
+- 300€–700€: CRM verticale, gestionale semplice, dashboard con database, area riservata, raccolta richieste, workflow guidato.
+- 700€–1.500€: marketplace leggero, app con ruoli utenti, database strutturato, dashboard amministrativa, integrazioni semplici, primo sistema di pagamento se davvero necessario.
+- 1.500€–3.000€: app con login/ruoli/dashboard/pagamenti, CRM avanzato, marketplace prima versione, app B2B verticale, integrazioni Stripe/Twilio/API esterne se necessarie.
+- 3.000€+: marketplace verticale, SaaS B2B, app con AI, automazioni, notifiche, pagamenti, pannello admin avanzato.
+- "Non lo so ancora" o vuoto: assumi 300€–700€.
+
+Se un'idea è naturalmente più ambiziosa del budget, NON eliminarla: proponi una versione SEMPLIFICATA compatibile (es. "Con questo budget meglio iniziare con landing + raccolta richieste + dashboard manuale, non marketplace completo").
+
+Non promettere guadagni garantiti, idee originali garantite, business automatico.
 
 Dati utente:
+- Budget operativo: ${d.budget || "non specificato"}
 - Settore: ${d.sector || "non specificato"}
 - Tipo app desiderata: ${d.appType || "non specificato"}
 - Livello complessità: ${d.complexity || "non specificato"}
@@ -79,10 +100,13 @@ Per ogni idea restituisci nello schema JSON:
 - why_interesting: perché potrebbe essere interessante (1 frase)
 - mvp: prima versione funzionante (cosa contiene il primo rilascio)
 - essential_features: 4-6 funzioni essenziali
+- do_not_build_yet: 3-5 cose da NON costruire subito per restare nel budget
 - hours_estimate: stima in ore (es. "40-80 ore")
 - difficulty: "Semplice" | "Media" | "Avanzata" | "Complessa"
 - initial_cost: costo indicativo iniziale con metodo AI/no-code (es. "500€-2.000€")
 - monthly_cost: costi mensili possibili (es. "50€-250€/mese")
+- budget_fit: ESATTAMENTE uno tra "Dentro il budget" | "Al limite del budget" | "Fuori budget, da semplificare"
+- budget_note: 1 frase che spiega la scelta e, se fuori budget, come semplificare
 - potential: potenziale economico indicativo (es. "Medio/alto se validato su nicchia locale")
 - revenue_model: modello di ricavo consigliato (1-2 ipotesi)
 - tools: 3-6 strumenti consigliati tra: ChatGPT, Lovable, Supabase, Perplexity, Antigravity, GitHub, Stripe, Twilio, Canva, ElevenLabs, Runway
