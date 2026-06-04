@@ -48,7 +48,7 @@ function Index() {
               </Link>
             </div>
             <p className="mt-6 text-xs text-muted-foreground">
-              Niente promesse magiche. Tu guidi, gli agenti eseguono.
+              Niente promesse magiche: tu resti il regista, gli agenti AI ti aiutano passo passo.
             </p>
           </div>
         </section>
@@ -137,7 +137,7 @@ function Index() {
               <h3 className="font-display font-semibold text-xl mt-3">Imprenditori, consulenti, creator</h3>
               <p className="text-muted-foreground mt-2">
                 Hai un'intuizione, un servizio o un processo che vorresti digitalizzare ma non sai da dove iniziare.
-                Ti diamo struttura, agenti e prompt per partire davvero.
+                Tu resti il regista: gli agenti AI ti aiutano passo passo con struttura, prompt e roadmap per partire davvero.
               </p>
             </div>
             <ul className="space-y-2 text-sm">
@@ -179,7 +179,7 @@ function Index() {
                 La tua idea merita una <span className="gradient-text">prima versione</span>
               </h2>
               <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                Crea un account e ottieni la scheda del tuo progetto in pochi minuti.
+                Tu guidi la visione, gli agenti AI ti accompagnano passo passo: scheda progetto, prompt e roadmap personalizzata in pochi minuti.
               </p>
               <Link to="/auth" className="inline-block mt-8">
                 <Button variant="hero" size="xl">Inizia il tuo progetto <ArrowRight className="size-4" /></Button>
