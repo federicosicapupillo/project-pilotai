@@ -6,13 +6,10 @@ import { Button } from "@/components/ui/button";
 
 const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/", label: "Home" },
-  { to: "/method", label: "Metodo" },
+  { to: "/academy", label: "Academy" },
+  { to: "/tools", label: "Strumenti" },
+  { to: "/agents", label: "Agenti" },
   { to: "/dashboard", label: "Dashboard", auth: true },
-  { to: "/academy", label: "Academy", auth: true },
-  { to: "/agents", label: "Agenti", auth: true },
-  { to: "/tools", label: "Strumenti", auth: true },
-  { to: "/my-path", label: "Il mio percorso", auth: true },
-  { to: "/library", label: "Libreria prompt", auth: true },
 ];
 
 export function AppHeader() {
