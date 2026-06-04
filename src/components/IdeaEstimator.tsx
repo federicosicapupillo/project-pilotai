@@ -253,6 +253,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [idea, setIdea] = useState("");
   const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
+  const [targetChoice, setTargetChoice] = useState<string>("Non lo so ancora");
   const [revenue, setRevenue] = useState<RevenueModel>("Non lo so ancora");
   const [price, setPrice] = useState<PriceBand>("Non lo so");
   const [result, setResult] = useState<Estimate | null>(null);
@@ -443,13 +444,50 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           <div className="grid sm:grid-cols-3 gap-3 p-3 pt-1">
             <div>
               <label className="text-[11px] uppercase tracking-wider text-muted-foreground">A chi vuoi venderla?</label>
-              <Input
-                value={target}
-                onChange={(e) => setTarget(e.target.value)}
-                placeholder="Es: ristoratori, agenti immobiliari, freelance…"
-                className="mt-1"
-                maxLength={200}
-              />
+              <select
+                value={targetChoice}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTargetChoice(v);
+                  if (v === "Altro") setTarget("");
+                  else if (v === "Non lo so ancora") setTarget("");
+                  else setTarget(v);
+                }}
+                className="mt-1 w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+              >
+                {[
+                  "Non lo so ancora",
+                  "Ristoratori",
+                  "Agenti immobiliari",
+                  "Freelance",
+                  "Aziende / B2B",
+                  "Negozi / Retail",
+                  "Palestre / Fitness",
+                  "Creator / Influencer",
+                  "Professionisti",
+                  "Hotel / Turismo",
+                  "Scuole / Formazione",
+                  "Eventi",
+                  "Medici / Studi professionali",
+                  "Artigiani",
+                  "Privati / Consumer",
+                  "Altro",
+                ].map((o) => (
+                  <option key={o} value={o} className="bg-background">{o}</option>
+                ))}
+              </select>
+              {targetChoice === "Altro" && (
+                <div className="mt-2">
+                  <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Specifica il target</label>
+                  <Input
+                    value={target}
+                    onChange={(e) => setTarget(e.target.value)}
+                    placeholder="Scrivi il target a cui vuoi vendere l'app"
+                    className="mt-1"
+                    maxLength={200}
+                  />
+                </div>
+              )}
             </div>
             <div>
               <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Come pensi di guadagnarci?</label>
