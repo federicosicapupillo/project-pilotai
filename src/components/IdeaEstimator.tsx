@@ -668,61 +668,6 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       {/* Difficulty bar */}
       <DifficultyBar level={result.difficulty} />
 
-      {/* Budget */}
-      <Block icon={Euro} title="Budget operativo">
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div className="rounded-xl p-3 border border-border/60 bg-background/40">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Budget inserito</div>
-            <div className="mt-1 font-display font-semibold text-base">
-              {hasBudget ? budget : "Non indicato"}
-            </div>
-          </div>
-          <div className="rounded-xl p-3 border border-primary/40 bg-primary/10">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Budget consigliato per partire</div>
-            <div className="mt-1 font-display font-semibold text-base gradient-text">{rec.label}</div>
-          </div>
-        </div>
-        {fit && (
-          <div className="mt-3">
-            <BudgetFitBadge fit={fit} />
-          </div>
-        )}
-        <p className="text-xs text-muted-foreground mt-2">{budgetMsg}</p>
-      </Block>
-
-      {/* Costi iniziali */}
-      <Block icon={Wallet} title="Costo per creare la prima versione">
-        <div className="grid sm:grid-cols-2 gap-3">
-          <CostBox
-            label="Costo minimo per partire"
-            value={`${fmt(result.costMinLow)} – ${fmt(result.costMinHigh)}`}
-          />
-          <CostBox
-            label="Budget consigliato"
-            value={`${fmt(result.costRecLow)} – ${fmt(result.costRecHigh)}`}
-            highlight
-          />
-        </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Il costo minimo serve per validare l'idea con una versione molto semplice. Il budget consigliato permette di costruire una prima versione più solida, con meno compromessi.
-        </p>
-
-        <div className="mt-4 grid sm:grid-cols-2 gap-3">
-          <CostBox
-            label="Con metodo AI/no-code essenziale"
-            value={`${fmt(result.costMinLow)} – ${fmt(result.costRecHigh)}`}
-            highlight
-          />
-          <CostBox
-            label="Con sviluppo tradizionale"
-            value={`${fmt(result.costAgencyLow)} – ${fmt(result.costAgencyHigh)}`}
-          />
-        </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Il metodo AI/no-code può ridurre molto il costo iniziale perché usa strumenti già pronti, agenti AI e costruzione guidata. Non elimina però strategia, test, manutenzione e miglioramenti.
-        </p>
-      </Block>
-
       {/* Costi mensili */}
       <Block icon={Repeat} title="Costi mensili degli strumenti">
         <div className="grid sm:grid-cols-2 gap-3">
