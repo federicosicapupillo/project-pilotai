@@ -8,6 +8,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ArrowLeft, BookOpen, Save } from "lucide-react";
 
+function Field({ label, hint, value, onChange, lines = false, rows = 3 }: { label: string; hint?: string; value: string; onChange: (v: string) => void; lines?: boolean; rows?: number }) {
+  return (
+    <div className="glass-card rounded-xl p-5">
+      <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">{label}</div>
+      {hint && <p className="text-xs text-muted-foreground mb-2">{hint}</p>}
+      <Textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows} placeholder={lines ? "Una voce per riga" : undefined} />
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/_authenticated/workbook/$projectId")({
   head: () => ({ meta: [{ title: "Workbook progetto — Da Idea ad App" }] }),
   component: WorkbookPage,
