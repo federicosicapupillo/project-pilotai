@@ -3,6 +3,7 @@ import { generateText } from "ai";
 import { z } from "zod";
 
 const InputSchema = z.object({
+  budget: z.string().max(60).optional().default(""),
   sector: z.string().max(100).optional().default(""),
   appType: z.string().max(100).optional().default(""),
   complexity: z.string().max(40).optional().default(""),
@@ -31,10 +32,13 @@ const IdeaSchema = z.object({
   why_interesting: textField,
   mvp: textField,
   essential_features: stringList,
+  do_not_build_yet: stringList,
   hours_estimate: textField,
   difficulty: textField,
   initial_cost: textField,
   monthly_cost: textField,
+  budget_fit: textField,
+  budget_note: textField,
   potential: textField,
   revenue_model: textField,
   tools: stringList,
@@ -62,9 +66,26 @@ const FALLBACK_TOOLS = ["ChatGPT", "Lovable", "Supabase", "Perplexity", "Stripe"
 const FALLBACK_AGENTS = ["Agente Stratega", "Agente Product Manager", "Agente Prompt Engineer"];
 
 function buildPrompt(d: z.infer<typeof InputSchema>) {
-  return `Genera ESATTAMENTE 3 idee di app personalizzate per questo utente.
+  return `Genera ESATTAMENTE 3 idee di app personalizzate per questo utente, COERENTI con il suo budget operativo.
+
+IMPORTANTE — Budget: ${d.budget || "non specificato"}
+Il budget indicato NON include il costo del corso. È solo budget operativo per costruire, testare e lanciare la prima versione funzionante (strumenti, dominio, database, API, contenuti, lancio).
+
+Regole budget (rispettale rigorosamente):
+- 0€–100€: solo landing page, form raccolta contatti, mini dashboard manuale, strumenti interni semplici, validazione idea senza backend complesso. EVITA marketplace, chat, pagamenti, AI avanzata, notifiche SMS, app multiutente complesse.
+- 100€–300€: landing con form, dashboard base, archivio dati semplice, mini CRM, tool interno, prototipo con login semplice.
+- 300€–700€: CRM verticale, gestionale semplice, dashboard con database, area riservata, raccolta richieste, workflow guidato.
+- 700€–1.500€: marketplace leggero, app con ruoli utenti, database strutturato, dashboard amministrativa, integrazioni semplici, primo sistema di pagamento se davvero necessario.
+- 1.500€–3.000€: app con login/ruoli/dashboard/pagamenti, CRM avanzato, marketplace prima versione, app B2B verticale, integrazioni Stripe/Twilio/API esterne se necessarie.
+- 3.000€+: marketplace verticale, SaaS B2B, app con AI, automazioni, notifiche, pagamenti, pannello admin avanzato.
+- "Non lo so ancora" o vuoto: assumi 300€–700€.
+
+Se un'idea è naturalmente più ambiziosa del budget, NON eliminarla: proponi una versione SEMPLIFICATA compatibile (es. "Con questo budget meglio iniziare con landing + raccolta richieste + dashboard manuale, non marketplace completo").
+
+Non promettere guadagni garantiti, idee originali garantite, business automatico.
 
 Dati utente:
+- Budget operativo: ${d.budget || "non specificato"}
 - Settore: ${d.sector || "non specificato"}
 - Tipo app desiderata: ${d.appType || "non specificato"}
 - Livello complessità: ${d.complexity || "non specificato"}
@@ -79,10 +100,13 @@ Per ogni idea restituisci nello schema JSON:
 - why_interesting: perché potrebbe essere interessante (1 frase)
 - mvp: prima versione funzionante (cosa contiene il primo rilascio)
 - essential_features: 4-6 funzioni essenziali
+- do_not_build_yet: 3-5 cose da NON costruire subito per restare nel budget
 - hours_estimate: stima in ore (es. "40-80 ore")
 - difficulty: "Semplice" | "Media" | "Avanzata" | "Complessa"
 - initial_cost: costo indicativo iniziale con metodo AI/no-code (es. "500€-2.000€")
 - monthly_cost: costi mensili possibili (es. "50€-250€/mese")
+- budget_fit: ESATTAMENTE uno tra "Dentro il budget" | "Al limite del budget" | "Fuori budget, da semplificare"
+- budget_note: 1 frase che spiega la scelta e, se fuori budget, come semplificare
 - potential: potenziale economico indicativo (es. "Medio/alto se validato su nicchia locale")
 - revenue_model: modello di ricavo consigliato (1-2 ipotesi)
 - tools: 3-6 strumenti consigliati tra: ChatGPT, Lovable, Supabase, Perplexity, Antigravity, GitHub, Stripe, Twilio, Canva, ElevenLabs, Runway
@@ -120,10 +144,13 @@ function fallbackIdeas(d: z.infer<typeof InputSchema>): GeneratedIdea[] {
       why_interesting: `È adatta a partire piccolo e misurare subito l'interesse del mercato.` ,
       mvp: "Landing, form raccolta richieste, dashboard semplice, generazione AI di bozze e archivio contatti.",
       essential_features: ["Raccolta richieste", "Dashboard contatti", "Generazione testi AI", "Stato opportunità", "Report base"],
+      do_not_build_yet: ["Pagamenti online", "App mobile nativa", "Sistema multi-ruolo complesso", "Notifiche push avanzate"],
       hours_estimate: "35-70 ore",
       difficulty: "Media",
       initial_cost: "500€-2.000€",
       monthly_cost: "50€-250€/mese",
+      budget_fit: "Dentro il budget",
+      budget_note: "Versione semplificata pensata per restare nei costi operativi tipici di un MVP AI/no-code.",
       potential: "Medio se validato su una nicchia concreta",
       revenue_model: "Abbonamento mensile o setup iniziale + canone",
       tools: FALLBACK_TOOLS,
@@ -139,10 +166,13 @@ function fallbackIdeas(d: z.infer<typeof InputSchema>): GeneratedIdea[] {
       why_interesting: "Riduce sprechi di tempo e rende il lancio più ordinato.",
       mvp: "Questionario guidato, generatore di landing, lista esperimenti e dashboard risultati.",
       essential_features: ["Questionario idea", "Generazione proposta", "Esperimenti suggeriti", "Metriche base", "Export report"],
+      do_not_build_yet: ["Community interna", "Pagamenti ricorrenti complessi", "Integrazioni avanzate", "Mobile app"],
       hours_estimate: "45-90 ore",
       difficulty: "Media",
       initial_cost: "700€-2.500€",
       monthly_cost: "80€-300€/mese",
+      budget_fit: "Al limite del budget",
+      budget_note: "Se il budget è basso, partire solo con questionario + landing manuale, senza dashboard avanzata.",
       potential: "Buono se venduto come tool + servizio guidato",
       revenue_model: "Licenza mensile, pacchetto premium o consulenza abbinata",
       tools: ["ChatGPT", "Lovable", "Supabase", "Canva", "Stripe"],
@@ -158,10 +188,13 @@ function fallbackIdeas(d: z.infer<typeof InputSchema>): GeneratedIdea[] {
       why_interesting: "Ha valore immediato perché fa risparmiare tempo in un processo reale.",
       mvp: "Login, database attività, automazioni base, notifiche e vista avanzamento.",
       essential_features: ["Login", "Gestione attività", "Automazioni base", "Notifiche", "Vista calendario"],
+      do_not_build_yet: ["Pannello admin avanzato", "Multi-tenant", "Integrazioni custom", "Reportistica BI"],
       hours_estimate: "50-100 ore",
       difficulty: "Avanzata",
       initial_cost: "1.000€-3.500€",
       monthly_cost: "100€-400€/mese",
+      budget_fit: "Fuori budget, da semplificare",
+      budget_note: "Con budget contenuto meglio partire da un solo processo automatizzato, senza ruoli e notifiche SMS.",
       potential: "Medio/alto se collegato a un problema costoso per aziende",
       revenue_model: "Setup B2B + canone mensile",
       tools: ["Lovable", "Supabase", "ChatGPT", "GitHub", "Twilio"],
@@ -186,10 +219,13 @@ function normalizeIdeas(value: unknown, data: z.infer<typeof InputSchema>) {
     why_interesting: idea.why_interesting || "Può partire come MVP leggero e crescere dopo la validazione.",
     mvp: idea.mvp || "Landing, flusso principale, database e dashboard base.",
     essential_features: idea.essential_features.length ? idea.essential_features : ["Landing", "Form", "Dashboard", "Database", "Report base"],
+    do_not_build_yet: idea.do_not_build_yet.length ? idea.do_not_build_yet : ["Funzioni avanzate", "Integrazioni complesse", "App mobile nativa"],
     hours_estimate: idea.hours_estimate || "40-80 ore",
     difficulty: idea.difficulty || "Media",
     initial_cost: idea.initial_cost || "500€-2.000€",
     monthly_cost: idea.monthly_cost || "50€-250€/mese",
+    budget_fit: idea.budget_fit || "Al limite del budget",
+    budget_note: idea.budget_note || "Stima indicativa: adatta scope e strumenti al budget reale.",
     potential: idea.potential || "Medio se validata su una nicchia concreta",
     revenue_model: idea.revenue_model || "Abbonamento, setup o vendita una tantum",
     tools: idea.tools.length ? idea.tools : FALLBACK_TOOLS,
