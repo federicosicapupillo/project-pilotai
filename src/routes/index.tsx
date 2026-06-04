@@ -3,9 +3,11 @@ import { Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { IdeaEstimator } from "@/components/IdeaEstimator";
+import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
 import {
   Sparkles, ArrowRight, Users, Wand2, ListChecks, BookOpen,
   Lightbulb, Rocket, Target, ShieldCheck, Layers, Zap, PenLine, FileText, Hammer,
+  Boxes, TrendingDown, GraduationCap, Recycle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
