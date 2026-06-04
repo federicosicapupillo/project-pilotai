@@ -9,7 +9,7 @@ import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitB
 import {
   ArrowRight, Sparkles, Clock, Activity, Layers, Users, AlertCircle,
   Lightbulb, Wrench, Bot, ListChecks, Info, Loader2,
-  Monitor, Plug, Wand2,
+  Monitor, Plug, Wand2, TrendingUp,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import {
@@ -246,6 +246,33 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
                 </p>
               </Section>
             </div>
+
+            {/* Potenziale massimo stimato */}
+            {summary.max_revenue && (
+              <section
+                className="relative rounded-2xl p-6 sm:p-8 overflow-hidden border border-primary/40"
+                style={{
+                  background:
+                    "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+                  boxShadow:
+                    "0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 10px 40px -10px color-mix(in oklab, var(--primary) 35%, transparent)",
+                }}
+              >
+                <div
+                  className="absolute -top-16 -right-12 size-40 rounded-full bg-primary/20 blur-3xl pointer-events-none"
+                  aria-hidden
+                />
+                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+                  <TrendingUp className="size-3.5 text-primary" /> Potenziale massimo stimato
+                </div>
+                <div className="font-display font-semibold text-3xl sm:text-4xl gradient-text leading-tight">
+                  {summary.max_revenue}
+                </div>
+                <p className="text-xs text-muted-foreground mt-3 max-w-xl">
+                  Stima indicativa basata su una prima versione funzionante, target corretto e primi clienti paganti.
+                </p>
+              </section>
+            )}
 
             {/* 11 — Cosa farà il tuo agente AI */}
             <Section icon={Bot} title="Cosa farà il tuo agente AI">
