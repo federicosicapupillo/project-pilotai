@@ -5,6 +5,7 @@ import { Check, ArrowRight, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/tracking";
 import { useAuth } from "@/hooks/use-auth";
+import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
 
 export const Route = createFileRoute("/prezzi")({
   head: () => ({
@@ -228,6 +229,10 @@ function PrezziPage() {
           I pagamenti saranno gestiti tramite checkout sicuro. Nessun costo nascosto, puoi disdire in qualsiasi momento.
           Per ora l'acquisto è in configurazione: lascia la tua email registrandoti e ti avviseremo appena è attivo.
         </p>
+
+        <div className="max-w-4xl mx-auto mt-10">
+          <ReusableToolkitBox showExample />
+        </div>
 
         <div className="text-center mt-6">
           <Link to="/method" className="text-sm text-primary hover:underline">
