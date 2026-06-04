@@ -8,15 +8,15 @@ import { ToolIcon } from "@/components/ToolIcon";
 import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
 import {
   ArrowRight, Sparkles, Clock, Activity, Layers, Users, AlertCircle,
-  Lightbulb, Target, Wrench, Bot, TrendingUp, Wallet, ListChecks, XCircle, Info, Loader2,
+  Lightbulb, Wrench, Bot, ListChecks, Info, Loader2,
   Monitor, Plug, Wand2,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import {
-  classify, getBudget, fmt, loadIdeaParams,
+  classify, loadIdeaParams,
   type Estimate, type IdeaParams,
 } from "@/lib/idea-estimate";
-import { generateIdeaSummary, type IdeaSummary } from "@/lib/idea-summary.functions";
+import { generateIdeaSummary } from "@/lib/idea-summary.functions";
 
 export const Route = createFileRoute("/riepilogo-idea")({
   head: () => ({
