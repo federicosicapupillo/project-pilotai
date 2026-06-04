@@ -21,8 +21,7 @@ const STEPS: Step[] = [
     desc: "Dai forma all'idea iniziale e scrivila in modo chiaro.",
     microcopy: "Usa ChatGPT e Claude per trasformare l'idea grezza in una prima descrizione chiara.",
     icon: Lightbulb,
-    accent: "from-amber-400/25 to-amber-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(251,191,36,0.45)]",
+    color: "#FBBF24",
     tools: [
       { name: "ChatGPT", role: "principale" },
       { name: "Claude", role: "supporto" },
@@ -33,8 +32,7 @@ const STEPS: Step[] = [
     desc: "Capisci se l'idea ha senso, chi la usa e se esistono alternative.",
     microcopy: "Usa Perplexity per fare ricerca, poi ChatGPT e Claude per organizzare e validare le informazioni.",
     icon: Search,
-    accent: "from-cyan-400/25 to-cyan-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(34,211,238,0.45)]",
+    color: "#A78BFA",
     tools: [
       { name: "Perplexity", role: "principale" },
       { name: "ChatGPT", role: "supporto" },
@@ -46,8 +44,7 @@ const STEPS: Step[] = [
     desc: "Salva decisioni, prompt, bug, roadmap e appunti del progetto.",
     microcopy: "Usa Obsidian per salvare tutto ciò che decidi e non perdere il filo del progetto.",
     icon: Brain,
-    accent: "from-violet-400/25 to-violet-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(167,139,250,0.5)]",
+    color: "#C084FC",
     tools: [
       { name: "Obsidian", role: "principale" },
       { name: "Notion", role: "opzionale" },
@@ -58,8 +55,7 @@ const STEPS: Step[] = [
     desc: "Crea la prima versione funzionante della tua app.",
     microcopy: "Usa Lovable per costruire la prima versione della tua app e ChatGPT per scrivere prompt più efficaci.",
     icon: Code2,
-    accent: "from-pink-400/25 to-pink-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(244,114,182,0.5)]",
+    color: "#60A5FA",
     tools: [
       { name: "Lovable", role: "principale" },
       { name: "ChatGPT", role: "supporto" },
@@ -70,8 +66,7 @@ const STEPS: Step[] = [
     desc: "Salva, traccia e gestisci le versioni del progetto.",
     microcopy: "Usa GitHub per salvare il progetto e GitHub Desktop per gestire le modifiche in modo più semplice.",
     icon: GitBranch,
-    accent: "from-slate-300/20 to-slate-400/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(203,213,225,0.4)]",
+    color: "#A78BFA",
     tools: [
       { name: "GitHub", role: "principale" },
       { name: "GitHub Desktop", role: "supporto" },
@@ -82,8 +77,7 @@ const STEPS: Step[] = [
     desc: "Gestisci database, login, dati e struttura tecnica.",
     microcopy: "Usa Supabase per dati e utenti, Lovable per collegarlo all'app, Antigravity solo se serve analisi tecnica.",
     icon: Database,
-    accent: "from-emerald-400/25 to-emerald-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(52,211,153,0.45)]",
+    color: "#34D399",
     tools: [
       { name: "Supabase", role: "principale" },
       { name: "Lovable", role: "supporto" },
@@ -95,8 +89,7 @@ const STEPS: Step[] = [
     desc: "Controlla bug, logica e flussi utente.",
     microcopy: "Usa Antigravity per il debug, ChatGPT per chiarire i problemi e GitHub Desktop per gestire le correzioni.",
     icon: ShieldCheck,
-    accent: "from-sky-400/25 to-sky-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(56,189,248,0.45)]",
+    color: "#A78BFA",
     tools: [
       { name: "Antigravity", role: "principale" },
       { name: "ChatGPT", role: "supporto" },
@@ -108,8 +101,7 @@ const STEPS: Step[] = [
     desc: "Crea immagini, demo, video e contenuti di presentazione.",
     microcopy: "Usa questi strumenti per presentare meglio la tua app con immagini, video, voce e demo.",
     icon: ImageIcon,
-    accent: "from-fuchsia-400/25 to-fuchsia-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(232,121,249,0.5)]",
+    color: "#F472B6",
     tools: [
       { name: "Midjourney", role: "principale" },
       { name: "Runway", role: "principale" },
@@ -124,8 +116,7 @@ const STEPS: Step[] = [
     desc: "Prepara il prodotto per essere usato, venduto o testato.",
     microcopy: "Usa Stripe e Twilio solo se il prodotto ne ha davvero bisogno. Usa Canva e ChatGPT per presentare e lanciare il progetto.",
     icon: Rocket,
-    accent: "from-indigo-400/25 to-indigo-500/5",
-    ring: "shadow-[0_0_40px_-10px_rgba(129,140,248,0.5)]",
+    color: "#FB923C",
     tools: [
       { name: "Stripe", role: "opzionale" },
       { name: "Twilio", role: "opzionale" },
@@ -179,62 +170,74 @@ export function OperativeCircuit({ compact = false }: { compact?: boolean }) {
 
       {/* TIMELINE */}
       <div className="relative">
-        <div className="flex items-stretch gap-3 overflow-x-auto pb-3 snap-x snap-mandatory -mx-1 px-1 scrollbar-thin">
+        <div className="flex items-stretch gap-0 overflow-x-auto pb-3 snap-x snap-mandatory -mx-1 px-1 scrollbar-thin">
           {STEPS.map((s, i) => {
             const isActive = active === i;
             const Icon = s.icon;
             return (
-              <div key={s.label} className="flex items-center gap-2 shrink-0 snap-start">
+              <div key={s.label} className="flex items-stretch shrink-0 snap-start">
                 <button
                   type="button"
                   onClick={() => setActive(isActive ? null : i)}
-                  className={`group relative text-left rounded-2xl border bg-gradient-to-b from-white/[0.06] to-white/[0.02] backdrop-blur-md p-4 w-[220px] transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 ${
-                    isActive
-                      ? `border-primary/60 ${s.ring}`
-                      : "border-white/10 hover:shadow-[0_0_30px_-10px_rgba(99,102,241,0.4)]"
+                  className={`group relative text-center rounded-2xl border bg-gradient-to-b from-white/[0.06] to-white/[0.02] backdrop-blur-md p-5 w-[190px] flex flex-col transition-all duration-300 hover:-translate-y-1 ${
+                    isActive ? "border-white/40" : "border-white/10"
                   }`}
+                  style={{
+                    boxShadow: isActive
+                      ? `0 0 40px -8px ${s.color}55, inset 0 0 0 1px ${s.color}33`
+                      : undefined,
+                  }}
                 >
-                  {/* accent gradient halo */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${s.accent} opacity-60 pointer-events-none`} />
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-[0.22em]"
+                    style={{ color: s.color }}
+                  >
+                    Step {i + 1}
+                  </span>
 
-                  <div className="relative">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                        Step {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <div className="size-9 rounded-xl border border-white/10 bg-white/5 grid place-items-center group-hover:border-primary/40 group-hover:bg-primary/10 transition-colors">
-                        <Icon className="size-4 text-foreground/90" />
-                      </div>
-                    </div>
-                    <div className="font-display font-semibold text-base mt-3">{s.label}</div>
-                    {!compact && (
-                      <>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 min-h-[2rem]">
-                          {s.desc}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-1 mt-3">
-                          {s.tools.slice(0, 4).map((t) => (
-                            <span
-                              key={t.name}
-                              className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] backdrop-blur ${ROLE_STYLE[t.role]}`}
-                              title={`${t.name} · ${ROLE_LABEL[t.role]}`}
-                            >
-                              <ToolIcon name={t.name} size={11} />
-                              <span className="font-medium truncate max-w-[70px]">{t.name}</span>
-                            </span>
-                          ))}
-                          {s.tools.length > 4 && (
-                            <span className="text-[10px] text-muted-foreground px-1">+{s.tools.length - 4}</span>
-                          )}
-                        </div>
-                      </>
-                    )}
+                  <div className="mt-3 mx-auto grid place-items-center size-14 rounded-2xl border transition-transform duration-300 group-hover:scale-105"
+                    style={{
+                      background: `linear-gradient(180deg, ${s.color}1f, ${s.color}08)`,
+                      borderColor: `${s.color}40`,
+                      boxShadow: `0 0 22px -6px ${s.color}66`,
+                    }}
+                  >
+                    <Icon className="size-7" style={{ color: s.color }} strokeWidth={1.75} />
                   </div>
+
+                  <div className="font-display font-semibold text-lg mt-3">{s.label}</div>
+
+                  {!compact && (
+                    <>
+                      <p className="text-[11px] leading-relaxed text-muted-foreground mt-2 min-h-[3.75rem]">
+                        {s.desc}
+                      </p>
+
+                      <div className="mt-4 pt-3 border-t border-white/5 flex flex-col gap-1.5">
+                        {s.tools.slice(0, 4).map((t) => (
+                          <span
+                            key={t.name}
+                            className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-[11px] ${ROLE_STYLE[t.role]}`}
+                            title={`${t.name} · ${ROLE_LABEL[t.role]}`}
+                          >
+                            <ToolIcon name={t.name} size={13} />
+                            <span className="font-medium truncate text-left flex-1">{t.name}</span>
+                          </span>
+                        ))}
+                        {s.tools.length > 4 && (
+                          <span className="text-[10px] text-muted-foreground text-left">
+                            +{s.tools.length - 4} altri
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </button>
                 {i < STEPS.length - 1 && (
-                  <div className="flex items-center shrink-0">
-                    <div className="h-px w-3 bg-gradient-to-r from-white/30 to-white/5" />
-                    <ArrowRight className="size-3.5 text-white/40 -ml-0.5" />
+                  <div className="flex items-center justify-center shrink-0 px-2">
+                    <div className="size-7 rounded-full border border-white/15 bg-white/5 grid place-items-center backdrop-blur">
+                      <ArrowRight className="size-3.5 text-primary/80" />
+                    </div>
                   </div>
                 )}
               </div>
