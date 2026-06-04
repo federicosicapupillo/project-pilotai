@@ -232,6 +232,16 @@ export function IdeaGenerator({
             </div>
           )}
 
+          {step === "form" && usePreset && error && (
+            <div className="py-10 flex flex-col items-center text-center gap-3">
+              <AlertTriangle className="size-8 text-destructive" />
+              <p className="text-sm text-destructive">{error}</p>
+              <Button variant="hero" onClick={onSubmit}>
+                <Wand2 className="size-4" /> Riprova
+              </Button>
+            </div>
+          )}
+
           {step === "results" && (
             <div className="space-y-4 mt-2">
               <div className="grid gap-3">
