@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { GraduationCap, ArrowRight, CheckCircle2, Circle, PlayCircle } from "lucide-react";
+import { OperativeCircuit } from "@/components/OperativeCircuit";
 
 export const Route = createFileRoute("/_authenticated/academy")({
   head: () => ({ meta: [{ title: "Academy — Da Idea ad App" }] }),
@@ -46,8 +47,8 @@ function AcademyPage() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-display font-semibold">Il tuo percorso passo passo</h1>
           <p className="text-muted-foreground mt-2 max-w-2xl">
-            10 moduli pratici per portarti dall'idea alla prima app reale. Ogni lezione ha agente consigliato,
-            tool da aprire, prompt pronto e un esercizio da completare.
+            {data?.modules.length ?? 12} moduli pratici per portarti dall'idea alla prima app reale. Ogni lezione ti dice cosa fare,
+            quale agente usare, quale tool aprire, quale prompt copiare e quando passare allo step successivo.
           </p>
         </div>
         {nextLesson && (
@@ -68,6 +69,10 @@ function AcademyPage() {
           <div className="text-3xl font-display font-semibold gradient-text">{overallPct}%</div>
         </div>
         <Progress value={overallPct} />
+      </div>
+
+      <div className="mb-8">
+        <OperativeCircuit />
       </div>
 
       {isLoading && <div className="text-muted-foreground">Caricamento…</div>}

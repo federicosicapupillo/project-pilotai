@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Target, Sparkles, CheckCircle2, Circle, Bot, Wrench } from "lucide-react";
+import { ToolBadge } from "@/components/ToolBadge";
 
 export const Route = createFileRoute("/_authenticated/academy/modules/$id")({
   head: () => ({ meta: [{ title: "Modulo — Academy" }] }),
@@ -84,7 +85,7 @@ function ModulePage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {[...toolSet].map((t) => (
-              <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-secondary/60 text-foreground">{t}</span>
+              <ToolBadge key={t} name={t} size="sm" />
             ))}
           </div>
         </div>

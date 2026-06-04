@@ -20,10 +20,12 @@ export type Database = {
           course_phase: string | null
           created_at: string
           expected_output: string | null
+          icon: string | null
           id: string
           name: string
           recommended_tools: Json | null
           role: string | null
+          sort_order: number | null
           updated_at: string
           when_to_use: string | null
         }
@@ -32,10 +34,12 @@ export type Database = {
           course_phase?: string | null
           created_at?: string
           expected_output?: string | null
+          icon?: string | null
           id?: string
           name: string
           recommended_tools?: Json | null
           role?: string | null
+          sort_order?: number | null
           updated_at?: string
           when_to_use?: string | null
         }
@@ -44,10 +48,12 @@ export type Database = {
           course_phase?: string | null
           created_at?: string
           expected_output?: string | null
+          icon?: string | null
           id?: string
           name?: string
           recommended_tools?: Json | null
           role?: string | null
+          sort_order?: number | null
           updated_at?: string
           when_to_use?: string | null
         }
@@ -263,55 +269,73 @@ export type Database = {
       project_workbook: {
         Row: {
           agents_used: Json | null
+          best_prompts: Json | null
           bugs_found: Json | null
           created_at: string
           data_to_save: Json | null
+          decisions: Json | null
+          errors_solved: Json | null
           id: string
           idea: string | null
           mvp: string | null
+          next_agent: string | null
           next_steps: Json | null
+          next_tool: string | null
           problem: string | null
           project_id: string
           prompts_used: Json | null
           screens: Json | null
           solution: string | null
           target: string | null
+          tools_used: Json | null
           updated_at: string
           user_id: string
         }
         Insert: {
           agents_used?: Json | null
+          best_prompts?: Json | null
           bugs_found?: Json | null
           created_at?: string
           data_to_save?: Json | null
+          decisions?: Json | null
+          errors_solved?: Json | null
           id?: string
           idea?: string | null
           mvp?: string | null
+          next_agent?: string | null
           next_steps?: Json | null
+          next_tool?: string | null
           problem?: string | null
           project_id: string
           prompts_used?: Json | null
           screens?: Json | null
           solution?: string | null
           target?: string | null
+          tools_used?: Json | null
           updated_at?: string
           user_id: string
         }
         Update: {
           agents_used?: Json | null
+          best_prompts?: Json | null
           bugs_found?: Json | null
           created_at?: string
           data_to_save?: Json | null
+          decisions?: Json | null
+          errors_solved?: Json | null
           id?: string
           idea?: string | null
           mvp?: string | null
+          next_agent?: string | null
           next_steps?: Json | null
+          next_tool?: string | null
           problem?: string | null
           project_id?: string
           prompts_used?: Json | null
           screens?: Json | null
           solution?: string | null
           target?: string | null
+          tools_used?: Json | null
           updated_at?: string
           user_id?: string
         }
@@ -454,37 +478,61 @@ export type Database = {
       }
       tool_library: {
         Row: {
+          category: string | null
           course_phase: string | null
           created_at: string
           description: string | null
           difficulty_level: string | null
           example_use: string | null
+          icon_color: string | null
+          icon_slug: string | null
           id: string
+          level: string | null
           name: string
+          pairs_with_agents: Json | null
+          phase_note: string | null
+          requirement: string | null
+          sort_order: number | null
           updated_at: string
           url: string | null
           use_case: string | null
         }
         Insert: {
+          category?: string | null
           course_phase?: string | null
           created_at?: string
           description?: string | null
           difficulty_level?: string | null
           example_use?: string | null
+          icon_color?: string | null
+          icon_slug?: string | null
           id?: string
+          level?: string | null
           name: string
+          pairs_with_agents?: Json | null
+          phase_note?: string | null
+          requirement?: string | null
+          sort_order?: number | null
           updated_at?: string
           url?: string | null
           use_case?: string | null
         }
         Update: {
+          category?: string | null
           course_phase?: string | null
           created_at?: string
           description?: string | null
           difficulty_level?: string | null
           example_use?: string | null
+          icon_color?: string | null
+          icon_slug?: string | null
           id?: string
+          level?: string | null
           name?: string
+          pairs_with_agents?: Json | null
+          phase_note?: string | null
+          requirement?: string | null
+          sort_order?: number | null
           updated_at?: string
           url?: string | null
           use_case?: string | null
