@@ -889,6 +889,37 @@ function CostBox({ label, value, highlight }: { label: string; value: string; hi
   );
 }
 
+function ScenarioBox({
+  tone, label, customers, price, revenue,
+}: {
+  tone: "prudent" | "realistic" | "ambitious";
+  label: string;
+  customers: number;
+  price: number;
+  revenue: number;
+}) {
+  const cls =
+    tone === "ambitious"
+      ? "border-primary/45 bg-primary/10"
+      : tone === "realistic"
+      ? "border-emerald-500/30 bg-emerald-500/[0.06]"
+      : "border-border/60 bg-background/40";
+  const valueCls =
+    tone === "ambitious" ? "gradient-text" :
+    tone === "realistic" ? "text-emerald-300" : "text-foreground";
+  return (
+    <div className={`rounded-xl p-3 border ${cls}`}>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className={`mt-1 font-display font-semibold text-lg ${valueCls}`}>
+        {fmt(revenue)}/mese
+      </div>
+      <div className="text-[11px] text-muted-foreground mt-1">
+        {customers} clienti × {price}€
+      </div>
+    </div>
+  );
+}
+
 function DifficultyBar({ level }: { level: Difficulty }) {
   const levels: Difficulty[] = ["Semplice", "Media", "Avanzata", "Complessa"];
   const idx = levels.indexOf(level);
