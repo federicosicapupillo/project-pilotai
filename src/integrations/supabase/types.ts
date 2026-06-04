@@ -277,6 +277,7 @@ export type Database = {
           errors_solved: Json | null
           id: string
           idea: string | null
+          launch_materials: Json | null
           mvp: string | null
           next_agent: string | null
           next_steps: Json | null
@@ -301,6 +302,7 @@ export type Database = {
           errors_solved?: Json | null
           id?: string
           idea?: string | null
+          launch_materials?: Json | null
           mvp?: string | null
           next_agent?: string | null
           next_steps?: Json | null
@@ -325,6 +327,7 @@ export type Database = {
           errors_solved?: Json | null
           id?: string
           idea?: string | null
+          launch_materials?: Json | null
           mvp?: string | null
           next_agent?: string | null
           next_steps?: Json | null
