@@ -232,6 +232,41 @@ function classify(
   const potentialLabel: "Basso" | "Medio" | "Alto" =
     potentialHigh >= 4000 ? "Alto" : potentialHigh >= 1500 ? "Medio" : "Basso";
 
+  // === Costi: minimo per partire vs consigliato per prima versione solida ===
+  const costMinLow  = Math.max(50,  Math.round(costAiLow * 0.5));
+  const costMinHigh = Math.max(150, Math.round(costAiLow * 1.0));
+  const costRecLow  = costAiLow;
+  const costRecHigh = costAiHigh;
+
+  // === Costi mensili: essenziale vs stack completo ===
+  const monthlyEssLow  = Math.max(15, Math.round(monthlyLow * 0.5));
+  const monthlyEssHigh = Math.max(40, Math.round(monthlyHigh * 0.45));
+  const monthlyFullLow  = monthlyLow;
+  const monthlyFullHigh = monthlyHigh;
+
+  // === Scenari economici (prudente / realistico / ambizioso) ===
+  // Prezzi di riferimento dalla price band scelta
+  let p1 = 29, p2 = 49, p3 = 97;
+  if (price === "9€–29€") { p1 = 19; p2 = 29; p3 = 39; }
+  else if (price === "49€–97€") { p1 = 39; p2 = 59; p3 = 97; }
+  else if (price === "197€–497€") { p1 = 97; p2 = 197; p3 = 297; }
+  else if (price === "500€+") { p1 = 197; p2 = 297; p3 = 497; }
+  else if (price === "Abbonamento mensile") { p1 = 19; p2 = 29; p3 = 49; }
+
+  // Numero clienti tipico per tipologia di progetto
+  let c1 = 10, c2 = 50, c3 = 150;
+  if (projectType === "Marketplace") { c1 = 20; c2 = 100; c3 = 400; }
+  else if (projectType === "App con AI") { c1 = 15; c2 = 70; c3 = 250; }
+  else if (projectType === "Landing page") { c1 = 5; c2 = 25; c3 = 80; }
+  else if (projectType === "App interna") { c1 = 1; c2 = 3; c3 = 8; }
+  else if (projectType === "CRM" || projectType === "Gestionale" || projectType === "Dashboard") { c1 = 8; c2 = 30; c3 = 100; }
+
+  const scenarios = {
+    prudent:   { customers: c1, price: p1, revenue: c1 * p1 },
+    realistic: { customers: c2, price: p2, revenue: c2 * p2 },
+    ambitious: { customers: c3, price: p3, revenue: c3 * p3 },
+  };
+
   // Revenue model hypotheses
   const revenueIdeas: string[] = [];
   if (revenue !== "Non lo so ancora" && revenue !== "Altro") revenueIdeas.push(revenue);
@@ -254,6 +289,9 @@ function classify(
     potentialLow, potentialHigh, potentialLabel,
     revenueIdeas: Array.from(new Set(revenueIdeas)).slice(0, 3),
     signals,
+    costMinLow, costMinHigh, costRecLow, costRecHigh,
+    monthlyEssLow, monthlyEssHigh, monthlyFullLow, monthlyFullHigh,
+    scenarios,
   };
 }
 
