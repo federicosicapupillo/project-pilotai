@@ -10,6 +10,7 @@ import {
   ArrowLeft, ArrowRight, Target, Bot, Wrench, ClipboardCopy, ListChecks,
   PlayCircle, CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle,
 } from "lucide-react";
+import { ToolBadge } from "@/components/ToolBadge";
 
 export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
   head: () => ({ meta: [{ title: "Lezione — Academy" }] }),
@@ -249,9 +250,14 @@ function LessonPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {tools.map((t) => (
-              <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-secondary/60">{t}</span>
+              <ToolBadge key={t} name={t} size="sm" prefix="Usa" />
             ))}
           </div>
+          {lesson.recommended_agent && tools.length > 0 && (
+            <p className="text-xs text-muted-foreground mt-3">
+              <span className="text-foreground/80 font-medium">Perché questa combinazione:</span> {lesson.recommended_agent} ti guida nel ragionamento; i tool sopra sono dove eseguire concretamente il passo.
+            </p>
+          )}
         </div>
       </div>
 
