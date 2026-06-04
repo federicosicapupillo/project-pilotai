@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ArrowLeft, BookOpen, Save } from "lucide-react";
 
@@ -98,20 +97,6 @@ function WorkbookPage() {
     onSuccess: () => { toast.success("Workbook salvato"); qc.invalidateQueries({ queryKey: ["workbook", projectId] }); },
     onError: (e: Error) => toast.error(e.message),
   });
-
-  const Field = ({ label, hint, value, onChange, lines = false, rows = 3 }: { label: string; hint?: string; value: string; onChange: (v: string) => void; lines?: boolean; rows?: number }) => (
-    <div className="glass-card rounded-xl p-5">
-      <label className="block">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">{label}</div>
-        {hint && <p className="text-xs text-muted-foreground mb-2">{hint}</p>}
-        {lines ? (
-          <Textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows} placeholder="Una voce per riga" />
-        ) : (
-          <Textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows} />
-        )}
-      </label>
-    </div>
-  );
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
