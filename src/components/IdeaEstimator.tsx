@@ -441,9 +441,34 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   );
 }
 
-function ResultCard({ result, onRoadmap }: { result: Estimate; onRoadmap: () => void }) {
+function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: BudgetBand; onRoadmap: () => void }) {
   const breakEvenPrices = [29, 97, 297];
   const baseCost = Math.round((result.costAiLow + result.costAiHigh) / 2);
+
+  const inserted = getBudget(budget);
+  const rec = recommendedBudget(result.projectType, result.difficulty);
+  const hasBudget = !!inserted && budget !== "Non lo so ancora" && inserted.max > 0;
+  const fit: BudgetFit | null = hasBudget ? budgetFit(inserted!.max, rec) : null;
+
+  let budgetMsg = "Indica un budget per ricevere un confronto preciso con il budget consigliato.";
+  if (hasBudget) {
+    if (inserted!.max >= rec.max) {
+      budgetMsg = "Il budget permette di costruire una versione più solida, ma conviene comunque partire semplice.";
+    } else if (inserted!.max >= rec.min) {
+      budgetMsg = "Il budget è coerente con una prima versione funzionante del progetto.";
+    } else if (inserted!.max >= rec.min * 0.5) {
+      budgetMsg = "Il budget inserito potrebbe essere sufficiente per una versione molto semplificata. Per una prima versione più solida il budget consigliato è " + rec.label + ".";
+    } else {
+      budgetMsg = "Il budget inserito è basso rispetto alla complessità dell'idea. Puoi partire, ma conviene ridurre le funzioni iniziali.";
+    }
+  }
+
+  let consiglio = "Puoi costruire una prima versione funzionante con database, dashboard base e flusso utente principale.";
+  if (hasBudget && inserted!.max <= 300) {
+    consiglio = "Parti con una versione più semplice: landing + raccolta richieste + dashboard manuale. Evita subito login complessi, pagamenti, chat e notifiche.";
+  } else if (hasBudget && inserted!.max >= 1500) {
+    consiglio = "Puoi valutare una prima versione più completa con login, ruoli, dashboard, pagamenti o notifiche, solo se servono davvero.";
+  }
 
   return (
     <div
@@ -463,6 +488,28 @@ function ResultCard({ result, onRoadmap }: { result: Estimate; onRoadmap: () => 
 
       {/* Difficulty bar */}
       <DifficultyBar level={result.difficulty} />
+
+      {/* Budget */}
+      <Block icon={Euro} title="Budget operativo">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div className="rounded-xl p-3 border border-border/60 bg-background/40">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Budget inserito</div>
+            <div className="mt-1 font-display font-semibold text-base">
+              {hasBudget ? budget : "Non indicato"}
+            </div>
+          </div>
+          <div className="rounded-xl p-3 border border-primary/40 bg-primary/10">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Budget consigliato per partire</div>
+            <div className="mt-1 font-display font-semibold text-base gradient-text">{rec.label}</div>
+          </div>
+        </div>
+        {fit && (
+          <div className="mt-3">
+            <BudgetFitBadge fit={fit} />
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground mt-2">{budgetMsg}</p>
+      </Block>
 
       {/* Costi iniziali */}
       <Block icon={Wallet} title="Costo stimato per creare la prima versione">
