@@ -73,7 +73,7 @@ function Index() {
         </Section>
 
         {/* METODO */}
-        <Section title="Come funziona" eyebrow="Il metodo">
+        <Section title="Il metodo in dettaglio" eyebrow="Il metodo">
           <div className="grid md:grid-cols-3 gap-4">
             {[
               { icon: Lightbulb, title: "1. Descrivi l'idea", desc: "Rispondi a un form guidato: cosa fai, per chi, quale problema risolvi." },
