@@ -27,12 +27,16 @@ type Wb = {
   idea: string; target: string; problem: string; solution: string; mvp: string;
   screens: string; data_to_save: string; agents_used: string; prompts_used: string;
   bugs_found: string; next_steps: string;
+  tools_used: string; decisions: string; best_prompts: string; errors_solved: string;
+  next_tool: string; next_agent: string;
 };
 
 const empty: Wb = {
   idea: "", target: "", problem: "", solution: "", mvp: "",
   screens: "", data_to_save: "", agents_used: "", prompts_used: "",
   bugs_found: "", next_steps: "",
+  tools_used: "", decisions: "", best_prompts: "", errors_solved: "",
+  next_tool: "", next_agent: "",
 };
 
 function toLines(v: unknown): string {
@@ -74,6 +78,12 @@ function WorkbookPage() {
         prompts_used: toLines(data.wb.prompts_used),
         bugs_found: toLines(data.wb.bugs_found),
         next_steps: toLines(data.wb.next_steps),
+        tools_used: toLines(data.wb.tools_used),
+        decisions: toLines(data.wb.decisions),
+        best_prompts: toLines(data.wb.best_prompts),
+        errors_solved: toLines(data.wb.errors_solved),
+        next_tool: data.wb.next_tool ?? "",
+        next_agent: data.wb.next_agent ?? "",
       });
     } else if (data.project) {
       setForm({
@@ -100,6 +110,12 @@ function WorkbookPage() {
         prompts_used: fromLines(form.prompts_used),
         bugs_found: fromLines(form.bugs_found),
         next_steps: fromLines(form.next_steps),
+        tools_used: fromLines(form.tools_used),
+        decisions: fromLines(form.decisions),
+        best_prompts: fromLines(form.best_prompts),
+        errors_solved: fromLines(form.errors_solved),
+        next_tool: form.next_tool || null,
+        next_agent: form.next_agent || null,
       };
       const { error } = await supabase.from("project_workbook").upsert(payload, { onConflict: "project_id" });
       if (error) throw error;
@@ -134,10 +150,16 @@ function WorkbookPage() {
         <Field label="MVP" value={form.mvp} onChange={(v) => setForm({ ...form, mvp: v })} rows={4} />
         <Field label="Schermate" hint="Una per riga" value={form.screens} onChange={(v) => setForm({ ...form, screens: v })} lines rows={5} />
         <Field label="Dati da salvare" hint="Una tabella/campo per riga" value={form.data_to_save} onChange={(v) => setForm({ ...form, data_to_save: v })} lines rows={5} />
-        <Field label="Agenti usati" hint="Uno per riga" value={form.agents_used} onChange={(v) => setForm({ ...form, agents_used: v })} lines rows={4} />
-        <Field label="Prompt usati" hint="Uno per riga" value={form.prompts_used} onChange={(v) => setForm({ ...form, prompts_used: v })} lines rows={5} />
-        <Field label="Bug trovati" hint="Uno per riga" value={form.bugs_found} onChange={(v) => setForm({ ...form, bugs_found: v })} lines rows={5} />
+        <Field label="Tool utilizzati" hint="Es. Lovable, Supabase…" value={form.tools_used} onChange={(v) => setForm({ ...form, tools_used: v })} lines rows={4} />
+        <Field label="Agenti utilizzati" hint="Uno per riga" value={form.agents_used} onChange={(v) => setForm({ ...form, agents_used: v })} lines rows={4} />
+        <Field label="Decisioni prese" hint="Una decisione per riga" value={form.decisions} onChange={(v) => setForm({ ...form, decisions: v })} lines rows={5} />
+        <Field label="Prompt migliori" hint="Quelli che hanno funzionato davvero" value={form.best_prompts} onChange={(v) => setForm({ ...form, best_prompts: v })} lines rows={5} />
+        <Field label="Prompt usati" hint="Tutti i prompt rilevanti" value={form.prompts_used} onChange={(v) => setForm({ ...form, prompts_used: v })} lines rows={5} />
+        <Field label="Errori risolti" hint="Bug o problemi affrontati" value={form.errors_solved} onChange={(v) => setForm({ ...form, errors_solved: v })} lines rows={5} />
+        <Field label="Bug trovati" hint="Aperti, ancora da risolvere" value={form.bugs_found} onChange={(v) => setForm({ ...form, bugs_found: v })} lines rows={5} />
         <Field label="Prossimi step" hint="Uno per riga" value={form.next_steps} onChange={(v) => setForm({ ...form, next_steps: v })} lines rows={5} />
+        <Field label="Prossimo tool da aprire" value={form.next_tool} onChange={(v) => setForm({ ...form, next_tool: v })} rows={2} />
+        <Field label="Prossimo agente da usare" value={form.next_agent} onChange={(v) => setForm({ ...form, next_agent: v })} rows={2} />
       </div>
 
       <div className="flex justify-end mt-6">
