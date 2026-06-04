@@ -599,10 +599,11 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
 }
 
 function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: BudgetBand; onRoadmap: () => void }) {
-  const breakEvenPrices = [29, 97, 297];
-  const baseCost = Math.round((result.costAiLow + result.costAiHigh) / 2);
-
+  const baseCost = Math.round((result.costRecLow + result.costRecHigh) / 2);
   const inserted = getBudget(budget);
+  const highBudget = !!inserted && inserted.max >= 1500;
+  const breakEvenPrices = highBudget ? [97, 297, 497] : [29, 97, 297];
+
   const rec = recommendedBudget(result.projectType, result.difficulty);
   const hasBudget = !!inserted && budget !== "Non lo so ancora" && inserted.max > 0;
   const fit: BudgetFit | null = hasBudget ? budgetFit(inserted!.max, rec) : null;
@@ -669,11 +670,26 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       </Block>
 
       {/* Costi iniziali */}
-      <Block icon={Wallet} title="Costo stimato per creare la prima versione">
+      <Block icon={Wallet} title="Costo per creare la prima versione">
         <div className="grid sm:grid-cols-2 gap-3">
           <CostBox
-            label="Con metodo AI/no-code"
-            value={`${fmt(result.costAiLow)} – ${fmt(result.costAiHigh)}`}
+            label="Costo minimo per partire"
+            value={`${fmt(result.costMinLow)} – ${fmt(result.costMinHigh)}`}
+          />
+          <CostBox
+            label="Budget consigliato"
+            value={`${fmt(result.costRecLow)} – ${fmt(result.costRecHigh)}`}
+            highlight
+          />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Il costo minimo serve per validare l'idea con una versione molto semplice. Il budget consigliato permette di costruire una prima versione più solida, con meno compromessi.
+        </p>
+
+        <div className="mt-4 grid sm:grid-cols-2 gap-3">
+          <CostBox
+            label="Con metodo AI/no-code essenziale"
+            value={`${fmt(result.costMinLow)} – ${fmt(result.costRecHigh)}`}
             highlight
           />
           <CostBox
@@ -682,22 +698,33 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
           />
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Il metodo AI/no-code può ridurre molto il costo iniziale, ma non elimina test, strategia, strumenti e manutenzione.
+          Il metodo AI/no-code può ridurre molto il costo iniziale perché usa strumenti già pronti, agenti AI e costruzione guidata. Non elimina però strategia, test, manutenzione e miglioramenti.
         </p>
       </Block>
 
       {/* Costi mensili */}
-      <Block icon={Repeat} title="Costi mensili possibili">
-        <div className="text-lg font-display font-semibold gradient-text">
-          {fmt(result.monthlyLow)} – {fmt(result.monthlyHigh)}/mese
+      <Block icon={Repeat} title="Costi mensili degli strumenti">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <CostBox
+            label="Costi mensili essenziali"
+            value={`${fmt(result.monthlyEssLow)} – ${fmt(result.monthlyEssHigh)}/mese`}
+            highlight
+          />
+          <CostBox
+            label="Con stack completo"
+            value={`${fmt(result.monthlyFullLow)} – ${fmt(result.monthlyFullHigh)}/mese`}
+          />
         </div>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           {result.monthlyCategories.map((c) => (
             <span key={c} className="text-xs px-2 py-1 rounded-full bg-background/40 border border-border/60">
               {c}
             </span>
           ))}
         </div>
+        <p className="text-xs text-muted-foreground mt-3">
+          Gli strumenti possono essere riutilizzati anche per altre app e progetti, quindi il costo non va attribuito solo a una singola idea.
+        </p>
         <div className="mt-3">
           <ReusableToolkitBox variant="inline" />
         </div>
@@ -726,21 +753,32 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       </Block>
 
       {/* Potenziale economico */}
-      <Block icon={TrendingUp} title="Potenziale economico indicativo">
-        <div className="flex flex-wrap items-baseline gap-3">
-          <div className="text-lg font-display font-semibold gradient-text">
-            {fmt(result.potentialLow)} – {fmt(result.potentialHigh)}/mese
-          </div>
-          <span className={`text-xs px-2 py-1 rounded-full border ${
-            result.potentialLabel === "Alto" ? "border-emerald-500/40 text-emerald-300 bg-emerald-500/10" :
-            result.potentialLabel === "Medio" ? "border-primary/40 text-primary bg-primary/10" :
-            "border-border/60 text-muted-foreground bg-background/40"
-          }`}>
-            Potenziale {result.potentialLabel.toLowerCase()}
-          </span>
+      <Block icon={TrendingUp} title="Potenziale economico stimato">
+        <div className="grid sm:grid-cols-3 gap-3">
+          <ScenarioBox
+            tone="prudent"
+            label="Scenario prudente"
+            customers={result.scenarios.prudent.customers}
+            price={result.scenarios.prudent.price}
+            revenue={result.scenarios.prudent.revenue}
+          />
+          <ScenarioBox
+            tone="realistic"
+            label="Scenario realistico"
+            customers={result.scenarios.realistic.customers}
+            price={result.scenarios.realistic.price}
+            revenue={result.scenarios.realistic.revenue}
+          />
+          <ScenarioBox
+            tone="ambitious"
+            label="Scenario ambizioso, non garantito"
+            customers={result.scenarios.ambitious.customers}
+            price={result.scenarios.ambitious.price}
+            revenue={result.scenarios.ambitious.revenue}
+          />
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Dipende da target, prezzo, traffico, qualità dell'offerta e capacità di vendita.
+        <p className="text-xs text-muted-foreground mt-3">
+          Stima basata su prezzo, target, modello di ricavo, difficoltà commerciale e capacità di acquisire clienti. Lo scenario ambizioso è possibile solo se il progetto viene validato, promosso e venduto bene.
         </p>
       </Block>
 
@@ -758,7 +796,7 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       {/* Punto di pareggio */}
       <Block icon={Calculator} title="Quante vendite servono per rientrare?">
         <p className="text-xs text-muted-foreground mb-2">
-          Costo iniziale di riferimento: <strong className="text-foreground">{fmt(baseCost)}</strong>
+          Se parti con un costo iniziale di <strong className="text-foreground">{fmt(baseCost)}</strong>, ti servirebbero circa:
         </p>
         <div className="grid sm:grid-cols-3 gap-2">
           {breakEvenPrices.map((p) => {
@@ -773,6 +811,11 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
             );
           })}
         </div>
+        {highBudget && (
+          <p className="text-xs text-foreground/85 mt-3">
+            Con un'offerta da <strong>497€</strong>, bastano poche vendite per recuperare il costo iniziale.
+          </p>
+        )}
         <p className="text-[11px] text-muted-foreground mt-2">
           Formula: costo iniziale stimato / prezzo ipotizzato = vendite per break-even.
         </p>
@@ -782,7 +825,7 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       <div className="flex items-start gap-2 rounded-xl bg-background/40 border border-border/60 p-3">
         <AlertCircle className="size-4 text-primary mt-0.5 shrink-0" />
         <p className="text-xs text-muted-foreground">
-          Questa non è una promessa di guadagno. È una stima indicativa basata sulle informazioni inserite, sul budget, sul tipo di progetto, sul target e sul possibile modello di ricavo. Il risultato reale dipende da mercato, prezzo, traffico, qualità dell'offerta, esecuzione e capacità di vendita.
+          Queste stime non sono promesse di guadagno. Servono a capire l'ordine di grandezza economico del progetto. I risultati reali dipendono da mercato, prezzo, offerta, traffico, capacità di vendita, qualità del prodotto ed esecuzione.
         </p>
       </div>
 
