@@ -61,14 +61,14 @@ function RiepilogoIdeaPage() {
             <Sparkles className="size-3 text-primary" /> Analisi gratuita
           </div>
           <h1 className="text-3xl sm:text-4xl font-display font-semibold mt-4">
-            Prima scrivi o scegli un'<span className="gradient-text">idea</span> da analizzare.
+            Non abbiamo ancora un'<span className="gradient-text">idea</span> da analizzare.
           </h1>
           <p className="text-muted-foreground mt-3">
-            Per generare il riepilogo gratuito serve una descrizione della tua idea o una delle idee suggerite.
+            Torna alla home e scrivi la tua idea: il tuo agente AI la trasformerà in un primo piano operativo.
           </p>
           <div className="mt-8">
             <Button variant="hero" size="lg" onClick={() => navigate({ to: "/analizza-idea" })}>
-              Analizza la tua idea gratis <ArrowRight className="size-4" />
+              Scrivi la mia idea <ArrowRight className="size-4" />
             </Button>
           </div>
         </main>
