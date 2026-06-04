@@ -1,44 +1,15 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
-} from "@/components/ui/dialog";
 import { ToolIcon } from "@/components/ToolIcon";
 import { generateAppIdeas, type GeneratedIdea } from "@/lib/idea-generator.functions";
 import { trackEvent } from "@/lib/tracking";
 import {
-  Sparkles, Wand2, Lightbulb, Loader2, ArrowRight, Users, AlertTriangle,
+  Wand2, Lightbulb, Loader2, ArrowRight, Users, AlertTriangle,
   Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info, Euro, Scale, Tag, Calculator,
 } from "lucide-react";
 
-type Step = "form" | "loading" | "results";
-
-const BUDGETS = [
-  "0€ – 100€", "100€ – 300€", "300€ – 700€",
-  "700€ – 1.500€", "1.500€ – 3.000€", "3.000€+", "Non lo so ancora",
-];
-const SECTORS = [
-  "Ristorazione", "Immobiliare", "Fitness / Benessere", "Turismo",
-  "Formazione", "Eventi", "Vendite / CRM", "Creator / Content",
-  "Servizi locali", "Aziende / B2B", "Altro", "Non lo so",
-];
-const APP_TYPES = [
-  "App per guadagnare online", "Strumento per aziende", "Gestionale interno",
-  "Marketplace", "CRM / Dashboard", "App per semplificare un lavoro",
-  "App per vendere un servizio", "Non lo so",
-];
-const COMPLEXITIES = ["Molto semplice", "Media", "Ambiziosa", "Non lo so"];
-const GOALS = [
-  "Guadagnare vendendo l'app",
-  "Creare uno strumento per aziende",
-  "Risparmiare tempo in un lavoro",
-  "Vendere un servizio",
-  "Generare lead",
-  "Creare un prodotto digitale",
-  "Imparare a costruire app con AI",
-];
+type Step = "idle" | "loading" | "results";
 
 export type IdeaGeneratorProps = {
   /** Called when user clicks "Sviluppa questa idea" — receives a description
@@ -46,8 +17,7 @@ export type IdeaGeneratorProps = {
   onSelect: (description: string) => void;
   triggerLabel?: string;
   variant?: "card" | "inline";
-  /** Preset values already chosen in the estimator. When presetBudget is set
-   * we skip the form and generate directly from these parameters. */
+  /** Values already chosen in the estimator. Required to generate ideas. */
   presetBudget?: string;
   presetTarget?: string;
   presetRevenue?: string;
@@ -63,43 +33,26 @@ export function IdeaGenerator({
   presetRevenue,
   presetPrice,
 }: IdeaGeneratorProps) {
-  const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<Step>("form");
-  const [budget, setBudget] = useState("");
-  const [sector, setSector] = useState("");
-  const [appType, setAppType] = useState("");
-  const [complexity, setComplexity] = useState("");
-  const [goal, setGoal] = useState("");
-  const [interests, setInterests] = useState("");
+  const [step, setStep] = useState<Step>("idle");
   const [ideas, setIdeas] = useState<GeneratedIdea[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [triggerError, setTriggerError] = useState<string | null>(null);
   const generate = useServerFn(generateAppIdeas);
 
-  const usePreset = Boolean(presetBudget);
-
-  const reset = () => {
-    setStep("form");
-    setIdeas([]);
-    setError(null);
-  };
-
   const onSubmit = async () => {
     setStep("loading");
     setError(null);
-    const payload = usePreset
-      ? {
-          budget: presetBudget ?? "",
-          target: presetTarget ?? "",
-          revenueModel: presetRevenue ?? "",
-          price: presetPrice ?? "",
-          sector: "",
-          appType: "",
-          complexity: "",
-          goal: "",
-          interests: "",
-        }
-      : { budget, sector, appType, complexity, goal, interests };
+    const payload = {
+      budget: presetBudget ?? "",
+      target: presetTarget ?? "",
+      revenueModel: presetRevenue ?? "",
+      price: presetPrice ?? "",
+      sector: "",
+      appType: "",
+      complexity: "",
+      goal: "",
+      interests: "",
+    };
     void trackEvent("idea_generator_submitted", payload);
     try {
       const r = await generate({ data: payload });
@@ -108,7 +61,7 @@ export function IdeaGenerator({
     } catch (e) {
       console.error(e);
       setError("Impossibile generare le idee in questo momento. Riprova tra poco.");
-      setStep("form");
+      setStep("idle");
     }
   };
 
@@ -116,28 +69,22 @@ export function IdeaGenerator({
     const description = buildDescription(idea);
     void trackEvent("idea_generator_selected", { name: idea.name });
     onSelect(description);
-    setOpen(false);
-    setTimeout(reset, 300);
   };
 
   const handleTriggerClick = () => {
     setTriggerError(null);
-    if (usePreset) {
-      if (!presetBudget) {
-        setTriggerError("Seleziona prima un budget operativo per generare idee realistiche.");
-        return;
-      }
-      setOpen(true);
-      setStep("loading");
-      void onSubmit();
+    if (!presetBudget) {
+      setTriggerError("Seleziona prima un budget operativo per generare idee realistiche.");
       return;
     }
-    setOpen(true);
+    void onSubmit();
   };
 
   const trigger = (
-    <Button variant="hero" size="lg" onClick={handleTriggerClick}>
-      <Wallet className="size-4" /> {triggerLabel}
+    <Button variant="hero" size="lg" onClick={handleTriggerClick} disabled={step === "loading"}>
+      {step === "loading"
+        ? <><Loader2 className="size-4 animate-spin" /> Generazione…</>
+        : <><Wallet className="size-4" /> {step === "results" ? "Rigenera idee" : triggerLabel}</>}
     </Button>
   );
 
@@ -151,13 +98,16 @@ export function IdeaGenerator({
           <div className="flex-1">
             <div className="font-display font-semibold">Non hai ancora un'idea?</div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {usePreset
-                ? "Useremo il budget, il target, il modello di ricavo e il prezzo che hai selezionato qui sopra per generare 3 idee coerenti."
-                : "Indica il tuo budget e genera idee di app realistiche, costruibili con agenti AI e strumenti no-code."}
+              Useremo il budget, il target, il modello di ricavo e il prezzo che hai selezionato qui sopra per generare 3 idee coerenti.
             </p>
             {triggerError && (
               <p className="text-xs text-destructive mt-2 flex items-center gap-1.5">
                 <AlertTriangle className="size-3.5" /> {triggerError}
+              </p>
+            )}
+            {error && (
+              <p className="text-xs text-destructive mt-2 flex items-center gap-1.5">
+                <AlertTriangle className="size-3.5" /> {error}
               </p>
             )}
           </div>
@@ -165,103 +115,35 @@ export function IdeaGenerator({
         </div>
       ) : trigger}
 
-      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setTimeout(reset, 300); }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto glass-card border-primary/20">
-          <DialogHeader>
-            <DialogTitle className="font-display text-2xl">
-              {step === "results" ? "Idee personalizzate per te" : "Genera un'idea di app"}
-            </DialogTitle>
-            <DialogDescription>
-              {step === "results"
-                ? "Scegli quella che ti convince di più. Calcoleremo ore, costi e potenziale."
-                : usePreset
-                  ? "Stiamo usando i parametri che hai già selezionato (budget, target, modello di ricavo e prezzo)."
-                  : "Indica il tuo budget operativo: genereremo idee compatibili e realizzabili con AI e no-code."}
-            </DialogDescription>
-          </DialogHeader>
+      {step === "loading" && (
+        <div className="mt-4 rounded-xl border border-primary/30 bg-background/30 py-12 flex flex-col items-center justify-center text-center">
+          <Loader2 className="size-10 text-primary animate-spin" />
+          <p className="mt-4 font-display font-semibold">Sto generando 3 idee personalizzate…</p>
+          <p className="text-xs text-muted-foreground mt-1">Pochi secondi.</p>
+        </div>
+      )}
 
-          {step === "form" && !usePreset && (
-            <div className="space-y-4 mt-2">
-              <FormField
-                label="Quanto budget vuoi dedicare alla creazione della prima versione?"
-                hint="Non includere il costo del corso. Indica solo il budget per strumenti, test, dominio, database, eventuali API, contenuti e lancio."
-              >
-                <ChipGroup options={BUDGETS} value={budget} onChange={setBudget} />
-              </FormField>
-              <FormField label="In quale settore ti interessa creare qualcosa?">
-                <ChipGroup options={SECTORS} value={sector} onChange={setSector} />
-              </FormField>
-              <FormField label="Che tipo di app vorresti creare?">
-                <ChipGroup options={APP_TYPES} value={appType} onChange={setAppType} />
-              </FormField>
-              <FormField label="Quanto vuoi che sia semplice da costruire?">
-                <ChipGroup options={COMPLEXITIES} value={complexity} onChange={setComplexity} />
-              </FormField>
-              <FormField label="Qual è il tuo obiettivo principale?">
-                <ChipGroup options={GOALS} value={goal} onChange={setGoal} />
-              </FormField>
-              <FormField label="Hai competenze o interessi particolari? (facoltativo)">
-                <Input
-                  value={interests}
-                  onChange={(e) => setInterests(e.target.value)}
-                  placeholder="Esempio: ristorazione, immobili, eventi, marketing, viaggi, formazione…"
-                  maxLength={400}
-                />
-              </FormField>
-
-              {error && (
-                <div className="text-xs text-destructive flex items-center gap-2">
-                  <AlertTriangle className="size-4" /> {error}
-                </div>
-              )}
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="ghost" onClick={() => setOpen(false)}>Annulla</Button>
-                <Button variant="hero" onClick={onSubmit}>
-                  <Wand2 className="size-4" /> Genera 3 idee
-                </Button>
-              </div>
+      {step === "results" && ideas.length > 0 && (
+        <div className="mt-4 space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-primary font-semibold">Idee personalizzate per te</div>
+              <p className="text-xs text-muted-foreground mt-0.5">Scegli quella che ti convince di più: precompileremo l'analisi completa.</p>
             </div>
-          )}
-
-          {step === "loading" && (
-            <div className="py-16 flex flex-col items-center justify-center text-center">
-              <Loader2 className="size-10 text-primary animate-spin" />
-              <p className="mt-4 font-display font-semibold">Sto generando 3 idee personalizzate…</p>
-              <p className="text-xs text-muted-foreground mt-1">Pochi secondi.</p>
-            </div>
-          )}
-
-          {step === "form" && usePreset && error && (
-            <div className="py-10 flex flex-col items-center text-center gap-3">
-              <AlertTriangle className="size-8 text-destructive" />
-              <p className="text-sm text-destructive">{error}</p>
-              <Button variant="hero" onClick={onSubmit}>
-                <Wand2 className="size-4" /> Riprova
-              </Button>
-            </div>
-          )}
-
-          {step === "results" && (
-            <div className="space-y-4 mt-2">
-              <div className="grid gap-3">
-                {ideas.map((idea, i) => (
-                  <IdeaCard key={i} idea={idea} onSelect={() => handleSelect(idea)} />
-                ))}
-              </div>
-              <p className="text-[11px] text-muted-foreground">
-                Stime indicative. Non sono promesse di guadagno: il risultato reale dipende da mercato, prezzo, esecuzione e capacità di vendita.
-              </p>
-              <div className="flex justify-between gap-2">
-                <Button variant="glass" onClick={reset}>← Cambia risposte</Button>
-                <Button variant="ghost" onClick={onSubmit}>
-                  <Wand2 className="size-4" /> Rigenera idee
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            <Button variant="ghost" size="sm" onClick={onSubmit} disabled={step !== "results"}>
+              <Wand2 className="size-4" /> Rigenera
+            </Button>
+          </div>
+          <div className="grid gap-3">
+            {ideas.map((idea, i) => (
+              <IdeaCard key={i} idea={idea} onSelect={() => handleSelect(idea)} />
+            ))}
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Le stime economiche sono indicative e non rappresentano una promessa di guadagno. Il risultato reale dipende da mercato, prezzo, qualità dell'offerta, traffico, esecuzione e capacità di vendita.
+          </p>
+        </div>
+      )}
     </>
   );
 }
