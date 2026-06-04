@@ -27,6 +27,7 @@ import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
 import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
 
@@ -121,6 +122,12 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   path: '/projects/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAcademyModulesIdRoute =
   AuthenticatedAcademyModulesIdRouteImport.update({
     id: '/academy/modules/$id',
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -175,6 +183,7 @@ export interface FileRoutesByTo {
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -198,6 +207,7 @@ export interface FileRoutesById {
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -264,6 +276,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workbook/$projectId'
     | '/_authenticated/academy/lessons/$id'
     | '/_authenticated/academy/modules/$id'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -278,6 +291,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   RiepilogoIdeaRoute: typeof RiepilogoIdeaRoute
   ToolsRoute: typeof ToolsRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -408,6 +422,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/academy/modules/$id': {
       id: '/_authenticated/academy/modules/$id'
       path: '/academy/modules/$id'
@@ -464,6 +485,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   RiepilogoIdeaRoute: RiepilogoIdeaRoute,
   ToolsRoute: ToolsRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
