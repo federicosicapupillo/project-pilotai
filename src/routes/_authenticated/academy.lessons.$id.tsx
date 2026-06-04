@@ -278,14 +278,13 @@ function LessonPage() {
               <ClipboardCopy className="size-4" /> Copia
             </Button>
           </div>
-          <pre className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-4 font-sans">{lesson.prompt_text}</pre>
-          <pre className="text-sm whitespace-pre-wrap bg-primary/5 border border-primary/20 rounded-lg p-4 font-sans mt-3">
+          <pre className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-4 font-sans">
             {personalizePrompt(lesson.prompt_text, active)}
           </pre>
           <p className="text-[11px] text-muted-foreground mt-2">
             {active
-              ? `Versione personalizzata sul tuo progetto "${active.title}". Il bottone "Copia" copia questa versione.`
-              : "Accedi e crea un progetto per ricevere automaticamente la versione personalizzata di questo prompt."}
+              ? `Prompt personalizzato automaticamente sul tuo progetto "${active.title}".`
+              : "Accedi e crea un progetto per ricevere il prompt già personalizzato sui tuoi dati."}
           </p>
         </div>
       )}
