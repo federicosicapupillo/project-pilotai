@@ -58,6 +58,9 @@ Genera idee adatte a una prima versione funzionante costruibile con strumenti AI
 Le idee devono essere: specifiche, semplici da capire, realizzabili, monetizzabili, adatte a un percorso guidato AI/no-code.
 Rispondi sempre in italiano.`;
 
+const FALLBACK_TOOLS = ["ChatGPT", "Lovable", "Supabase", "Perplexity", "Stripe"];
+const FALLBACK_AGENTS = ["Agente Stratega", "Agente Product Manager", "Agente Prompt Engineer"];
+
 function buildPrompt(d: z.infer<typeof InputSchema>) {
   return `Genera ESATTAMENTE 3 idee di app personalizzate per questo utente.
 
@@ -90,6 +93,112 @@ Per ogni idea restituisci nello schema JSON:
 Le 3 idee devono essere DIVERSE tra loro per angolo di attacco o modello di business.`;
 }
 
+function extractJsonObject(text: string) {
+  const cleaned = text.replace(/```(?:json)?/gi, "").replace(/```/g, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start === -1 || end === -1 || end <= start) return null;
+
+  try {
+    return JSON.parse(cleaned.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+}
+
+function fallbackIdeas(d: z.infer<typeof InputSchema>): GeneratedIdea[] {
+  const sector = d.sector && d.sector !== "Non lo so" ? d.sector : "servizi locali";
+  const goal = d.goal && d.goal !== "Non lo so" ? d.goal : "validare un prodotto semplice";
+  const appType = d.appType && d.appType !== "Non lo so" ? d.appType : "app operativa";
+
+  return [
+    {
+      name: `Assistente ${sector}`,
+      description: `Una ${appType.toLowerCase()} che aiuta professionisti nel settore ${sector} a gestire richieste, follow-up e contenuti con AI.`,
+      target: `Freelance, piccoli team e attività nel settore ${sector}`,
+      problem: "Molte attività ripetitive vengono ancora gestite manualmente e fanno perdere opportunità.",
+      why_interesting: `È adatta a partire piccolo e misurare subito l'interesse del mercato.` ,
+      mvp: "Landing, form raccolta richieste, dashboard semplice, generazione AI di bozze e archivio contatti.",
+      essential_features: ["Raccolta richieste", "Dashboard contatti", "Generazione testi AI", "Stato opportunità", "Report base"],
+      hours_estimate: "35-70 ore",
+      difficulty: "Media",
+      initial_cost: "500€-2.000€",
+      monthly_cost: "50€-250€/mese",
+      potential: "Medio se validato su una nicchia concreta",
+      revenue_model: "Abbonamento mensile o setup iniziale + canone",
+      tools: FALLBACK_TOOLS,
+      agents: FALLBACK_AGENTS,
+      main_risk: "Partire con un target troppo largo invece di una nicchia precisa.",
+      next_step: `Intervista 5 persone nel settore ${sector} e verifica se pagherebbero per risolvere questo problema.`,
+    },
+    {
+      name: `MVP Validator ${sector}`,
+      description: `Uno strumento che trasforma idee grezze in test di mercato rapidi per chi vuole ${goal.toLowerCase()}.`,
+      target: "Creator, consulenti e founder non tecnici",
+      problem: "Molte idee vengono costruite prima di essere validate con utenti reali.",
+      why_interesting: "Riduce sprechi di tempo e rende il lancio più ordinato.",
+      mvp: "Questionario guidato, generatore di landing, lista esperimenti e dashboard risultati.",
+      essential_features: ["Questionario idea", "Generazione proposta", "Esperimenti suggeriti", "Metriche base", "Export report"],
+      hours_estimate: "45-90 ore",
+      difficulty: "Media",
+      initial_cost: "700€-2.500€",
+      monthly_cost: "80€-300€/mese",
+      potential: "Buono se venduto come tool + servizio guidato",
+      revenue_model: "Licenza mensile, pacchetto premium o consulenza abbinata",
+      tools: ["ChatGPT", "Lovable", "Supabase", "Canva", "Stripe"],
+      agents: ["Agente Stratega", "Agente Marketing", "Agente Product Manager"],
+      main_risk: "Generare report utili ma non abbastanza specifici per convincere al pagamento.",
+      next_step: "Definisci una nicchia e crea 3 test di validazione da proporre entro 7 giorni.",
+    },
+    {
+      name: `Ops Pilot ${sector}`,
+      description: `Una mini-dashboard interna per automatizzare un flusso operativo specifico in ambito ${sector}.`,
+      target: "Piccole aziende e team operativi",
+      problem: "I processi sono spesso sparsi tra chat, fogli di calcolo e note non sincronizzate.",
+      why_interesting: "Ha valore immediato perché fa risparmiare tempo in un processo reale.",
+      mvp: "Login, database attività, automazioni base, notifiche e vista avanzamento.",
+      essential_features: ["Login", "Gestione attività", "Automazioni base", "Notifiche", "Vista calendario"],
+      hours_estimate: "50-100 ore",
+      difficulty: "Avanzata",
+      initial_cost: "1.000€-3.500€",
+      monthly_cost: "100€-400€/mese",
+      potential: "Medio/alto se collegato a un problema costoso per aziende",
+      revenue_model: "Setup B2B + canone mensile",
+      tools: ["Lovable", "Supabase", "ChatGPT", "GitHub", "Twilio"],
+      agents: ["Agente Product Manager", "Agente Backend", "Agente QA"],
+      main_risk: "Sottovalutare permessi, dati e sicurezza nella versione B2B.",
+      next_step: "Scegli un solo processo operativo da automatizzare e disegnane il flusso end-to-end.",
+    },
+  ];
+}
+
+function normalizeIdeas(value: unknown, data: z.infer<typeof InputSchema>) {
+  const parsed = OutputSchema.safeParse(value);
+  const baseIdeas = parsed.success ? parsed.data.ideas : [];
+  const ideas = [...baseIdeas, ...fallbackIdeas(data)].slice(0, 3);
+
+  return ideas.map((idea, index) => ({
+    ...idea,
+    name: idea.name || `Idea ${index + 1}`,
+    description: idea.description || "Idea di app AI/no-code da validare con una prima versione funzionante.",
+    target: idea.target || "Utenti di una nicchia specifica da validare",
+    problem: idea.problem || "Problema operativo o commerciale da rendere più semplice.",
+    why_interesting: idea.why_interesting || "Può partire come MVP leggero e crescere dopo la validazione.",
+    mvp: idea.mvp || "Landing, flusso principale, database e dashboard base.",
+    essential_features: idea.essential_features.length ? idea.essential_features : ["Landing", "Form", "Dashboard", "Database", "Report base"],
+    hours_estimate: idea.hours_estimate || "40-80 ore",
+    difficulty: idea.difficulty || "Media",
+    initial_cost: idea.initial_cost || "500€-2.000€",
+    monthly_cost: idea.monthly_cost || "50€-250€/mese",
+    potential: idea.potential || "Medio se validata su una nicchia concreta",
+    revenue_model: idea.revenue_model || "Abbonamento, setup o vendita una tantum",
+    tools: idea.tools.length ? idea.tools : FALLBACK_TOOLS,
+    agents: idea.agents.length ? idea.agents : FALLBACK_AGENTS,
+    main_risk: idea.main_risk || "Costruire troppo prima di aver validato il problema.",
+    next_step: idea.next_step || "Validare il problema con 5 potenziali utenti prima di costruire.",
+  }));
+}
+
 export const generateAppIdeas = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
@@ -98,16 +207,18 @@ export const generateAppIdeas = createServerFn({ method: "POST" })
 
     const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
     const gateway = createLovableAiGatewayProvider(key);
-    const model = gateway("google/gemini-3-flash-preview");
+    const model = gateway("google/gemini-2.5-flash");
 
-    const { object } = await generateObject({
-      model,
-      system: SYSTEM_PROMPT,
-      prompt: buildPrompt(data),
-      schema: OutputSchema,
-    });
+    try {
+      const { text } = await generateText({
+        model,
+        system: `${SYSTEM_PROMPT}\nRispondi solo con JSON valido. Nessun markdown, nessun testo fuori dal JSON.`,
+        prompt: `${buildPrompt(data)}\n\nFormato obbligatorio: {"ideas":[{...},{...},{...}]}`,
+      });
 
-    // Ensure we always return 3 ideas for the UI (pad or trim).
-    const ideas = object.ideas.slice(0, 3);
-    return { ideas };
+      return { ideas: normalizeIdeas(extractJsonObject(text), data) };
+    } catch (error) {
+      console.error("Idea generation failed", error);
+      return { ideas: fallbackIdeas(data) };
+    }
   });
