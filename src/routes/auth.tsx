@@ -37,6 +37,7 @@ function AuthPage() {
 
   if (!loading && user) {
     const target = consumeRedirect();
+    if (target === "/checkout-agente") return <Navigate to="/checkout-agente" replace />;
     if (target === "/new-project") return <Navigate to="/new-project" replace />;
     return <Navigate to="/dashboard" replace />;
   }
@@ -49,7 +50,8 @@ function AuthPage() {
     if (error) return toast.error(error.message);
     toast.success("Bentornato!");
     const target = consumeRedirect();
-    if (target === "/new-project") navigate({ to: "/new-project" });
+    if (target === "/checkout-agente") navigate({ to: "/checkout-agente" });
+    else if (target === "/new-project") navigate({ to: "/new-project" });
     else navigate({ to: "/dashboard" });
   };
 
@@ -69,7 +71,8 @@ function AuthPage() {
     if (data.session) {
       toast.success("Account creato!");
       const target = consumeRedirect();
-      if (target === "/new-project") navigate({ to: "/new-project" });
+      if (target === "/checkout-agente") navigate({ to: "/checkout-agente" });
+      else if (target === "/new-project") navigate({ to: "/new-project" });
       else navigate({ to: "/dashboard" });
     } else {
       toast.success("Account creato! Controlla la tua email per confermare, poi accedi.");
