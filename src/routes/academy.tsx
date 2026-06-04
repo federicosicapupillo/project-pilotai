@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { GraduationCap, ArrowRight, CheckCircle2, Circle, PlayCircle } from "lucide-react";
+import { GraduationCap, ArrowRight, CheckCircle2, Circle, Rocket } from "lucide-react";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
 
@@ -44,18 +44,17 @@ function AcademyPage() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/60 text-xs text-muted-foreground mb-3">
-            <GraduationCap className="size-3.5 text-primary" /> Academy operativa
+            <GraduationCap className="size-3.5 text-primary" /> Laboratorio guidato dall'AI
           </div>
-          <h1 className="text-3xl sm:text-4xl font-display font-semibold">Il tuo percorso passo passo</h1>
+          <h1 className="text-3xl sm:text-4xl font-display font-semibold">Costruisci la tua app passo dopo passo</h1>
           <p className="text-muted-foreground mt-2 max-w-2xl">
-            {data?.modules.length ?? 12} moduli pratici per portarti dall'idea alla prima app reale. Ogni lezione ti dice cosa fare,
-            quale agente usare, quale tool aprire, quale prompt copiare e quando passare allo step successivo.
+            Niente video lunghi. Segui gli step, copia i prompt e fatti guidare dal tuo agente AI personale.
           </p>
         </div>
         {nextLesson && (
           <Link to="/academy/lessons/$id" params={{ id: nextLesson.id }}>
             <Button variant="hero" size="lg">
-              <PlayCircle className="size-4" /> Continua il percorso
+              <Rocket className="size-4" /> {completedCount === 0 ? "Inizia dal primo step" : "Continua il percorso"}
             </Button>
           </Link>
         )}

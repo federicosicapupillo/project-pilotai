@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import {
   ArrowLeft, ArrowRight, Target, Bot, Wrench, ClipboardCopy, ListChecks,
-  PlayCircle, CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle, ShieldCheck, XCircle,
+  CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle, ShieldCheck, XCircle, MessageSquare,
 } from "lucide-react";
 import { ToolBadge } from "@/components/ToolBadge";
 import { ActiveProjectBox } from "@/components/ActiveProjectBox";
@@ -354,22 +354,27 @@ function LessonPage() {
       </div>
 
       <div className="glass-card rounded-xl p-6 mb-6">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
-          <PlayCircle className="size-3.5 text-primary" /> Video lezione
-        </div>
-        <div className="aspect-video rounded-lg bg-secondary/50 border border-border/50 grid place-items-center">
-          <div className="text-center">
-            <PlayCircle className="size-12 text-primary/60 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Video lezione (placeholder)</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="glass-card rounded-xl p-6 mb-6">
         <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
           <Target className="size-3.5 text-primary" /> Obiettivo
         </div>
         <p>{lesson.objective}</p>
+      </div>
+
+      <div className="glass-card rounded-xl p-5 mb-6 border border-primary/30">
+        <div className="flex items-start gap-3">
+          <div className="size-9 rounded-lg gradient-bg grid place-items-center shrink-0 glow-soft">
+            <MessageSquare className="size-4 text-primary-foreground" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-display font-semibold">Hai bisogno di aiuto?</p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Il tuo agente AI può adattare questo step alla tua idea.
+            </p>
+          </div>
+          <Link to="/agente-ai" className="shrink-0">
+            <Button variant="glass" size="sm">Chiedi al mio agente AI</Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 mb-6">
