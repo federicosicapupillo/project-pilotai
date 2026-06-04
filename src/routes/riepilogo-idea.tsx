@@ -21,8 +21,8 @@ import { generateIdeaSummary, type IdeaSummary } from "@/lib/idea-summary.functi
 export const Route = createFileRoute("/riepilogo-idea")({
   head: () => ({
     meta: [
-      { title: "Riepilogo della tua idea — analisi gratuita" },
-      { name: "description", content: "Ecco una prima analisi gratuita della tua idea: ore, difficoltà, costi, strumenti e potenziale economico indicativo." },
+      { title: "Ecco l'analisi della tua idea" },
+      { name: "description", content: "Il tuo agente AI ha trasformato la tua idea in un primo piano operativo: target, problema, soluzione, funzioni, schermate, complessità e tempi." },
     ],
   }),
   component: RiepilogoIdeaPage,
