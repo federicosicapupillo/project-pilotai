@@ -611,9 +611,14 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       <div className="flex items-start gap-2 rounded-xl bg-background/40 border border-border/60 p-3">
         <AlertCircle className="size-4 text-primary mt-0.5 shrink-0" />
         <p className="text-xs text-muted-foreground">
-          Questa non è una promessa di guadagno. È una stima indicativa basata sulle informazioni inserite, sul tipo di progetto, sui costi ipotizzati, sul target e sul possibile modello di ricavo. Il risultato reale dipende da mercato, prezzo, traffico, qualità dell'offerta, esecuzione e capacità di vendita.
+          Questa non è una promessa di guadagno. È una stima indicativa basata sulle informazioni inserite, sul budget, sul tipo di progetto, sul target e sul possibile modello di ricavo. Il risultato reale dipende da mercato, prezzo, traffico, qualità dell'offerta, esecuzione e capacità di vendita.
         </p>
       </div>
+
+      {/* Consiglio operativo */}
+      <Block icon={Lightbulb} title="Consiglio operativo">
+        <p className="text-sm text-foreground/90">{consiglio}</p>
+      </Block>
 
       {/* CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
