@@ -16,6 +16,8 @@ import {
   ROADMAP_TEMPLATE,
 } from "@/lib/project-templates";
 import { generateProjectContent } from "@/lib/ai-generation.functions";
+import { generateAppRoadmap } from "@/lib/app-roadmap.functions";
+import { buildFallbackRoadmap } from "@/lib/app-roadmap";
 import { toast } from "sonner";
 import { Sparkles, ArrowLeft, Check, Loader2 } from "lucide-react";
 
@@ -29,6 +31,7 @@ function NewProjectPage() {
   const [busy, setBusy] = useState(false);
   const [steps, setSteps] = useState<Array<{ label: string; status: "todo" | "doing" | "done" }>>([]);
   const generate = useServerFn(generateProjectContent);
+  const generateRoadmap = useServerFn(generateAppRoadmap);
   const [form, setForm] = useState({
     title: "",
     idea_description: "",
@@ -44,11 +47,12 @@ function NewProjectPage() {
   const set = <K extends keyof typeof form>(k: K, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const initialSteps = () => [
-    { label: "Stiamo trasformando la tua idea in un progetto operativo…", status: "doing" as const },
+    { label: "Sto analizzando la tua idea…", status: "doing" as const },
     { label: "Scheda progetto generata", status: "todo" as const },
     { label: "Agenti AI creati", status: "todo" as const },
     { label: "Prompt operativi pronti", status: "todo" as const },
-    { label: "Roadmap costruita", status: "todo" as const },
+    { label: "Sto creando la roadmap di costruzione della tua app…", status: "todo" as const },
+    { label: "Roadmap pronta: puoi iniziare a costruire", status: "todo" as const },
   ];
   const advance = (i: number) =>
     setSteps((prev) =>
@@ -74,7 +78,7 @@ function NewProjectPage() {
       let analysis: ReturnType<typeof ANALYSIS_TEMPLATE>;
       let agents: Array<{ project_id: string; name: string; role: string; when_to_use: string; expected_output: string; prompt_text: string }>;
       let prompts: Array<{ project_id: string; category: string; title: string; prompt_text: string; recommended_tool: string }>;
-      let roadmap: Array<{ project_id: string; title: string; description: string; status: string; priority: number }>;
+      let roadmap: Array<Record<string, unknown>>;
       let usedAi = false;
 
       try {
@@ -94,13 +98,6 @@ function NewProjectPage() {
         analysis = ai.project_analysis;
         agents = ai.agents.map((a) => ({ project_id: project.id, ...a }));
         prompts = ai.prompts.map((p) => ({ project_id: project.id, ...p }));
-        roadmap = ai.roadmap_items.map((r, i) => ({
-          project_id: project.id,
-          title: r.title,
-          description: r.description,
-          status: "todo",
-          priority: typeof r.priority === "number" ? r.priority : i,
-        }));
         usedAi = true;
       } catch (aiErr) {
         console.error("AI generation failed, falling back to templates", aiErr);
@@ -115,13 +112,6 @@ function NewProjectPage() {
           prompt_text: a.prompt_text,
           recommended_tool: "ChatGPT / Claude",
         }));
-        roadmap = ROADMAP_TEMPLATE.map((r, i) => ({
-          project_id: project.id,
-          title: r.title,
-          description: r.description,
-          status: "todo",
-          priority: i,
-        }));
       }
 
       advance(1);
@@ -131,6 +121,42 @@ function NewProjectPage() {
       advance(3);
       await supabase.from("prompts").insert(prompts);
       advance(4);
+
+      // App Construction Roadmap (rich, personalized). Fallback to deterministic template on any failure.
+      try {
+        const aiRoadmap = await generateRoadmap({
+          data: {
+            title: form.title,
+            idea_description: form.idea_description,
+            target: form.target,
+            problem: form.problem,
+            solution: form.solution,
+            product_type: form.product_type,
+            experience_level: form.experience_level,
+            existing_tools: form.existing_tools,
+            urgency: form.urgency,
+          },
+        });
+        roadmap = aiRoadmap.map((s) => ({
+          project_id: project.id,
+          title: s.title,
+          description: s.description,
+          phase: s.phase,
+          order_index: s.order_index,
+          priority: s.priority,
+          status: s.status,
+          recommended_agent: s.recommended_agent,
+          recommended_tool: s.recommended_tool,
+          prompt_text: s.prompt_text,
+          expected_output: s.expected_output,
+          checklist_items: s.checklist_items,
+          progress_weight: s.progress_weight,
+        }));
+      } catch (e) {
+        console.error("AI roadmap failed, using fallback", e);
+        const fb = buildFallbackRoadmap({ title: form.title, idea_description: form.idea_description });
+        roadmap = fb.map((s) => ({ project_id: project.id, ...s }));
+      }
       await supabase.from("roadmap_items").insert(roadmap);
       finishAll();
 
