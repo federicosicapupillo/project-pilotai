@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as RiepilogoIdeaRouteImport } from './routes/riepilogo-idea'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrezziRouteImport } from './routes/prezzi'
 import { Route as MethodRouteImport } from './routes/method'
@@ -32,6 +33,11 @@ import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_aut
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
   path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiepilogoIdeaRoute = RiepilogoIdeaRouteImport.update({
+  id: '/riepilogo-idea',
+  path: '/riepilogo-idea',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/method': typeof MethodRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
+  '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/method': typeof MethodRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
+  '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/method': typeof MethodRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
+  '/riepilogo-idea': typeof RiepilogoIdeaRoute
   '/tools': typeof ToolsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/method'
     | '/prezzi'
     | '/pricing'
+    | '/riepilogo-idea'
     | '/tools'
     | '/dashboard'
     | '/library'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/method'
     | '/prezzi'
     | '/pricing'
+    | '/riepilogo-idea'
     | '/tools'
     | '/dashboard'
     | '/library'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/method'
     | '/prezzi'
     | '/pricing'
+    | '/riepilogo-idea'
     | '/tools'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
@@ -264,6 +276,7 @@ export interface RootRouteChildren {
   MethodRoute: typeof MethodRoute
   PrezziRoute: typeof PrezziRoute
   PricingRoute: typeof PricingRoute
+  RiepilogoIdeaRoute: typeof RiepilogoIdeaRoute
   ToolsRoute: typeof ToolsRoute
 }
 
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/tools'
       fullPath: '/tools'
       preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/riepilogo-idea': {
+      id: '/riepilogo-idea'
+      path: '/riepilogo-idea'
+      fullPath: '/riepilogo-idea'
+      preLoaderRoute: typeof RiepilogoIdeaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -442,6 +462,7 @@ const rootRouteChildren: RootRouteChildren = {
   MethodRoute: MethodRoute,
   PrezziRoute: PrezziRoute,
   PricingRoute: PricingRoute,
+  RiepilogoIdeaRoute: RiepilogoIdeaRoute,
   ToolsRoute: ToolsRoute,
 }
 export const routeTree = rootRouteImport

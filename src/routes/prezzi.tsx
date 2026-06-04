@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { trackEvent } from "@/lib/tracking";
 import { useAuth } from "@/hooks/use-auth";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
+import { loadIdeaParams } from "@/lib/idea-estimate";
 
 export const Route = createFileRoute("/prezzi")({
   head: () => ({
@@ -125,7 +126,13 @@ function PrezziPage() {
     await trackEvent(`pricing_click_${plan.id}`, { price: plan.price });
 
     if (plan.id === "free") {
-      navigate({ to: "/analizza-idea" });
+      const saved = loadIdeaParams();
+      if (saved && saved.idea.trim().length >= 8) {
+        navigate({ to: "/riepilogo-idea" });
+      } else {
+        toast.message("Prima scrivi o scegli un'idea da analizzare.");
+        navigate({ to: "/analizza-idea" });
+      }
       return;
     }
 
