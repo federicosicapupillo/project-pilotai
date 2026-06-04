@@ -54,13 +54,13 @@ function Index() {
         </section>
 
         {/* STEPS — 4 card subito sotto la hero */}
-        <Section title="Dall'idea all'MVP in 4 passi" eyebrow="Come funziona">
+        <Section title="Dall'idea alla prima versione dell'app in 4 passi" eyebrow="Come funziona">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { icon: PenLine, title: "1. Inserisci la tua idea", desc: "Rispondi a poche domande guidate: cosa fai, per chi, quale problema risolvi." },
-              { icon: FileText, title: "2. Ottieni il progetto strutturato", desc: "Una scheda chiara: target, MVP, schermate, dati, rischi e cosa non costruire." },
+              { icon: FileText, title: "2. Ottieni il progetto strutturato", desc: "Una scheda chiara: target, prima versione dell'app (MVP), schermate, dati, rischi e cosa non costruire." },
               { icon: Wand2, title: "3. Agenti AI e prompt pronti", desc: "Una squadra di agenti AI consigliati e prompt operativi da copiare e usare." },
-              { icon: Hammer, title: "4. Costruisci il tuo MVP", desc: "Segui la roadmap passo passo e realizza la prima versione con strumenti no-code." },
+              { icon: Hammer, title: "4. Costruisci la prima versione della tua app", desc: "Segui la roadmap passo passo e realizza la prima versione funzionante con strumenti no-code." },
             ].map((s) => (
               <div key={s.title} className="glass-card rounded-xl p-6">
                 <div className="size-10 rounded-lg gradient-bg grid place-items-center glow-soft">
@@ -78,7 +78,7 @@ function Index() {
           <div className="grid md:grid-cols-3 gap-4">
             {[
               { icon: Lightbulb, title: "1. Descrivi l'idea", desc: "Rispondi a un form guidato: cosa fai, per chi, quale problema risolvi." },
-              { icon: Layers, title: "2. Ricevi una scheda chiara", desc: "Target, soluzione, funzioni MVP, schermate, dati, rischi, cosa NON costruire." },
+              { icon: Layers, title: "2. Ricevi una scheda chiara", desc: "Target, soluzione, funzioni essenziali della prima versione, schermate, dati, rischi, cosa NON costruire." },
               { icon: Wand2, title: "3. Squadra agenti + prompt", desc: "7 agenti AI consigliati, ognuno con prompt pronti da copiare nei tuoi strumenti." },
             ].map((s) => (
               <div key={s.title} className="glass-card rounded-xl p-6">
@@ -96,7 +96,7 @@ function Index() {
         <Section title="Perché funziona" eyebrow="Vantaggi">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: Target, title: "Focus chiaro", desc: "MVP definito, niente progetti infiniti." },
+              { icon: Target, title: "Focus chiaro", desc: "Prima versione dell'app definita, niente progetti infiniti." },
               { icon: Zap, title: "Veloce", desc: "Dal foglio bianco alla scheda in 5 minuti." },
               { icon: ShieldCheck, title: "Niente codice", desc: "Pensato per chi non programma." },
               { icon: Rocket, title: "Pronto a costruire", desc: "Prompt e roadmap operativa inclusi." },
@@ -119,7 +119,7 @@ function Index() {
               { t: "Landing per lanciare un servizio", d: "Pagina che spiega l'offerta e raccoglie contatti qualificati." },
               { t: "Gestionale per agente immobiliare", d: "Annunci, clienti interessati, appuntamenti in un posto solo." },
               { t: "App interna per il team", d: "Strumento su misura per un processo specifico del tuo studio." },
-              { t: "Marketplace di nicchia", d: "Un primo MVP per validare l'idea con utenti reali." },
+              { t: "Marketplace di nicchia", d: "Una prima versione dell'app (MVP) per validare l'idea con utenti reali." },
             ].map((e) => (
               <div key={e.t} className="glass-card rounded-xl p-5">
                 <h3 className="font-display font-semibold">{e.t}</h3>
@@ -141,7 +141,7 @@ function Index() {
               </p>
             </div>
             <ul className="space-y-2 text-sm">
-              {["Ristoratori e attività locali", "Agenti immobiliari", "Freelance e studi professionali", "Coach e formatori", "Founder al primo MVP"].map((x) => (
+              {["Ristoratori e attività locali", "Agenti immobiliari", "Freelance e studi professionali", "Coach e formatori", "Founder alla prima versione dell'app"].map((x) => (
                 <li key={x} className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-primary" /> {x}</li>
               ))}
             </ul>
@@ -152,7 +152,7 @@ function Index() {
         <Section title="Cosa ottieni" eyebrow="Deliverable">
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { icon: Layers, t: "Scheda progetto strutturata", d: "Target, MVP, schermate, dati, rischi, cosa NON costruire." },
+              { icon: Layers, t: "Scheda progetto strutturata", d: "Target, prima versione dell'app (MVP), schermate, dati, rischi, cosa NON costruire." },
               { icon: Users, t: "Squadra di 7 agenti AI", d: "Stratega, PM, UX, Prompt Engineer, Tester, Marketing, Documentazione." },
               { icon: BookOpen, t: "Libreria di prompt pronti", d: "Per ogni fase: strategia, ricerca, design, debug, marketing, lancio." },
               { icon: ListChecks, t: "Roadmap operativa", d: "10 step con stato Da fare / In corso / Completato." },

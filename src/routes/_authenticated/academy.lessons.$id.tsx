@@ -94,7 +94,7 @@ const minLines = (min: number, max?: number) => (v: unknown): FieldCheckResult =
 // ---- Mapping ----------------------------------------------------------------
 const REQUIRED_BY_LESSON: Record<string, WBRequirement[]> = {
   "1-1": [{ field: "decisions", label: "Ruolo di regista + cosa deleghi", hint: "Sezione Decisioni", validate: filledObjectOrArray }],
-  "1-2": [{ field: "mvp", label: "Classificazione funzioni costruibili/no", hint: "Sezione MVP", validate: filledText(40) }],
+  "1-2": [{ field: "mvp", label: "Classificazione funzioni costruibili/no", hint: "Sezione Prima versione dell'app (MVP)", validate: filledText(40) }],
   "1-3": [{ field: "next_steps", label: "Le 5 fasi del prodotto", hint: "Sezione Roadmap", validate: minLines(5) }],
   "1-4": [{ field: "decisions", label: "Le tue 5 regole personali", hint: "Sezione Decisioni / Note operative", validate: minLines(5) }],
 
@@ -104,15 +104,15 @@ const REQUIRED_BY_LESSON: Record<string, WBRequirement[]> = {
     { field: "problem", label: "Problema concreto", hint: "Sezione Problema", validate: filledText(20) },
     { field: "solution", label: "Soluzione proposta (max 3 punti)", hint: "Sezione Soluzione", validate: filledText(20) },
   ],
-  "2-4": [{ field: "mvp", label: "Prima versione semplificata (≤3 funzioni)", hint: "Sezione MVP", validate: mvpMaxFunctions(3) }],
+  "2-4": [{ field: "mvp", label: "Prima versione semplificata (≤3 funzioni)", hint: "Sezione Prima versione dell'app (MVP)", validate: mvpMaxFunctions(3) }],
 
   "3-1": [{ field: "decisions", label: "Mappa competitor (≥3 voci)", hint: "Sezione Decisioni / Competitor", validate: minLines(3) }],
   "3-2": [{ field: "decisions", label: "Prove di domanda (≥3)", hint: "Sezione Decisioni / Validazione", validate: minLines(3) }],
   "3-3": [{ field: "bugs_found", label: "Rischi e assunzioni (≥5)", hint: "Sezione Rischi", validate: minLines(5) }],
   "3-4": [{ field: "target", label: "Nicchia iniziale scelta", hint: "Sezione Target", validate: filledText(20) }],
 
-  "4-1": [{ field: "mvp", label: "Definizione MVP (ipotesi + comportamento)", hint: "Sezione MVP", validate: filledText(40) }],
-  "4-2": [{ field: "mvp", label: "Funzioni must-have (≤5)", hint: "Sezione MVP", validate: mvpMaxFunctions(5) }],
+  "4-1": [{ field: "mvp", label: "Definizione della prima versione dell'app (ipotesi + comportamento)", hint: "Sezione Prima versione dell'app (MVP)", validate: filledText(40) }],
+  "4-2": [{ field: "mvp", label: "Funzioni essenziali (≤5)", hint: "Sezione Prima versione dell'app (MVP)", validate: mvpMaxFunctions(5) }],
   "4-3": [{ field: "decisions", label: "Lista NOT NOW (≥10 voci)", hint: "Sezione Decisioni / Fuori scope", validate: minLines(10) }],
   "4-4": [{ field: "next_steps", label: "Roadmap di 5–7 step", hint: "Sezione Roadmap", validate: minLines(5, 7) }],
 };

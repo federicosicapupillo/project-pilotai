@@ -149,7 +149,13 @@ function WorkbookPage() {
         <Field label="Target" value={form.target} onChange={(v) => setForm({ ...form, target: v })} />
         <Field label="Problema" value={form.problem} onChange={(v) => setForm({ ...form, problem: v })} />
         <Field label="Soluzione" value={form.solution} onChange={(v) => setForm({ ...form, solution: v })} />
-        <Field label="MVP" value={form.mvp} onChange={(v) => setForm({ ...form, mvp: v })} rows={4} />
+        <Field
+          label="Prima versione dell'app (MVP)"
+          hint="La prima versione funzionante della tua app, con solo le funzioni essenziali per capire se l'idea ha senso."
+          value={form.mvp}
+          onChange={(v) => setForm({ ...form, mvp: v })}
+          rows={4}
+        />
         <Field label="Schermate" hint="Una per riga" value={form.screens} onChange={(v) => setForm({ ...form, screens: v })} lines rows={5} />
         <Field label="Dati da salvare" hint="Una tabella/campo per riga" value={form.data_to_save} onChange={(v) => setForm({ ...form, data_to_save: v })} lines rows={5} />
         <Field label="Tool utilizzati" hint="Es. Lovable, Supabase…" value={form.tools_used} onChange={(v) => setForm({ ...form, tools_used: v })} lines rows={4} />

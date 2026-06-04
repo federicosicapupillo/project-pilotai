@@ -74,8 +74,8 @@ function ProjectPage() {
     { tool: "GitHub", why: "Versiona tutte le modifiche." },
     { tool: "GitHub Desktop", why: "Push/pull/commit visuale senza terminale.", optional: true },
     { tool: "Midjourney", why: "Concept visivi e mood di brand.", optional: true },
-    { tool: "Runway", why: "Video demo o teaser dell'MVP.", optional: true },
-    { tool: "Stripe", why: "Aggiungi pagamenti SOLO se l'MVP li richiede.", optional: true },
+    { tool: "Runway", why: "Video demo o teaser della prima versione dell'app.", optional: true },
+    { tool: "Stripe", why: "Aggiungi pagamenti SOLO se la prima versione dell'app li richiede.", optional: true },
     { tool: "Twilio", why: "OTP/SMS SOLO se servono al prodotto.", optional: true },
   ];
 
@@ -125,6 +125,12 @@ function ProjectPage() {
         </TabsList>
 
         <TabsContent value="scheda" className="mt-6">
+          <div className="glass-card rounded-xl p-5 mb-4 border border-primary/20">
+            <h3 className="font-display font-semibold text-base">Cos'è la prima versione dell'app?</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Non devi costruire subito l'app perfetta. La prima versione (chiamata anche MVP) serve a creare qualcosa di semplice, funzionante e testabile. Contiene solo le funzioni indispensabili per capire se la tua idea può davvero funzionare.
+            </p>
+          </div>
           <div className="grid md:grid-cols-2 gap-4">
             <SchedaBlock title="Target utenti" content={analysis?.target_users} />
             <SchedaBlock title="Problema risolto" content={analysis?.main_problem} />
@@ -133,7 +139,7 @@ function ProjectPage() {
             <SchedaList title="Schermate necessarie" items={analysis?.required_screens as string[]} />
             <SchedaList title="Dati da salvare" items={analysis?.data_to_save as string[]} />
             <SchedaList title="Rischi" items={analysis?.risks as string[]} accent="destructive" />
-            <SchedaBlock title="Prima versione MVP" content={analysis?.mvp_version} />
+            <SchedaBlock title="Prima versione dell'app (MVP)" content={analysis?.mvp_version} />
             <SchedaList title="Cosa NON costruire subito" items={analysis?.not_to_build_now as string[]} />
           </div>
         </TabsContent>
@@ -172,7 +178,7 @@ function ProjectPage() {
               ))}
             </ol>
             <p className="text-xs text-muted-foreground mt-4">
-              Stripe e Twilio servono solo se il tuo MVP richiede pagamenti reali o telefonia/SMS. Non sono il primo passo.
+              Stripe e Twilio servono solo se la prima versione della tua app richiede pagamenti reali o telefonia/SMS. Non sono il primo passo.
             </p>
           </div>
         </TabsContent>
