@@ -160,40 +160,6 @@ function buildDescription(idea: GeneratedIdea): string {
   ].filter(Boolean).join(" ");
 }
 
-function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">{label}</div>
-      {hint && <div className="text-[11px] text-muted-foreground/80 mb-2 -mt-1">{hint}</div>}
-      {children}
-    </div>
-  );
-}
-
-function ChipGroup({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {options.map((o) => {
-        const active = value === o;
-        return (
-          <button
-            key={o}
-            type="button"
-            onClick={() => onChange(active ? "" : o)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-              active
-                ? "border-primary/60 bg-primary/15 text-primary"
-                : "border-border/60 bg-background/40 text-foreground/80 hover:border-primary/40"
-            }`}
-          >
-            {o}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 function IdeaCard({ idea, onSelect }: { idea: GeneratedIdea; onSelect: () => void }) {
   return (
     <div
