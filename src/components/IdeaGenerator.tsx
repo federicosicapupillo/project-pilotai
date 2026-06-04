@@ -46,9 +46,23 @@ export type IdeaGeneratorProps = {
   onSelect: (description: string) => void;
   triggerLabel?: string;
   variant?: "card" | "inline";
+  /** Preset values already chosen in the estimator. When presetBudget is set
+   * we skip the form and generate directly from these parameters. */
+  presetBudget?: string;
+  presetTarget?: string;
+  presetRevenue?: string;
+  presetPrice?: string;
 };
 
-export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me", variant = "card" }: IdeaGeneratorProps) {
+export function IdeaGenerator({
+  onSelect,
+  triggerLabel = "Genera un'idea per me",
+  variant = "card",
+  presetBudget,
+  presetTarget,
+  presetRevenue,
+  presetPrice,
+}: IdeaGeneratorProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
   const [budget, setBudget] = useState("");
@@ -59,7 +73,10 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
   const [interests, setInterests] = useState("");
   const [ideas, setIdeas] = useState<GeneratedIdea[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [triggerError, setTriggerError] = useState<string | null>(null);
   const generate = useServerFn(generateAppIdeas);
+
+  const usePreset = Boolean(presetBudget);
 
   const reset = () => {
     setStep("form");
@@ -70,9 +87,22 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
   const onSubmit = async () => {
     setStep("loading");
     setError(null);
-    void trackEvent("idea_generator_submitted", { budget, sector, appType, complexity, goal });
+    const payload = usePreset
+      ? {
+          budget: presetBudget ?? "",
+          target: presetTarget ?? "",
+          revenueModel: presetRevenue ?? "",
+          price: presetPrice ?? "",
+          sector: "",
+          appType: "",
+          complexity: "",
+          goal: "",
+          interests: "",
+        }
+      : { budget, sector, appType, complexity, goal, interests };
+    void trackEvent("idea_generator_submitted", payload);
     try {
-      const r = await generate({ data: { budget, sector, appType, complexity, goal, interests } });
+      const r = await generate({ data: payload });
       setIdeas(r.ideas);
       setStep("results");
     } catch (e) {
@@ -90,8 +120,23 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
     setTimeout(reset, 300);
   };
 
+  const handleTriggerClick = () => {
+    setTriggerError(null);
+    if (usePreset) {
+      if (!presetBudget) {
+        setTriggerError("Seleziona prima un budget operativo per generare idee realistiche.");
+        return;
+      }
+      setOpen(true);
+      setStep("loading");
+      void onSubmit();
+      return;
+    }
+    setOpen(true);
+  };
+
   const trigger = (
-    <Button variant="hero" size="lg" onClick={() => setOpen(true)}>
+    <Button variant="hero" size="lg" onClick={handleTriggerClick}>
       <Wallet className="size-4" /> {triggerLabel}
     </Button>
   );
@@ -106,8 +151,15 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
           <div className="flex-1">
             <div className="font-display font-semibold">Non hai ancora un'idea?</div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Indica il tuo budget e genera idee di app realistiche, costruibili con agenti AI e strumenti no-code.
+              {usePreset
+                ? "Useremo il budget, il target, il modello di ricavo e il prezzo che hai selezionato qui sopra per generare 3 idee coerenti."
+                : "Indica il tuo budget e genera idee di app realistiche, costruibili con agenti AI e strumenti no-code."}
             </p>
+            {triggerError && (
+              <p className="text-xs text-destructive mt-2 flex items-center gap-1.5">
+                <AlertTriangle className="size-3.5" /> {triggerError}
+              </p>
+            )}
           </div>
           {trigger}
         </div>
@@ -122,11 +174,13 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
             <DialogDescription>
               {step === "results"
                 ? "Scegli quella che ti convince di più. Calcoleremo ore, costi e potenziale."
-                : "Indica il tuo budget operativo: genereremo idee compatibili e realizzabili con AI e no-code."}
+                : usePreset
+                  ? "Stiamo usando i parametri che hai già selezionato (budget, target, modello di ricavo e prezzo)."
+                  : "Indica il tuo budget operativo: genereremo idee compatibili e realizzabili con AI e no-code."}
             </DialogDescription>
           </DialogHeader>
 
-          {step === "form" && (
+          {step === "form" && !usePreset && (
             <div className="space-y-4 mt-2">
               <FormField
                 label="Quanto budget vuoi dedicare alla creazione della prima versione?"
@@ -175,6 +229,16 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
               <Loader2 className="size-10 text-primary animate-spin" />
               <p className="mt-4 font-display font-semibold">Sto generando 3 idee personalizzate…</p>
               <p className="text-xs text-muted-foreground mt-1">Pochi secondi.</p>
+            </div>
+          )}
+
+          {step === "form" && usePreset && error && (
+            <div className="py-10 flex flex-col items-center text-center gap-3">
+              <AlertTriangle className="size-8 text-destructive" />
+              <p className="text-sm text-destructive">{error}</p>
+              <Button variant="hero" onClick={onSubmit}>
+                <Wand2 className="size-4" /> Riprova
+              </Button>
             </div>
           )}
 
