@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, X } from "lucide-react";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -19,14 +19,22 @@ const PLANS = [
   {
     name: "Start",
     price: "Gratis",
-    desc: "Per esplorare il metodo e creare la tua prima scheda progetto.",
+    desc: "Per scoprire il metodo e capire quanto può essere realizzabile la tua idea.",
     features: [
-      "1 progetto attivo",
-      "Scheda progetto guidata",
-      "Stima ore della prima versione",
+      "1 idea analizzata",
+      "Stima ore della prima versione funzionante",
+      "Prima scheda progetto guidata",
       "Accesso base agli agenti AI",
+      "Anteprima della roadmap",
     ],
-    cta: "Inizia gratis",
+    excludes: [
+      "costruzione guidata completa dell'app",
+      "percorso Academy completo",
+      "roadmap avanzata passo passo",
+      "tutte le lezioni operative",
+      "supporto sugli strumenti AI/no-code",
+    ],
+    cta: "Analizza la tua idea gratis",
     variant: "glass" as const,
   },
   {
@@ -93,6 +101,18 @@ function PricingPage() {
                   </li>
                 ))}
               </ul>
+              {p.excludes && (
+                <div className="mt-5 pt-4 border-t border-border/40">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Non include</div>
+                  <ul className="space-y-1.5 text-xs text-muted-foreground">
+                    {p.excludes.map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <X className="size-3.5 mt-0.5 shrink-0 opacity-70" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <Link to="/auth" className="mt-6">
                 <Button variant={p.variant} size="lg" className="w-full">
                   {p.cta} <ArrowRight className="size-4" />
