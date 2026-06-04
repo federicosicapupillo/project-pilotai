@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -15,6 +15,7 @@ type Estimate = {
 };
 
 const STORAGE_KEY = "draft_idea_description";
+const REDIRECT_KEY = "post_auth_redirect";
 
 function classify(idea: string): Estimate {
   const t = idea.toLowerCase();
@@ -74,6 +75,7 @@ const STEPS = [
 export function IdeaEstimator() {
   const [idea, setIdea] = useState("");
   const [result, setResult] = useState<Estimate | null>(null);
+  const navigate = useNavigate();
 
   const onCalc = () => {
     if (idea.trim().length < 8) return;
@@ -81,6 +83,14 @@ export function IdeaEstimator() {
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY, idea.trim());
     }
+  };
+
+  const goToRoadmap = () => {
+    if (typeof window !== "undefined" && idea.trim()) {
+      localStorage.setItem(STORAGE_KEY, idea.trim());
+      localStorage.setItem(REDIRECT_KEY, "/new-project");
+    }
+    navigate({ to: "/new-project" });
   };
 
   return (
@@ -153,11 +163,9 @@ export function IdeaEstimator() {
                 <p className="text-xs text-muted-foreground max-w-md">
                   La prima versione funzionante (chiamata anche MVP) contiene solo le funzioni essenziali per capire se l'idea ha senso.
                 </p>
-                <Link to="/auth" search={{ next: "/new-project" }}>
-                  <Button variant="hero" size="lg">
-                    Crea la roadmap completa <ArrowRight className="size-4" />
-                  </Button>
-                </Link>
+                <Button variant="hero" size="lg" onClick={goToRoadmap}>
+                  Crea la roadmap completa <ArrowRight className="size-4" />
+                </Button>
               </div>
             </div>
           )}

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
+import { IdeaEstimator } from "@/components/IdeaEstimator";
 import {
   Sparkles, ArrowRight, Users, Wand2, ListChecks, BookOpen,
   Lightbulb, Rocket, Target, ShieldCheck, Layers, Zap, PenLine, FileText, Hammer,
@@ -52,6 +53,9 @@ function Index() {
             </p>
           </div>
         </section>
+
+        {/* IDEA → ORE — blocco interattivo subito sotto la hero */}
+        <IdeaEstimator />
 
         {/* STEPS — 4 card subito sotto la hero */}
         <Section title="Dall'idea alla prima versione dell'app in 4 passi" eyebrow="Come funziona">
