@@ -30,6 +30,14 @@ const OutputSchema = z.object({
   steps: z.array(StepSchema),
 });
 
+type RoadmapDto = z.infer<typeof StepSchema> & {
+  phase: AppRoadmapPhase;
+  order_index: number;
+  priority: number;
+  status: "todo";
+  progress_weight: number;
+};
+
 const SYSTEM_PROMPT = `Sei un Product Manager esperto di app no-code, agenti AI, Lovable, Supabase e validazione MVP.
 Devi creare una roadmap OPERATIVA personalizzata per costruire l'app dell'utente, passo passo.
 Regole rigide:
@@ -85,7 +93,7 @@ function normalizePhase(phase: string | null | undefined, index: number): AppRoa
   return fuzzy ?? APP_ROADMAP_PHASES[Math.min(index, APP_ROADMAP_PHASES.length - 1)];
 }
 
-function toClientRoadmap(steps: z.infer<typeof StepSchema>[]) {
+function toClientRoadmap(steps: z.infer<typeof StepSchema>[]): RoadmapDto[] {
   return steps.map((s, i) => {
     const phase = normalizePhase(s.phase, i);
     return {
@@ -97,6 +105,23 @@ function toClientRoadmap(steps: z.infer<typeof StepSchema>[]) {
       progress_weight: PHASE_WEIGHT[phase] ?? 1,
     };
   });
+}
+
+function fallbackRoadmap(data: z.infer<typeof InputSchema>): RoadmapDto[] {
+  return buildFallbackRoadmap({ title: data.title, idea_description: data.idea_description }).map((s, i) => ({
+    title: s.title,
+    description: s.description ?? "",
+    phase: normalizePhase(s.phase, i),
+    recommended_agent: s.recommended_agent ?? "Agente Stratega",
+    recommended_tool: s.recommended_tool ?? "ChatGPT",
+    prompt_text: s.prompt_text ?? "",
+    expected_output: s.expected_output ?? "",
+    checklist_items: Array.isArray(s.checklist_items) ? s.checklist_items.map(String) : [],
+    order_index: s.order_index,
+    priority: s.priority,
+    status: "todo",
+    progress_weight: s.progress_weight,
+  }));
 }
 
 export const generateAppRoadmap = createServerFn({ method: "POST" })
@@ -121,6 +146,6 @@ export const generateAppRoadmap = createServerFn({ method: "POST" })
       return toClientRoadmap(object.steps);
     } catch (error) {
       console.error("AI roadmap generation failed; returning deterministic fallback", error);
-      return buildFallbackRoadmap({ title: data.title, idea_description: data.idea_description });
+      return fallbackRoadmap(data);
     }
   });
