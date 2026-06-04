@@ -11,6 +11,8 @@ import {
   PlayCircle, CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle,
 } from "lucide-react";
 import { ToolBadge } from "@/components/ToolBadge";
+import { ActiveProjectBox } from "@/components/ActiveProjectBox";
+import { useActiveProject, personalizePrompt } from "@/hooks/use-active-project";
 
 export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
   head: () => ({ meta: [{ title: "Lezione — Academy" }] }),
@@ -90,6 +92,7 @@ function LessonPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { active } = useActiveProject();
   const [notes, setNotes] = useState("");
   const [checks, setChecks] = useState<Record<number, boolean>>({});
   const [syncStage, setSyncStage] = useState<"idle" | "saving" | "syncing" | "synced" | "error">("idle");
@@ -183,8 +186,8 @@ function LessonPage() {
 
   const copyPrompt = async () => {
     if (!lesson.prompt_text) return;
-    await navigator.clipboard.writeText(lesson.prompt_text);
-    toast.success("Prompt copiato!");
+    await navigator.clipboard.writeText(personalizePrompt(lesson.prompt_text, active));
+    toast.success(active ? `Prompt copiato (personalizzato su "${active.title}")` : "Prompt copiato!");
   };
 
   return (
@@ -196,6 +199,10 @@ function LessonPage() {
       >
         <ArrowLeft className="size-4" /> {mod?.title}
       </Link>
+
+      <div className="mb-6">
+        <ActiveProjectBox />
+      </div>
 
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
@@ -271,7 +278,14 @@ function LessonPage() {
               <ClipboardCopy className="size-4" /> Copia
             </Button>
           </div>
-          <pre className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-4 font-sans">{lesson.prompt_text}</pre>
+          <pre className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-4 font-sans">
+            {personalizePrompt(lesson.prompt_text, active)}
+          </pre>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            {active
+              ? `Prompt personalizzato automaticamente sul tuo progetto "${active.title}".`
+              : "Accedi e crea un progetto per ricevere il prompt già personalizzato sui tuoi dati."}
+          </p>
         </div>
       )}
 
@@ -311,6 +325,15 @@ function LessonPage() {
         <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
           <FileText className="size-3.5 text-primary" /> Le tue note
         </div>
+        {active && (
+          <p className="text-xs text-muted-foreground mb-3">
+            Suggerimento: incolla qui l'output ottenuto da {lesson.recommended_agent ?? "l'agente"}, poi
+            <Link to="/workbook/$projectId" params={{ projectId: active.id }} className="text-primary hover:underline mx-1">
+              salvalo nel Workbook
+            </Link>
+            del progetto "{active.title}" per consolidarlo.
+          </p>
+        )}
         <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

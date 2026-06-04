@@ -1,0 +1,1 @@
+ALTER TABLE public.project_workbook ADD COLUMN IF NOT EXISTS launch_materials jsonb DEFAULT '[]'::jsonb;
