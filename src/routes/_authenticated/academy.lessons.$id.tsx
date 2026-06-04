@@ -475,26 +475,45 @@ function LessonPage() {
           ) : (
             <>
               <p className="text-xs text-muted-foreground mb-3">
-                Prima di segnare questa lezione come completata, verifico che tu abbia davvero salvato l'output nel Workbook del progetto <span className="text-foreground/90 font-medium">"{active.title}"</span>.
+                Prima di segnare questa lezione come completata verifico che i campi del Workbook del progetto <span className="text-foreground/90 font-medium">"{active.title}"</span> siano davvero salvati e validi.
               </p>
               <ul className="space-y-2">
-                {fieldStatus.map((f) => (
-                  <li key={f.field + f.label} className="flex items-start gap-3 text-sm">
-                    {f.ok ? (
-                      <CheckCircle2 className="size-4 mt-0.5 text-primary shrink-0" />
-                    ) : (
-                      <XCircle className="size-4 mt-0.5 text-amber-400 shrink-0" />
-                    )}
-                    <span className={f.ok ? "text-foreground" : "text-foreground/90"}>
-                      {f.label}
-                      {!f.ok && <span className="text-amber-300/90"> — manca nel Workbook</span>}
-                    </span>
-                  </li>
-                ))}
+                {fieldStatus.map((f) => {
+                  const isOk = f.status === "ok";
+                  const isMissing = f.status === "missing";
+                  const Icon = isOk ? CheckCircle2 : isMissing ? XCircle : AlertCircle;
+                  const iconCls = isOk ? "text-primary" : isMissing ? "text-amber-400" : "text-red-400";
+                  const badge = isOk ? "OK" : isMissing ? "Mancante" : "Validazione fallita";
+                  const badgeCls = isOk
+                    ? "bg-primary/15 text-primary border-primary/30"
+                    : isMissing
+                      ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                      : "bg-red-500/15 text-red-300 border-red-500/30";
+                  return (
+                    <li key={f.field + f.label} className="flex items-start gap-3 text-sm">
+                      <Icon className={`size-4 mt-0.5 shrink-0 ${iconCls}`} />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-foreground">{f.label}</span>
+                          <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${badgeCls}`}>{badge}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {isOk
+                            ? `Salvato correttamente in "${f.hint}".`
+                            : isMissing
+                              ? `Compila e salva in "${f.hint}".`
+                              : `${f.reason ?? "Contenuto non valido."} Correggi in "${f.hint}".`}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
               {!allFieldsOk && (
                 <p className="text-xs text-amber-300/90 mt-3">
-                  Apri il Workbook, compila i campi mancanti, salva, poi torna qui e potrai segnare la lezione come completata.
+                  {missingCount > 0 && <>Mancanti: <span className="font-medium">{missingCount}</span>. </>}
+                  {invalidCount > 0 && <>Da correggere: <span className="font-medium">{invalidCount}</span>. </>}
+                  Apri il Workbook, sistema i campi indicati, poi torna qui per completare la lezione.
                 </p>
               )}
             </>
