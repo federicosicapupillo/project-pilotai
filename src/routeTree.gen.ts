@@ -13,6 +13,7 @@ import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as RiepilogoIdeaRouteImport } from './routes/riepilogo-idea'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrezziRouteImport } from './routes/prezzi'
+import { Route as PagamentoSuccessoRouteImport } from './routes/pagamento-successo'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalizzaIdeaRouteImport } from './routes/analizza-idea'
@@ -50,6 +51,11 @@ const PricingRoute = PricingRouteImport.update({
 const PrezziRoute = PrezziRouteImport.update({
   id: '/prezzi',
   path: '/prezzi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagamentoSuccessoRoute = PagamentoSuccessoRouteImport.update({
+  id: '/pagamento-successo',
+  path: '/pagamento-successo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodRoute = MethodRouteImport.update({
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pagamento-successo': typeof PagamentoSuccessoRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pagamento-successo': typeof PagamentoSuccessoRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/pagamento-successo': typeof PagamentoSuccessoRoute
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/analizza-idea'
     | '/auth'
     | '/method'
+    | '/pagamento-successo'
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/analizza-idea'
     | '/auth'
     | '/method'
+    | '/pagamento-successo'
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/analizza-idea'
     | '/auth'
     | '/method'
+    | '/pagamento-successo'
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
@@ -300,6 +312,7 @@ export interface RootRouteChildren {
   AnalizzaIdeaRoute: typeof AnalizzaIdeaRoute
   AuthRoute: typeof AuthRoute
   MethodRoute: typeof MethodRoute
+  PagamentoSuccessoRoute: typeof PagamentoSuccessoRoute
   PrezziRoute: typeof PrezziRoute
   PricingRoute: typeof PricingRoute
   RiepilogoIdeaRoute: typeof RiepilogoIdeaRoute
@@ -335,6 +348,13 @@ declare module '@tanstack/react-router' {
       path: '/prezzi'
       fullPath: '/prezzi'
       preLoaderRoute: typeof PrezziRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pagamento-successo': {
+      id: '/pagamento-successo'
+      path: '/pagamento-successo'
+      fullPath: '/pagamento-successo'
+      preLoaderRoute: typeof PagamentoSuccessoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/method': {
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalizzaIdeaRoute: AnalizzaIdeaRoute,
   AuthRoute: AuthRoute,
   MethodRoute: MethodRoute,
+  PagamentoSuccessoRoute: PagamentoSuccessoRoute,
   PrezziRoute: PrezziRoute,
   PricingRoute: PricingRoute,
   RiepilogoIdeaRoute: RiepilogoIdeaRoute,
