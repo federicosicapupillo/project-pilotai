@@ -281,13 +281,15 @@ function LessonPage() {
 
   // ---- Workbook save-check (modules 1–4) ---------------------------------
   const key = mod ? `${mod.order_index}-${lesson.order_index}` : "";
-  const requiredFields = REQUIRED_BY_LESSON[key] ?? [];
-  const requirementsActive = requiredFields.length > 0;
-  const fieldStatus = requiredFields.map((r) => ({
-    ...r,
-    ok: isFieldFilled(workbook, r.field),
-  }));
-  const allFieldsOk = fieldStatus.every((f) => f.ok);
+  const requirements = REQUIRED_BY_LESSON[key] ?? [];
+  const requirementsActive = requirements.length > 0;
+  const fieldStatus = requirements.map((r) => {
+    const result = checkRequirement(workbook, r);
+    return { ...r, ...result };
+  });
+  const allFieldsOk = fieldStatus.every((f) => f.status === "ok");
+  const missingCount = fieldStatus.filter((f) => f.status === "missing").length;
+  const invalidCount = fieldStatus.filter((f) => f.status === "invalid").length;
   const completionBlocked = requirementsActive && (!active || !allFieldsOk) && !isCompleted;
   // -----------------------------------------------------------------------
 
