@@ -325,6 +325,15 @@ function LessonPage() {
         <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
           <FileText className="size-3.5 text-primary" /> Le tue note
         </div>
+        {active && (
+          <p className="text-xs text-muted-foreground mb-3">
+            Suggerimento: incolla qui l'output ottenuto da {lesson.recommended_agent ?? "l'agente"}, poi
+            <Link to="/workbook/$projectId" params={{ projectId: active.id }} className="text-primary hover:underline mx-1">
+              salvalo nel Workbook
+            </Link>
+            del progetto "{active.title}" per consolidarlo.
+          </p>
+        )}
         <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
