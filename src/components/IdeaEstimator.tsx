@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { ToolIcon } from "@/components/ToolIcon";
 import { IdeaGenerator } from "@/components/IdeaGenerator";
+import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
@@ -648,17 +649,31 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
             </span>
           ))}
         </div>
+        <div className="mt-3">
+          <ReusableToolkitBox variant="inline" />
+        </div>
       </Block>
 
       {/* Tool consigliati */}
       <Block icon={Wrench} title="Strumenti consigliati">
         <div className="flex flex-wrap gap-2">
           {result.tools.map((t) => (
-            <span key={t} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/40 border border-border/60 text-sm">
-              <ToolIcon name={t} size={16} /> {t}
+            <span
+              key={t}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/40 border border-border/60 text-sm"
+              title={getReuseBadge(t)}
+            >
+              <ToolIcon name={t} size={16} />
+              <span>{t}</span>
+              <span className="text-[10px] uppercase tracking-wider text-primary/90 border border-primary/30 bg-primary/10 rounded-full px-1.5 py-0.5">
+                {getReuseBadge(t)}
+              </span>
             </span>
           ))}
         </div>
+        <p className="text-[11px] text-muted-foreground mt-3 leading-relaxed">
+          Nota importante: alcuni strumenti hanno abbonamenti mensili. Questi costi possono sembrare legati a una singola app, ma in realtà ti permettono di lavorare anche su altri progetti. Più idee sviluppi, più il costo degli strumenti si distribuisce.
+        </p>
       </Block>
 
       {/* Potenziale economico */}
@@ -726,6 +741,9 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       <Block icon={Lightbulb} title="Consiglio operativo">
         <p className="text-sm text-foreground/90">{consiglio}</p>
       </Block>
+
+      {/* Cassetta degli attrezzi AI */}
+      <ReusableToolkitBox showExample />
 
       {/* CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">

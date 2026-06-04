@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { GraduationCap, ArrowRight, CheckCircle2, Circle, PlayCircle } from "lucide-react";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
+import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
 
 export const Route = createFileRoute("/academy")({
   head: () => ({ meta: [{ title: "Academy — Da Idea ad App" }] }),
@@ -73,6 +74,10 @@ function AcademyPage() {
 
       <div className="mb-8">
         <OperativeCircuit />
+      </div>
+
+      <div className="mb-8">
+        <ReusableToolkitBox />
       </div>
 
       {isLoading && <div className="text-muted-foreground">Caricamento…</div>}
