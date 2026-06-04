@@ -371,15 +371,36 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
 
       <div className={embed ? "space-y-3" : "mt-5 space-y-3"}>
         <div>
-          <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Raccontami la tua idea</label>
-          <Textarea
-            value={idea}
-            onChange={(e) => setIdea(e.target.value)}
-            placeholder="Esempio: voglio creare un'app per aiutare ristoratori a trovare personale extra per weekend e turni serali…"
-            rows={5}
-            maxLength={2000}
-            className="text-base mt-1"
-          />
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs uppercase tracking-[0.18em] font-semibold text-foreground/90">
+              ✍️ Raccontami la tua idea
+            </label>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {idea.length}/2000
+            </span>
+          </div>
+          <div
+            className="relative rounded-2xl overflow-hidden transition-all duration-300 focus-within:scale-[1.005]"
+            style={{
+              background:
+                "linear-gradient(160deg, color-mix(in oklab, var(--primary) 6%, hsl(222 47% 7%)) 0%, hsl(222 47% 6%) 100%)",
+              boxShadow:
+                "0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 10px 40px -20px color-mix(in oklab, var(--primary) 40%, transparent), inset 0 1px 0 color-mix(in oklab, white 6%, transparent)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <Textarea
+              value={idea}
+              onChange={(e) => setIdea(e.target.value)}
+              placeholder="Esempio: voglio creare un'app per aiutare ristoratori a trovare personale extra per weekend e turni serali…"
+              rows={6}
+              maxLength={2000}
+              className="text-base sm:text-[17px] leading-relaxed text-foreground placeholder:text-muted-foreground/70 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 sm:p-5 min-h-[160px]"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground/80 mt-2 pl-1">
+            💡 Più sei chiaro, più la stima sarà utile.
+          </p>
         </div>
 
         {/* Budget operativo — campo evidenziato */}
