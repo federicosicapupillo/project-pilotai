@@ -9,19 +9,19 @@ const InputSchema = z.object({
 });
 
 const OutputSchema = z.object({
-  title: z.string().describe("Titolo sintetico e accattivante dell'idea, massimo 90 caratteri."),
-  short_description: z.string().describe("Riformulazione chiara e professionale dell'idea originale, 1-2 frasi."),
-  project_type: z.string().describe("Tipo di progetto: es. Web app, Mobile app, Tool AI, Automazione, Marketplace, Gestionale, Landing page."),
-  target: z.string().describe("Target specifico e coerente con l'idea. Elenca categorie reali di persone/professionisti che useranno l'app. Niente frasi generiche."),
-  problem: z.string().describe("Problema reale risolto, concreto e specifico per questa idea. 2-3 frasi."),
-  solution: z.string().describe("Come l'app risolve il problema in modo pratico. 2-3 frasi specifiche per questa idea."),
-  first_version: z.string().describe("Cosa includere nella prima versione funzionante, evitando funzioni inutili. 2-3 frasi."),
-  essential_features: z.array(z.string()).min(4).max(7).describe("4-7 funzioni essenziali e specifiche dell'idea."),
-  screens: z.array(z.string()).min(3).max(7).describe("3-7 schermate principali coerenti con il flusso dell'idea."),
-  difficulty: z.enum(["Facile", "Medio", "Avanzato"]).describe("Livello di complessità calcolato in base a funzioni, login, AI, integrazioni, pagamenti, calendario, WhatsApp, ecc."),
-  difficulty_reason: z.string().describe("Una frase che spiega perché questa difficoltà."),
-  estimated_hours: z.string().describe("Range realistico di ore guidate per la prima versione, es. '8 - 14 ore guidate'. Non promettere tempi impossibili."),
-  integrations: z.array(z.string()).max(8).describe("Eventuali integrazioni richieste (es. Google Calendar, WhatsApp, Stripe, OpenAI). Vuoto se non servono."),
+  title: z.string(),
+  short_description: z.string(),
+  project_type: z.string(),
+  target: z.string(),
+  problem: z.string(),
+  solution: z.string(),
+  first_version: z.string(),
+  essential_features: z.array(z.string()),
+  screens: z.array(z.string()),
+  difficulty: z.string(),
+  difficulty_reason: z.string(),
+  estimated_hours: z.string(),
+  integrations: z.array(z.string()),
 });
 
 export type IdeaSummary = z.infer<typeof OutputSchema>;
@@ -36,7 +36,22 @@ REGOLE FONDAMENTALI:
 - Tempi realistici: prima versione tipicamente 6-25 ore guidate. Niente promesse impossibili.
 - Le funzioni essenziali devono essere SPECIFICHE dell'idea, non liste standard.
 - Il target deve essere un elenco concreto di categorie di persone/professionisti.
-- Identifica integrazioni reali nominate o implicite (WhatsApp, Google Calendar, Stripe, ecc).`;
+- Identifica integrazioni reali nominate o implicite (WhatsApp, Google Calendar, Stripe, ecc).
+
+FORMATO OUTPUT (JSON, tutti i campi obbligatori):
+- title: string (max 90 char)
+- short_description: string (1-2 frasi)
+- project_type: string (es. "Web app", "Mobile app", "Tool AI", "Automazione", "Marketplace", "Gestionale", "Landing page")
+- target: string (categorie reali di utenti)
+- problem: string (2-3 frasi)
+- solution: string (2-3 frasi)
+- first_version: string (2-3 frasi)
+- essential_features: array di 4-7 stringhe
+- screens: array di 3-7 stringhe
+- difficulty: string, uno tra "Facile", "Medio", "Avanzato"
+- difficulty_reason: string (1 frase)
+- estimated_hours: string (es. "8 - 14 ore guidate")
+- integrations: array di stringhe (vuoto [] se non servono)`;
 
 export const generateIdeaSummary = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
