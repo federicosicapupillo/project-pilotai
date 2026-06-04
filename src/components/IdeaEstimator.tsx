@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { ToolIcon } from "@/components/ToolIcon";
+import { IdeaGenerator } from "@/components/IdeaGenerator";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
@@ -219,6 +220,23 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     });
   };
 
+  const handleGeneratedIdea = (description: string) => {
+    setIdea(description);
+    const r = classify(description, target, revenue, price);
+    setResult(r);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, description.trim());
+    }
+    void trackEvent("idea_estimate_from_generator", {
+      difficulty: r.difficulty, projectType: r.projectType,
+    });
+    setTimeout(() => {
+      if (typeof document !== "undefined") {
+        document.getElementById("estimator-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+  };
+
   const goToRoadmap = () => {
     if (typeof window !== "undefined" && idea.trim()) {
       localStorage.setItem(STORAGE_KEY, idea.trim());
@@ -307,6 +325,9 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.
           </p>
         </div>
+
+        {/* Non hai ancora un'idea? */}
+        <IdeaGenerator onSelect={handleGeneratedIdea} />
       </div>
 
       {result && <ResultCard result={result} onRoadmap={goToRoadmap} />}
@@ -328,6 +349,7 @@ function ResultCard({ result, onRoadmap }: { result: Estimate; onRoadmap: () => 
 
   return (
     <div
+      id="estimator-result"
       className="mt-6 rounded-2xl p-5 sm:p-6 border border-primary/30 relative overflow-hidden space-y-5"
       style={{
         background:
