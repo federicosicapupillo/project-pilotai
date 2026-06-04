@@ -11,6 +11,8 @@ import {
   PlayCircle, CheckCircle2, FileText, Sparkles, Loader2, RefreshCw, AlertCircle, Circle,
 } from "lucide-react";
 import { ToolBadge } from "@/components/ToolBadge";
+import { ActiveProjectBox } from "@/components/ActiveProjectBox";
+import { useActiveProject, personalizePrompt } from "@/hooks/use-active-project";
 
 export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
   head: () => ({ meta: [{ title: "Lezione — Academy" }] }),
@@ -90,6 +92,7 @@ function LessonPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { active } = useActiveProject();
   const [notes, setNotes] = useState("");
   const [checks, setChecks] = useState<Record<number, boolean>>({});
   const [syncStage, setSyncStage] = useState<"idle" | "saving" | "syncing" | "synced" | "error">("idle");
@@ -183,8 +186,8 @@ function LessonPage() {
 
   const copyPrompt = async () => {
     if (!lesson.prompt_text) return;
-    await navigator.clipboard.writeText(lesson.prompt_text);
-    toast.success("Prompt copiato!");
+    await navigator.clipboard.writeText(personalizePrompt(lesson.prompt_text, active));
+    toast.success(active ? `Prompt copiato (personalizzato su "${active.title}")` : "Prompt copiato!");
   };
 
   return (
@@ -196,6 +199,10 @@ function LessonPage() {
       >
         <ArrowLeft className="size-4" /> {mod?.title}
       </Link>
+
+      <div className="mb-6">
+        <ActiveProjectBox />
+      </div>
 
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
@@ -272,6 +279,14 @@ function LessonPage() {
             </Button>
           </div>
           <pre className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-4 font-sans">{lesson.prompt_text}</pre>
+          <pre className="text-sm whitespace-pre-wrap bg-primary/5 border border-primary/20 rounded-lg p-4 font-sans mt-3">
+            {personalizePrompt(lesson.prompt_text, active)}
+          </pre>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            {active
+              ? `Versione personalizzata sul tuo progetto "${active.title}". Il bottone "Copia" copia questa versione.`
+              : "Accedi e crea un progetto per ricevere automaticamente la versione personalizzata di questo prompt."}
+          </p>
         </div>
       )}
 
