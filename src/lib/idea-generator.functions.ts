@@ -41,6 +41,14 @@ const IdeaSchema = z.object({
   budget_note: textField,
   potential: textField,
   revenue_model: textField,
+  suggested_price: textField,
+  earning_range: textField,
+  scenario_prudent: textField,
+  scenario_realistic: textField,
+  scenario_high: textField,
+  break_even: textField,
+  commercial_risk: textField,
+  earning_explanation: textField,
   tools: stringList,
   agents: stringList,
   main_risk: textField,
@@ -109,10 +117,29 @@ Per ogni idea restituisci nello schema JSON:
 - budget_note: 1 frase che spiega la scelta e, se fuori budget, come semplificare
 - potential: potenziale economico indicativo (es. "Medio/alto se validato su nicchia locale")
 - revenue_model: modello di ricavo consigliato (1-2 ipotesi)
+- suggested_price: prezzo consigliato concreto (es. "29€/mese", "97€ una tantum", "commissione 8%", "lead a 25€")
+- earning_range: range guadagno mensile indicativo, scegliere tra "0€ – 300€/mese", "300€ – 1.000€/mese", "1.000€ – 3.000€/mese", "3.000€ – 10.000€/mese", "10.000€+/mese". Per tool interni usa formula "Risparmio: X€/mese".
+- scenario_prudente IGNORARE — usa scenario_prudent
+- scenario_prudent: scenario prudente con formula concreta, es. "10 clienti x 29€/mese = 290€/mese"
+- scenario_realistic: scenario realistico, es. "50 clienti x 29€/mese = 1.450€/mese"
+- scenario_high: scenario alto (solo se progetto validato), es. "150 clienti x 29€/mese = 4.350€/mese"
+- break_even: punto di pareggio calcolato come (costo iniziale / prezzo) = N clienti/mensilità. Es. "Con 700€ di costo iniziale e prezzo 29€/mese servono ~24 clienti per rientrare."
+- commercial_risk: ESATTAMENTE "Basso" | "Medio" | "Alto"
+- earning_explanation: 1-2 frasi che spiegano la stima e i fattori chiave (target, vendita, traffico necessario)
 - tools: 3-6 strumenti consigliati tra: ChatGPT, Lovable, Supabase, Perplexity, Antigravity, GitHub, Stripe, Twilio, Canva, ElevenLabs, Runway
 - agents: 3-5 agenti AI consigliati (es. "Agente Stratega", "Agente Product Manager", "Agente Prompt Engineer")
 - main_risk: rischio principale da considerare
 - next_step: prossimo step concreto per partire
+
+Logica stima guadagno (rispettala):
+- Landing page semplice: 0€ – 500€/mese (lead/servizi), rischio Basso/Medio.
+- Tool interno: guadagno diretto basso, usa earning_range come "Risparmio: …€/mese", rischio Basso.
+- CRM/dashboard per professionisti: 300€ – 3.000€/mese, rischio Medio.
+- Gestionale verticale B2B: 1.000€ – 10.000€/mese, rischio Medio.
+- Marketplace: 3.000€ – 20.000€+/mese, rischio Alto (serve massa critica).
+- App consumer: variabile, rischio Alto.
+- App con AI: medio/alto, rischio Medio (valuta costi API).
+Stime SEMPRE prudenti, mai promesse. Non scrivere "guadagnerai", usa "potresti", "indicativamente".
 
 Le 3 idee devono essere DIVERSE tra loro per angolo di attacco o modello di business.`;
 }
