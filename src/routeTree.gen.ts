@@ -13,10 +13,17 @@ import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
 import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authenticated/new-project'
+import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
+import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
+import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
+import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
+import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
 
 const MethodRoute = MethodRouteImport.update({
   id: '/method',
@@ -37,9 +44,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedToolsRoute = AuthenticatedToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedNewProjectRoute = AuthenticatedNewProjectRouteImport.update({
   id: '/new-project',
   path: '/new-project',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMyPathRoute = AuthenticatedMyPathRouteImport.update({
+  id: '/my-path',
+  path: '/my-path',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
@@ -52,29 +69,71 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAgentsRoute = AuthenticatedAgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWorkbookProjectIdRoute =
+  AuthenticatedWorkbookProjectIdRouteImport.update({
+    id: '/workbook/$projectId',
+    path: '/workbook/$projectId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   id: '/projects/$id',
   path: '/projects/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAcademyModulesIdRoute =
+  AuthenticatedAcademyModulesIdRouteImport.update({
+    id: '/modules/$id',
+    path: '/modules/$id',
+    getParentRoute: () => AuthenticatedAcademyRoute,
+  } as any)
+const AuthenticatedAcademyLessonsIdRoute =
+  AuthenticatedAcademyLessonsIdRouteImport.update({
+    id: '/lessons/$id',
+    path: '/lessons/$id',
+    getParentRoute: () => AuthenticatedAcademyRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/academy': typeof AuthenticatedAcademyRouteWithChildren
+  '/agents': typeof AuthenticatedAgentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
+  '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
+  '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
+  '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/academy': typeof AuthenticatedAcademyRouteWithChildren
+  '/agents': typeof AuthenticatedAgentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
+  '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
+  '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
+  '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,10 +141,17 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/_authenticated/academy': typeof AuthenticatedAcademyRouteWithChildren
+  '/_authenticated/agents': typeof AuthenticatedAgentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
+  '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
+  '/_authenticated/tools': typeof AuthenticatedToolsRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
+  '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
+  '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,29 +159,50 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/method'
+    | '/academy'
+    | '/agents'
     | '/dashboard'
     | '/library'
+    | '/my-path'
     | '/new-project'
+    | '/tools'
     | '/projects/$id'
+    | '/workbook/$projectId'
+    | '/academy/lessons/$id'
+    | '/academy/modules/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/method'
+    | '/academy'
+    | '/agents'
     | '/dashboard'
     | '/library'
+    | '/my-path'
     | '/new-project'
+    | '/tools'
     | '/projects/$id'
+    | '/workbook/$projectId'
+    | '/academy/lessons/$id'
+    | '/academy/modules/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/method'
+    | '/_authenticated/academy'
+    | '/_authenticated/agents'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
+    | '/_authenticated/my-path'
     | '/_authenticated/new-project'
+    | '/_authenticated/tools'
     | '/_authenticated/projects/$id'
+    | '/_authenticated/workbook/$projectId'
+    | '/_authenticated/academy/lessons/$id'
+    | '/_authenticated/academy/modules/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -155,11 +242,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/tools': {
+      id: '/_authenticated/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof AuthenticatedToolsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/new-project': {
       id: '/_authenticated/new-project'
       path: '/new-project'
       fullPath: '/new-project'
       preLoaderRoute: typeof AuthenticatedNewProjectRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-path': {
+      id: '/_authenticated/my-path'
+      path: '/my-path'
+      fullPath: '/my-path'
+      preLoaderRoute: typeof AuthenticatedMyPathRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/library': {
@@ -176,6 +277,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/agents': {
+      id: '/_authenticated/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AuthenticatedAgentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/academy': {
+      id: '/_authenticated/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AuthenticatedAcademyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/workbook/$projectId': {
+      id: '/_authenticated/workbook/$projectId'
+      path: '/workbook/$projectId'
+      fullPath: '/workbook/$projectId'
+      preLoaderRoute: typeof AuthenticatedWorkbookProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/projects/$id': {
       id: '/_authenticated/projects/$id'
       path: '/projects/$id'
@@ -183,21 +305,58 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/academy/modules/$id': {
+      id: '/_authenticated/academy/modules/$id'
+      path: '/modules/$id'
+      fullPath: '/academy/modules/$id'
+      preLoaderRoute: typeof AuthenticatedAcademyModulesIdRouteImport
+      parentRoute: typeof AuthenticatedAcademyRoute
+    }
+    '/_authenticated/academy/lessons/$id': {
+      id: '/_authenticated/academy/lessons/$id'
+      path: '/lessons/$id'
+      fullPath: '/academy/lessons/$id'
+      preLoaderRoute: typeof AuthenticatedAcademyLessonsIdRouteImport
+      parentRoute: typeof AuthenticatedAcademyRoute
+    }
   }
 }
 
+interface AuthenticatedAcademyRouteChildren {
+  AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
+  AuthenticatedAcademyModulesIdRoute: typeof AuthenticatedAcademyModulesIdRoute
+}
+
+const AuthenticatedAcademyRouteChildren: AuthenticatedAcademyRouteChildren = {
+  AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
+  AuthenticatedAcademyModulesIdRoute: AuthenticatedAcademyModulesIdRoute,
+}
+
+const AuthenticatedAcademyRouteWithChildren =
+  AuthenticatedAcademyRoute._addFileChildren(AuthenticatedAcademyRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRouteWithChildren
+  AuthenticatedAgentsRoute: typeof AuthenticatedAgentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
+  AuthenticatedToolsRoute: typeof AuthenticatedToolsRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
+  AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAcademyRoute: AuthenticatedAcademyRouteWithChildren,
+  AuthenticatedAgentsRoute: AuthenticatedAgentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
+  AuthenticatedToolsRoute: AuthenticatedToolsRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
+  AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

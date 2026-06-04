@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_library: {
+        Row: {
+          base_prompt: string | null
+          course_phase: string | null
+          created_at: string
+          expected_output: string | null
+          id: string
+          name: string
+          recommended_tools: Json | null
+          role: string | null
+          updated_at: string
+          when_to_use: string | null
+        }
+        Insert: {
+          base_prompt?: string | null
+          course_phase?: string | null
+          created_at?: string
+          expected_output?: string | null
+          id?: string
+          name: string
+          recommended_tools?: Json | null
+          role?: string | null
+          updated_at?: string
+          when_to_use?: string | null
+        }
+        Update: {
+          base_prompt?: string | null
+          course_phase?: string | null
+          created_at?: string
+          expected_output?: string | null
+          id?: string
+          name?: string
+          recommended_tools?: Json | null
+          role?: string | null
+          updated_at?: string
+          when_to_use?: string | null
+        }
+        Relationships: []
+      }
       agents: {
         Row: {
           created_at: string
@@ -54,6 +93,98 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      course_lessons: {
+        Row: {
+          checklist_items: Json | null
+          content: string | null
+          created_at: string
+          description: string | null
+          exercise_text: string | null
+          id: string
+          module_id: string
+          objective: string | null
+          order_index: number
+          prompt_text: string | null
+          recommended_agent: string | null
+          recommended_tools: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          checklist_items?: Json | null
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          exercise_text?: string | null
+          id?: string
+          module_id: string
+          objective?: string | null
+          order_index?: number
+          prompt_text?: string | null
+          recommended_agent?: string | null
+          recommended_tools?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          checklist_items?: Json | null
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          exercise_text?: string | null
+          id?: string
+          module_id?: string
+          objective?: string | null
+          order_index?: number
+          prompt_text?: string | null
+          recommended_agent?: string | null
+          recommended_tools?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "course_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_modules: {
+        Row: {
+          created_at: string
+          description: string | null
+          final_output: string | null
+          id: string
+          objective: string | null
+          order_index: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          final_output?: string | null
+          id?: string
+          objective?: string | null
+          order_index?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          final_output?: string | null
+          id?: string
+          objective?: string | null
+          order_index?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -124,6 +255,71 @@ export type Database = {
             foreignKeyName: "project_analysis_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_workbook: {
+        Row: {
+          agents_used: Json | null
+          bugs_found: Json | null
+          created_at: string
+          data_to_save: Json | null
+          id: string
+          idea: string | null
+          mvp: string | null
+          next_steps: Json | null
+          problem: string | null
+          project_id: string
+          prompts_used: Json | null
+          screens: Json | null
+          solution: string | null
+          target: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agents_used?: Json | null
+          bugs_found?: Json | null
+          created_at?: string
+          data_to_save?: Json | null
+          id?: string
+          idea?: string | null
+          mvp?: string | null
+          next_steps?: Json | null
+          problem?: string | null
+          project_id: string
+          prompts_used?: Json | null
+          screens?: Json | null
+          solution?: string | null
+          target?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agents_used?: Json | null
+          bugs_found?: Json | null
+          created_at?: string
+          data_to_save?: Json | null
+          id?: string
+          idea?: string | null
+          mvp?: string | null
+          next_steps?: Json | null
+          problem?: string | null
+          project_id?: string
+          prompts_used?: Json | null
+          screens?: Json | null
+          solution?: string | null
+          target?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_workbook_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
@@ -249,6 +445,96 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "roadmap_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tool_library: {
+        Row: {
+          course_phase: string | null
+          created_at: string
+          description: string | null
+          difficulty_level: string | null
+          example_use: string | null
+          id: string
+          name: string
+          updated_at: string
+          url: string | null
+          use_case: string | null
+        }
+        Insert: {
+          course_phase?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          example_use?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          url?: string | null
+          use_case?: string | null
+        }
+        Update: {
+          course_phase?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          example_use?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          url?: string | null
+          use_case?: string | null
+        }
+        Relationships: []
+      }
+      user_lesson_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          lesson_id: string
+          notes: string | null
+          project_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id: string
+          notes?: string | null
+          project_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          notes?: string | null
+          project_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_lesson_progress_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
