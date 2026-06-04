@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Sparkles, ArrowRight, Layers, Database, ShieldCheck, Hammer, Bug, Wand2, Gauge,
 } from "lucide-react";
+import { trackEvent } from "@/lib/tracking";
 
 type Difficulty = "Bassa" | "Media" | "Alta";
 type Estimate = {
@@ -79,18 +80,28 @@ export function IdeaEstimator() {
 
   const onCalc = () => {
     if (idea.trim().length < 8) return;
-    setResult(classify(idea));
+    const r = classify(idea);
+    setResult(r);
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY, idea.trim());
     }
+    void trackEvent("idea_estimate_calculated", {
+      hoursLow: r.hoursLow,
+      hoursHigh: r.hoursHigh,
+      difficulty: r.difficulty,
+      projectType: r.projectType,
+      length: idea.trim().length,
+    });
   };
 
   const goToRoadmap = () => {
     if (typeof window !== "undefined" && idea.trim()) {
       localStorage.setItem(STORAGE_KEY, idea.trim());
       localStorage.setItem(REDIRECT_KEY, "/new-project");
+      localStorage.setItem("pending_plan", "roadmap");
     }
-    navigate({ to: "/pricing" });
+    void trackEvent("cta_roadmap_29");
+    navigate({ to: "/prezzi" });
   };
 
   return (
@@ -163,9 +174,14 @@ export function IdeaEstimator() {
                 <p className="text-xs text-muted-foreground max-w-md">
                   La prima versione funzionante (chiamata anche MVP) contiene solo le funzioni essenziali per capire se l'idea ha senso.
                 </p>
-                <Button variant="hero" size="lg" onClick={goToRoadmap}>
-                  Crea la roadmap completa <ArrowRight className="size-4" />
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link to="/method">
+                    <Button variant="glass" size="lg">Prima voglio vedere il metodo</Button>
+                  </Link>
+                  <Button variant="hero" size="lg" onClick={goToRoadmap}>
+                    Crea la roadmap completa a 29€ <ArrowRight className="size-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           )}
