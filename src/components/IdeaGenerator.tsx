@@ -10,15 +10,19 @@ import { generateAppIdeas, type GeneratedIdea } from "@/lib/idea-generator.funct
 import { trackEvent } from "@/lib/tracking";
 import {
   Sparkles, Wand2, Lightbulb, Loader2, ArrowRight, Users, AlertTriangle,
-  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers,
+  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info,
 } from "lucide-react";
 
 type Step = "form" | "loading" | "results";
 
+const BUDGETS = [
+  "0€ – 100€", "100€ – 300€", "300€ – 700€",
+  "700€ – 1.500€", "1.500€ – 3.000€", "3.000€+", "Non lo so ancora",
+];
 const SECTORS = [
   "Ristorazione", "Immobiliare", "Fitness / Benessere", "Turismo",
   "Formazione", "Eventi", "Vendite / CRM", "Creator / Content",
-  "Servizi locali", "Aziende / B2B", "Non lo so",
+  "Servizi locali", "Aziende / B2B", "Altro", "Non lo so",
 ];
 const APP_TYPES = [
   "App per guadagnare online", "Strumento per aziende", "Gestionale interno",
@@ -28,9 +32,11 @@ const APP_TYPES = [
 const COMPLEXITIES = ["Molto semplice", "Media", "Ambiziosa", "Non lo so"];
 const GOALS = [
   "Guadagnare vendendo l'app",
+  "Creare uno strumento per aziende",
   "Risparmiare tempo in un lavoro",
-  "Creare un prodotto da lanciare",
-  "Aiutare clienti o aziende",
+  "Vendere un servizio",
+  "Generare lead",
+  "Creare un prodotto digitale",
   "Imparare a costruire app con AI",
 ];
 
@@ -45,6 +51,7 @@ export type IdeaGeneratorProps = {
 export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me", variant = "card" }: IdeaGeneratorProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
+  const [budget, setBudget] = useState("");
   const [sector, setSector] = useState("");
   const [appType, setAppType] = useState("");
   const [complexity, setComplexity] = useState("");
@@ -63,9 +70,9 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
   const onSubmit = async () => {
     setStep("loading");
     setError(null);
-    void trackEvent("idea_generator_submitted", { sector, appType, complexity, goal });
+    void trackEvent("idea_generator_submitted", { budget, sector, appType, complexity, goal });
     try {
-      const r = await generate({ data: { sector, appType, complexity, goal, interests } });
+      const r = await generate({ data: { budget, sector, appType, complexity, goal, interests } });
       setIdeas(r.ideas);
       setStep("results");
     } catch (e) {
@@ -84,8 +91,8 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
   };
 
   const trigger = (
-    <Button variant="glass" size="lg" onClick={() => setOpen(true)}>
-      <Sparkles className="size-4" /> {triggerLabel}
+    <Button variant="hero" size="lg" onClick={() => setOpen(true)}>
+      <Wallet className="size-4" /> {triggerLabel}
     </Button>
   );
 
@@ -99,7 +106,7 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
           <div className="flex-1">
             <div className="font-display font-semibold">Non hai ancora un'idea?</div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Rispondi a poche domande e genera idee di app personalizzate, costruibili con agenti AI e strumenti no-code.
+              Indica il tuo budget e genera idee di app realistiche, costruibili con agenti AI e strumenti no-code.
             </p>
           </div>
           {trigger}
@@ -115,12 +122,18 @@ export function IdeaGenerator({ onSelect, triggerLabel = "Genera un'idea per me"
             <DialogDescription>
               {step === "results"
                 ? "Scegli quella che ti convince di più. Calcoleremo ore, costi e potenziale."
-                : "Rispondi a poche domande: useremo l'AI per proporti idee realistiche e costruibili."}
+                : "Indica il tuo budget operativo: genereremo idee compatibili e realizzabili con AI e no-code."}
             </DialogDescription>
           </DialogHeader>
 
           {step === "form" && (
             <div className="space-y-4 mt-2">
+              <FormField
+                label="Quanto budget vuoi dedicare alla creazione della prima versione?"
+                hint="Non includere il costo del corso. Indica solo il budget per strumenti, test, dominio, database, eventuali API, contenuti e lancio."
+              >
+                <ChipGroup options={BUDGETS} value={budget} onChange={setBudget} />
+              </FormField>
               <FormField label="In quale settore ti interessa creare qualcosa?">
                 <ChipGroup options={SECTORS} value={sector} onChange={setSector} />
               </FormField>
@@ -201,10 +214,11 @@ function buildDescription(idea: GeneratedIdea): string {
   ].filter(Boolean).join(" ");
 }
 
-function FormField({ label, children }: { label: string; children: React.ReactNode }) {
+function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
       <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">{label}</div>
+      {hint && <div className="text-[11px] text-muted-foreground/80 mb-2 -mt-1">{hint}</div>}
       {children}
     </div>
   );
