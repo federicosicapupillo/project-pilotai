@@ -28,7 +28,7 @@ type Wb = {
   screens: string; data_to_save: string; agents_used: string; prompts_used: string;
   bugs_found: string; next_steps: string;
   tools_used: string; decisions: string; best_prompts: string; errors_solved: string;
-  next_tool: string; next_agent: string;
+  next_tool: string; next_agent: string; launch_materials: string;
 };
 
 const empty: Wb = {
@@ -36,7 +36,7 @@ const empty: Wb = {
   screens: "", data_to_save: "", agents_used: "", prompts_used: "",
   bugs_found: "", next_steps: "",
   tools_used: "", decisions: "", best_prompts: "", errors_solved: "",
-  next_tool: "", next_agent: "",
+  next_tool: "", next_agent: "", launch_materials: "",
 };
 
 function toLines(v: unknown): string {
@@ -84,6 +84,7 @@ function WorkbookPage() {
         errors_solved: toLines(data.wb.errors_solved),
         next_tool: data.wb.next_tool ?? "",
         next_agent: data.wb.next_agent ?? "",
+        launch_materials: toLines(data.wb.launch_materials),
       });
     } else if (data.project) {
       setForm({
@@ -116,6 +117,7 @@ function WorkbookPage() {
         errors_solved: fromLines(form.errors_solved),
         next_tool: form.next_tool || null,
         next_agent: form.next_agent || null,
+        launch_materials: fromLines(form.launch_materials),
       };
       const { error } = await supabase.from("project_workbook").upsert(payload, { onConflict: "project_id" });
       if (error) throw error;
@@ -160,6 +162,7 @@ function WorkbookPage() {
         <Field label="Prossimi step" hint="Uno per riga" value={form.next_steps} onChange={(v) => setForm({ ...form, next_steps: v })} lines rows={5} />
         <Field label="Prossimo tool da aprire" value={form.next_tool} onChange={(v) => setForm({ ...form, next_tool: v })} rows={2} />
         <Field label="Prossimo agente da usare" value={form.next_agent} onChange={(v) => setForm({ ...form, next_agent: v })} rows={2} />
+        <Field label="Materiali per lancio/demo" hint="Video, copy, pitch, asset" value={form.launch_materials} onChange={(v) => setForm({ ...form, launch_materials: v })} lines rows={5} />
       </div>
 
       <div className="flex justify-end mt-6">
