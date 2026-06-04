@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
 import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authenticated/new-project'
+import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
@@ -50,6 +51,11 @@ const AuthenticatedToolsRoute = AuthenticatedToolsRouteImport.update({
 const AuthenticatedNewProjectRoute = AuthenticatedNewProjectRouteImport.update({
   id: '/new-project',
   path: '/new-project',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMyPathRoute = AuthenticatedMyPathRouteImport.update({
+  id: '/my-path',
+  path: '/my-path',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AuthenticatedAgentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/agents': typeof AuthenticatedAgentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/tools': typeof AuthenticatedToolsRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/_authenticated/agents': typeof AuthenticatedAgentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
+  '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
   '/_authenticated/tools': typeof AuthenticatedToolsRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/dashboard'
     | '/library'
+    | '/my-path'
     | '/new-project'
     | '/tools'
     | '/projects/$id'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/dashboard'
     | '/library'
+    | '/my-path'
     | '/new-project'
     | '/tools'
     | '/projects/$id'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/_authenticated/agents'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
+    | '/_authenticated/my-path'
     | '/_authenticated/new-project'
     | '/_authenticated/tools'
     | '/_authenticated/projects/$id'
@@ -229,6 +241,13 @@ declare module '@tanstack/react-router' {
       path: '/new-project'
       fullPath: '/new-project'
       preLoaderRoute: typeof AuthenticatedNewProjectRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-path': {
+      id: '/_authenticated/my-path'
+      path: '/my-path'
+      fullPath: '/my-path'
+      preLoaderRoute: typeof AuthenticatedMyPathRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/library': {
@@ -301,6 +320,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgentsRoute: typeof AuthenticatedAgentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
   AuthenticatedToolsRoute: typeof AuthenticatedToolsRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
@@ -311,6 +331,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgentsRoute: AuthenticatedAgentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
   AuthenticatedToolsRoute: AuthenticatedToolsRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
