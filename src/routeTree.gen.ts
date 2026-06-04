@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrezziRouteImport } from './routes/prezzi'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRoadmapSuccessRouteImport } from './routes/_authenticated/roadmap-success'
 import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authenticated/new-project'
 import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
@@ -34,6 +36,11 @@ const ToolsRoute = ToolsRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrezziRoute = PrezziRouteImport.update({
+  id: '/prezzi',
+  path: '/prezzi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodRoute = MethodRouteImport.update({
@@ -65,6 +72,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoadmapSuccessRoute =
+  AuthenticatedRoadmapSuccessRouteImport.update({
+    id: '/roadmap-success',
+    path: '/roadmap-success',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNewProjectRoute = AuthenticatedNewProjectRouteImport.update({
   id: '/new-project',
   path: '/new-project',
@@ -115,12 +128,14 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
+  '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -132,12 +147,14 @@ export interface FileRoutesByTo {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
+  '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -151,12 +168,14 @@ export interface FileRoutesById {
   '/agents': typeof AgentsRoute
   '/auth': typeof AuthRoute
   '/method': typeof MethodRoute
+  '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/tools': typeof ToolsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
+  '/_authenticated/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
@@ -170,12 +189,14 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/prezzi'
     | '/pricing'
     | '/tools'
     | '/dashboard'
     | '/library'
     | '/my-path'
     | '/new-project'
+    | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
@@ -187,12 +208,14 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/prezzi'
     | '/pricing'
     | '/tools'
     | '/dashboard'
     | '/library'
     | '/my-path'
     | '/new-project'
+    | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/academy/lessons/$id'
@@ -205,12 +228,14 @@ export interface FileRouteTypes {
     | '/agents'
     | '/auth'
     | '/method'
+    | '/prezzi'
     | '/pricing'
     | '/tools'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
     | '/_authenticated/my-path'
     | '/_authenticated/new-project'
+    | '/_authenticated/roadmap-success'
     | '/_authenticated/projects/$id'
     | '/_authenticated/workbook/$projectId'
     | '/_authenticated/academy/lessons/$id'
@@ -224,6 +249,7 @@ export interface RootRouteChildren {
   AgentsRoute: typeof AgentsRoute
   AuthRoute: typeof AuthRoute
   MethodRoute: typeof MethodRoute
+  PrezziRoute: typeof PrezziRoute
   PricingRoute: typeof PricingRoute
   ToolsRoute: typeof ToolsRoute
 }
@@ -242,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prezzi': {
+      id: '/prezzi'
+      path: '/prezzi'
+      fullPath: '/prezzi'
+      preLoaderRoute: typeof PrezziRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/method': {
@@ -285,6 +318,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/roadmap-success': {
+      id: '/_authenticated/roadmap-success'
+      path: '/roadmap-success'
+      fullPath: '/roadmap-success'
+      preLoaderRoute: typeof AuthenticatedRoadmapSuccessRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/new-project': {
       id: '/_authenticated/new-project'
@@ -350,6 +390,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
+  AuthenticatedRoadmapSuccessRoute: typeof AuthenticatedRoadmapSuccessRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
   AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
@@ -361,6 +402,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
+  AuthenticatedRoadmapSuccessRoute: AuthenticatedRoadmapSuccessRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
   AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
@@ -377,6 +419,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgentsRoute: AgentsRoute,
   AuthRoute: AuthRoute,
   MethodRoute: MethodRoute,
+  PrezziRoute: PrezziRoute,
   PricingRoute: PricingRoute,
   ToolsRoute: ToolsRoute,
 }

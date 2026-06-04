@@ -34,14 +34,14 @@ function Index() {
             </div>
             <h1 className="mt-6 text-4xl sm:text-6xl lg:text-7xl font-display font-semibold tracking-tight leading-[1.05]">
               Hai un'<span className="gradient-text">idea</span> per un'app?<br />
-              Scrivila e scopri in quanto <span className="gradient-text">tempo</span> puoi crearla.
+              Scrivila e scopri in quante <span className="gradient-text">ore</span> puoi crearla.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Da Idea ad App ti guida passo passo con agenti AI, strumenti no-code,
-              prompt operativi e una roadmap personalizzata per trasformare la tua idea in una prima app reale.
+              Ti guidiamo passo passo con agenti AI, prompt operativi, strumenti no-code
+              e una roadmap personalizzata per trasformare la tua idea in una prima versione funzionante.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/pricing">
+              <Link to="/prezzi">
                 <Button variant="hero" size="xl">Inizia il tuo progetto <ArrowRight className="size-4" /></Button>
               </Link>
               <Link to="/method">
@@ -185,7 +185,7 @@ function Index() {
               <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
                 Tu guidi la visione, gli agenti AI ti accompagnano passo passo: scheda progetto, prompt e roadmap personalizzata in pochi minuti.
               </p>
-              <Link to="/pricing" className="inline-block mt-8">
+              <Link to="/prezzi" className="inline-block mt-8">
                 <Button variant="hero" size="xl">Inizia il tuo progetto <ArrowRight className="size-4" /></Button>
               </Link>
             </div>
