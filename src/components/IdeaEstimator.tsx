@@ -253,6 +253,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [idea, setIdea] = useState("");
   const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
+  const [targetChoice, setTargetChoice] = useState<string>("Non lo so ancora");
   const [revenue, setRevenue] = useState<RevenueModel>("Non lo so ancora");
   const [price, setPrice] = useState<PriceBand>("Non lo so");
   const [result, setResult] = useState<Estimate | null>(null);
