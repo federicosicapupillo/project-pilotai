@@ -256,10 +256,14 @@ function IdeaCard({ idea, onSelect }: { idea: GeneratedIdea; onSelect: () => voi
         </div>
       )}
 
-      <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-xs flex gap-2">
-        <AlertTriangle className="size-3.5 text-amber-400 mt-0.5 shrink-0" />
-        <span><strong className="text-amber-300">Rischio:</strong> <span className="text-foreground/90">{idea.main_risk}</span></span>
-      </div>
+      {idea.main_risk && (
+        <div className="mt-3 rounded-lg border border-border/50 bg-background/30 p-2.5 text-xs">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            Da validare prima di costruire
+          </div>
+          <p className="text-foreground/80 leading-relaxed">{idea.main_risk}</p>
+        </div>
+      )}
 
       <div className="mt-4 flex justify-end">
         <Button variant="hero" size="lg" onClick={onSelect}>
