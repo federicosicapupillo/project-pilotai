@@ -9,6 +9,9 @@ const InputSchema = z.object({
   complexity: z.string().max(40).optional().default(""),
   goal: z.string().max(120).optional().default(""),
   interests: z.string().max(400).optional().default(""),
+  target: z.string().max(200).optional().default(""),
+  revenueModel: z.string().max(100).optional().default(""),
+  price: z.string().max(60).optional().default(""),
 });
 
 const textField = z.preprocess((value) => {
