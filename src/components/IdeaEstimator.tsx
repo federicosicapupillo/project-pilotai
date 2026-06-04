@@ -252,6 +252,7 @@ export type IdeaEstimatorProps = { embed?: boolean };
 
 export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [idea, setIdea] = useState("");
+  const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
   const [revenue, setRevenue] = useState<RevenueModel>("Non lo so ancora");
   const [price, setPrice] = useState<PriceBand>("Non lo so");
@@ -309,24 +310,67 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             <Gauge className="size-3.5 text-primary" /> Calcolatore intelligente
           </div>
           <h2 className="font-display font-semibold text-2xl sm:text-3xl mt-2">
-            Scrivi la tua idea.{" "}
-            <span className="gradient-text">Stima ore, costi e potenziale economico.</span>
+            Hai un'idea per un'app?{" "}
+            <span className="gradient-text">Scopri ore, costi e budget consigliato.</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-2">
-            La nostra AI ti aiuta a stimare ore, difficoltà, costi, strumenti necessari e possibile modello di ricavo per creare la prima versione funzionante.
+            Scrivi la tua idea, inserisci il budget che vuoi dedicare al progetto e scopri quante ore servono, quanto potrebbe costare e quale potenziale economico potrebbe avere.
           </p>
         </>
       )}
 
       <div className={embed ? "space-y-3" : "mt-5 space-y-3"}>
-        <Textarea
-          value={idea}
-          onChange={(e) => setIdea(e.target.value)}
-          placeholder="Raccontami la tua idea…"
-          rows={5}
-          maxLength={2000}
-          className="text-base"
-        />
+        <div>
+          <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Raccontami la tua idea</label>
+          <Textarea
+            value={idea}
+            onChange={(e) => setIdea(e.target.value)}
+            placeholder="Esempio: voglio creare un'app per aiutare ristoratori a trovare personale extra per weekend e turni serali…"
+            rows={5}
+            maxLength={2000}
+            className="text-base mt-1"
+          />
+        </div>
+
+        {/* Budget operativo — campo evidenziato */}
+        <div
+          className="rounded-2xl p-4 sm:p-5 border border-primary/40 glow-soft"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+          }}
+        >
+          <div className="flex items-start gap-3">
+            <div className="size-10 rounded-lg gradient-bg grid place-items-center shrink-0">
+              <Euro className="size-5 text-primary-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-display font-semibold text-base">Inserisci il tuo budget</div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Indica il budget operativo per la prima versione funzionante. <strong className="text-foreground/90">Non includere il costo del corso.</strong>
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {BUDGET_OPTIONS.map((b) => {
+              const active = budget === b.label;
+              return (
+                <button
+                  key={b.label}
+                  type="button"
+                  onClick={() => setBudget(active ? "" : b.label)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    active
+                      ? "border-primary/70 bg-primary/20 text-primary font-medium"
+                      : "border-border/60 bg-background/40 text-foreground/80 hover:border-primary/40"
+                  }`}
+                >
+                  {b.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Domande facoltative */}
         <details className="rounded-lg border border-border/60 bg-background/30">
@@ -373,7 +417,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
 
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="hero" size="lg" onClick={onCalc} disabled={idea.trim().length < 8}>
-            <Wand2 className="size-4" /> Calcola ore, costi e potenziale
+            <Wand2 className="size-4" /> Calcola ore, costi e budget consigliato
           </Button>
           <p className="text-xs text-muted-foreground">
             Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.
@@ -384,7 +428,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         <IdeaGenerator onSelect={handleGeneratedIdea} />
       </div>
 
-      {result && <ResultCard result={result} onRoadmap={goToRoadmap} />}
+      {result && <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />}
     </div>
   );
 
