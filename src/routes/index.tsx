@@ -32,18 +32,19 @@ function Index() {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
               <Sparkles className="size-3 text-primary" /> Metodo AI per non tecnici
             </div>
-            <h1 className="mt-6 text-4xl sm:text-6xl lg:text-7xl font-display font-semibold tracking-tight leading-[1.05]">
+            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tight leading-[1.05]">
               Hai un'<span className="gradient-text">idea</span> per un'app?<br />
-              Scrivila e scopri in quante <span className="gradient-text">ore</span> puoi crearla.
+              Scopri quante <span className="gradient-text">ore</span> servono,<br />
+              quanto potrebbe <span className="gradient-text">costare</span><br />
+              e quale <span className="gradient-text">potenziale economico</span> potrebbe avere.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Ti guidiamo passo passo con agenti AI, prompt operativi, strumenti no-code
-              e una roadmap personalizzata per trasformare la tua idea in una prima versione funzionante.
+              Scrivi la tua idea. La nostra AI ti aiuta a stimare ore, difficoltà, costi, strumenti necessari e possibile modello di ricavo per creare la prima versione funzionante.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/prezzi">
-                <Button variant="hero" size="xl">Inizia il tuo progetto <ArrowRight className="size-4" /></Button>
-              </Link>
+              <a href="#calcolatore">
+                <Button variant="hero" size="xl">Calcola ore, costi e potenziale <ArrowRight className="size-4" /></Button>
+              </a>
               <Link to="/method">
                 <Button variant="glass" size="xl">Scopri il metodo</Button>
               </Link>
