@@ -10,7 +10,7 @@ import { generateAppIdeas, type GeneratedIdea } from "@/lib/idea-generator.funct
 import { trackEvent } from "@/lib/tracking";
 import {
   Sparkles, Wand2, Lightbulb, Loader2, ArrowRight, Users, AlertTriangle,
-  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info, Euro, Scale, Tag,
+  Target, Coins, Repeat, TrendingUp, Wrench, Bot, Layers, Wallet, MinusCircle, CheckCircle2, XCircle, Info, Euro, Scale, Tag, Calculator,
 } from "lucide-react";
 
 type Step = "form" | "loading" | "results";
