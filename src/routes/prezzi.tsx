@@ -124,11 +124,7 @@ function PrezziPage() {
     await trackEvent(`pricing_click_${plan.id}`, { price: plan.price });
 
     if (plan.id === "free") {
-      if (user) navigate({ to: "/new-project" });
-      else {
-        if (typeof window !== "undefined") localStorage.setItem("post_auth_redirect", "/new-project");
-        navigate({ to: "/auth" });
-      }
+      navigate({ to: "/analizza-idea" });
       return;
     }
 
