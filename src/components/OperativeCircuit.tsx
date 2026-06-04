@@ -11,8 +11,7 @@ type Step = {
   desc: string;
   microcopy: string;
   icon: LucideIcon;
-  accent: string; // tailwind color token base, e.g. "from-amber-400/30 to-amber-500/10"
-  ring: string;   // ring/glow color
+  color: string; // hex for icon glow
   tools: Tool[];
 };
 
