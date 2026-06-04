@@ -41,13 +41,13 @@ type BudgetBand =
   | "3.000€+"
   | "Non lo so ancora";
 
-const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; min: number; max: number }[] = [
-  { label: "100€ – 300€",      min: 100,  max: 300 },
-  { label: "300€ – 700€",      min: 300,  max: 700 },
-  { label: "700€ – 1.500€",    min: 700,  max: 1500 },
-  { label: "1.500€ – 3.000€",  min: 1500, max: 3000 },
-  { label: "3.000€+",          min: 3000, max: 6000 },
-  { label: "Non lo so ancora", min: 0,    max: 0 },
+const BUDGET_OPTIONS: { label: Exclude<BudgetBand, "">; display: string; min: number; max: number }[] = [
+  { label: "100€ – 300€",      display: "100–300 €",      min: 100,  max: 300 },
+  { label: "300€ – 700€",      display: "300–700 €",      min: 300,  max: 700 },
+  { label: "700€ – 1.500€",    display: "700–1.500 €",    min: 700,  max: 1500 },
+  { label: "1.500€ – 3.000€",  display: "1.500–3.000 €",  min: 1500, max: 3000 },
+  { label: "3.000€+",          display: "3.000 €+",       min: 3000, max: 6000 },
+  { label: "Non lo so ancora", display: "Non lo so ancora", min: 0,    max: 0 },
 ];
 
 const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
