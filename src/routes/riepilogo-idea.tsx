@@ -1,18 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { ToolIcon } from "@/components/ToolIcon";
 import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
 import {
   ArrowRight, Sparkles, Clock, Activity, Layers, Users, AlertCircle,
-  Lightbulb, Target, Wrench, Bot, TrendingUp, Wallet, ListChecks, XCircle, Info,
+  Lightbulb, Target, Wrench, Bot, TrendingUp, Wallet, ListChecks, XCircle, Info, Loader2,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import {
   classify, getBudget, fmt, loadIdeaParams,
   type Estimate, type IdeaParams,
 } from "@/lib/idea-estimate";
+import { generateProjectContent, type GeneratedProjectContent } from "@/lib/ai-generation.functions";
 
 export const Route = createFileRoute("/riepilogo-idea")({
   head: () => ({
