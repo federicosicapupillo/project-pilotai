@@ -74,8 +74,8 @@ function ProjectPage() {
     { tool: "GitHub", why: "Versiona tutte le modifiche." },
     { tool: "GitHub Desktop", why: "Push/pull/commit visuale senza terminale.", optional: true },
     { tool: "Midjourney", why: "Concept visivi e mood di brand.", optional: true },
-    { tool: "Runway", why: "Video demo o teaser dell'MVP.", optional: true },
-    { tool: "Stripe", why: "Aggiungi pagamenti SOLO se l'MVP li richiede.", optional: true },
+    { tool: "Runway", why: "Video demo o teaser della prima versione dell'app.", optional: true },
+    { tool: "Stripe", why: "Aggiungi pagamenti SOLO se la prima versione dell'app li richiede.", optional: true },
     { tool: "Twilio", why: "OTP/SMS SOLO se servono al prodotto.", optional: true },
   ];
 
@@ -133,7 +133,7 @@ function ProjectPage() {
             <SchedaList title="Schermate necessarie" items={analysis?.required_screens as string[]} />
             <SchedaList title="Dati da salvare" items={analysis?.data_to_save as string[]} />
             <SchedaList title="Rischi" items={analysis?.risks as string[]} accent="destructive" />
-            <SchedaBlock title="Prima versione MVP" content={analysis?.mvp_version} />
+            <SchedaBlock title="Prima versione dell'app (MVP)" content={analysis?.mvp_version} />
             <SchedaList title="Cosa NON costruire subito" items={analysis?.not_to_build_now as string[]} />
           </div>
         </TabsContent>
@@ -172,7 +172,7 @@ function ProjectPage() {
               ))}
             </ol>
             <p className="text-xs text-muted-foreground mt-4">
-              Stripe e Twilio servono solo se il tuo MVP richiede pagamenti reali o telefonia/SMS. Non sono il primo passo.
+              Stripe e Twilio servono solo se la prima versione della tua app richiede pagamenti reali o telefonia/SMS. Non sono il primo passo.
             </p>
           </div>
         </TabsContent>

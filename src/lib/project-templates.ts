@@ -35,7 +35,7 @@ export const PROMPT_CATEGORIES = [
 
 export const ROADMAP_TEMPLATE = [
   { title: "Idea chiarita", description: "Hai descritto il problema, il target e il risultato atteso." },
-  { title: "MVP definito", description: "Hai stabilito cosa entra nella prima versione e cosa no." },
+  { title: "Prima versione dell'app (MVP) definita", description: "Hai stabilito cosa entra nella prima versione funzionante della tua app e cosa no." },
   { title: "Schermate definite", description: "Lista delle schermate principali e dei flussi utente." },
   { title: "Database definito", description: "Quali entità servono e che relazioni hanno." },
   { title: "Prompt per Lovable creato", description: "Prompt operativo per generare la prima versione." },
@@ -56,10 +56,10 @@ export const AGENT_TEMPLATE = (idea: string) => [
   },
   {
     name: "Agente Product Manager",
-    role: "Trasforma la visione in un MVP costruibile.",
+    role: "Trasforma la visione nella prima versione dell'app (MVP), costruibile davvero.",
     when_to_use: "Dopo che la strategia è chiara, prima del design.",
-    expected_output: "Lista funzioni MVP, cosa rimandare, criteri di successo.",
-    prompt_text: `Sei un product manager. Partendo dall'idea: "${idea}", produci:\n- 5 funzioni essenziali per l'MVP.\n- 5 funzioni da NON costruire ora.\n- 3 metriche per capire se l'MVP funziona.\n- User story principale in formato "Come ... voglio ... per ...".`,
+    expected_output: "Lista funzioni essenziali della prima versione, cosa rimandare, criteri di successo.",
+    prompt_text: `Sei un product manager. Partendo dall'idea: "${idea}", produci:\n- 5 funzioni essenziali per la prima versione dell'app (MVP).\n- 5 funzioni da NON costruire ora.\n- 3 metriche per capire se la prima versione funziona.\n- User story principale in formato "Come ... voglio ... per ...".`,
   },
   {
     name: "Agente UX/UI Designer",
@@ -77,7 +77,7 @@ export const AGENT_TEMPLATE = (idea: string) => [
   },
   {
     name: "Agente Tester",
-    role: "Verifica che l'MVP faccia davvero quello che promette.",
+    role: "Verifica che la prima versione dell'app faccia davvero quello che promette.",
     when_to_use: "Dopo la generazione della prima versione.",
     expected_output: "Checklist di test + lista bug prioritari.",
     prompt_text: `Sei un QA tester. Data l'app "${idea}", scrivi:\n- 10 test funzionali su flussi reali.\n- 5 test su casi limite.\n- Una checklist di accessibilità e responsive.\n- Formato bug: [Gravità] [Schermata] Descrizione - passi per riprodurre.`,
@@ -166,17 +166,17 @@ export const PROMPT_LIBRARY_SEED = [
   },
   {
     category: "Progettazione app",
-    title: "Definisci MVP e schermate",
+    title: "Definisci la prima versione dell'app e le schermate",
     recommended_tool: "ChatGPT",
     prompt_text:
-      "Per l'app [idea]: lista 5 funzioni MVP, 5 funzioni da rimandare, 5 schermate principali con scopo e CTA.",
+      "Per l'app [idea]: lista 5 funzioni essenziali della prima versione dell'app (MVP), 5 funzioni da rimandare, 5 schermate principali con scopo e CTA.",
   },
   {
     category: "Lovable",
     title: "Prompt iniziale per generare la prima versione",
     recommended_tool: "Lovable",
     prompt_text:
-      "Crea una web app chiamata [nome]. Obiettivo: [obiettivo]. Pagine: [lista]. Stile: moderno premium dark. Database: [tabelle]. Auth: email + Google. Regole: niente pagamenti, niente mobile, MVP semplice e ordinato.",
+      "Crea una web app chiamata [nome]. Obiettivo: [obiettivo]. Pagine: [lista]. Stile: moderno premium dark. Database: [tabelle]. Auth: email + Google. Regole: niente pagamenti, niente mobile, prima versione (MVP) semplice e ordinata.",
   },
   {
     category: "Antigravity",
@@ -239,7 +239,7 @@ export const METHOD_STEPS = [
     key: "architettura",
     title: "Architettura",
     description:
-      "Definisci schermate, funzioni MVP e dati da salvare. Tutto il resto va nella lista 'non ora'.",
+      "Definisci schermate, funzioni essenziali della prima versione dell'app e dati da salvare. Tutto il resto va nella lista 'non ora'.",
   },
   {
     key: "prompt",

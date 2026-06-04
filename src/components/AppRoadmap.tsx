@@ -178,7 +178,7 @@ export function AppRoadmap({ projectId }: { projectId: string }) {
         return (
           <div key={phase} className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{phase}</h4>
+              <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{phaseLabel(phase)}</h4>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{phaseDone}/{list.length}</span>
             </div>
             <div className="space-y-2">
