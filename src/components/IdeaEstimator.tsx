@@ -625,22 +625,7 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
   const highBudget = !!inserted && inserted.max >= 1500;
   const breakEvenPrices = highBudget ? [97, 297, 497] : [29, 97, 297];
 
-  const rec = recommendedBudget(result.projectType, result.difficulty);
   const hasBudget = !!inserted && budget !== "Non lo so ancora" && inserted.max > 0;
-  const fit: BudgetFit | null = hasBudget ? budgetFit(inserted!.max, rec) : null;
-
-  let budgetMsg = "Indica un budget per ricevere un confronto preciso con il budget consigliato.";
-  if (hasBudget) {
-    if (inserted!.max >= rec.max) {
-      budgetMsg = "Il budget permette di costruire una versione più solida, ma conviene comunque partire semplice.";
-    } else if (inserted!.max >= rec.min) {
-      budgetMsg = "Il budget è coerente con una prima versione funzionante del progetto.";
-    } else if (inserted!.max >= rec.min * 0.5) {
-      budgetMsg = "Il budget inserito potrebbe essere sufficiente per una versione molto semplificata. Per una prima versione più solida il budget consigliato è " + rec.label + ".";
-    } else {
-      budgetMsg = "Il budget inserito è basso rispetto alla complessità dell'idea. Puoi partire, ma conviene ridurre le funzioni iniziali.";
-    }
-  }
 
   let consiglio = "Puoi costruire una prima versione funzionante con database, dashboard base e flusso utente principale.";
   if (hasBudget && inserted!.max <= 300) {
