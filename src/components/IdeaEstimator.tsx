@@ -691,3 +691,20 @@ function DifficultyBar({ level }: { level: Difficulty }) {
     </div>
   );
 }
+
+function BudgetFitBadge({ fit }: { fit: BudgetFit }) {
+  let cls = "border-amber-500/40 bg-amber-500/15 text-amber-300";
+  let Icon = AlertTriangle;
+  if (fit === "Dentro il budget") {
+    cls = "border-emerald-500/40 bg-emerald-500/15 text-emerald-300";
+    Icon = CheckCircle2;
+  } else if (fit === "Fuori budget, da semplificare") {
+    cls = "border-rose-500/40 bg-rose-500/15 text-rose-300";
+    Icon = XCircle;
+  }
+  return (
+    <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border ${cls}`}>
+      <Icon className="size-3.5" /> {fit}
+    </span>
+  );
+}
