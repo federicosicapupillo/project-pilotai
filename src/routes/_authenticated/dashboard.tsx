@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, Folder, ArrowRight, Sparkles, Activity } from "lucide-react";
+import { computeProgress, currentPhase, nextActionableStep, type RoadmapItem } from "@/lib/app-roadmap";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
@@ -28,6 +29,25 @@ function DashboardPage() {
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data;
+    },
+  });
+
+  const { data: roadmaps } = useQuery({
+    queryKey: ["projects-progress"],
+    enabled: !!projects && projects.length > 0,
+    queryFn: async () => {
+      const ids = projects!.map((p) => p.id);
+      const { data, error } = await supabase
+        .from("roadmap_items")
+        .select("project_id, title, status, progress_weight, order_index, phase, recommended_agent, recommended_tool, description, prompt_text, expected_output, checklist_items")
+        .in("project_id", ids);
+      if (error) throw error;
+      const byProject = new Map<string, RoadmapItem[]>();
+      for (const r of (data ?? []) as unknown as (RoadmapItem & { project_id: string })[]) {
+        if (!byProject.has(r.project_id)) byProject.set(r.project_id, []);
+        byProject.get(r.project_id)!.push(r);
+      }
+      return byProject;
     },
   });
 
@@ -107,12 +127,34 @@ function DashboardPage() {
                 <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
                   {p.idea_description ?? "—"}
                 </p>
-                <div className="flex items-center justify-between mt-4 text-xs text-muted-foreground">
-                  <span>{p.product_type ?? "Progetto"}</span>
-                  <span className="flex items-center gap-1 text-primary group-hover:translate-x-1 transition-transform">
-                    Apri <ArrowRight className="size-3" />
-                  </span>
-                </div>
+                {(() => {
+                  const items = roadmaps?.get(p.id) ?? [];
+                  const pr = computeProgress(items);
+                  const phase = currentPhase(items);
+                  const next = nextActionableStep(items);
+                  return (
+                    <>
+                      <div className="mt-4 flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">App {pr.pct}% · {pr.completed}/{pr.total}</span>
+                        {phase && <span className="text-muted-foreground">{phase}</span>}
+                      </div>
+                      <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
+                        <div className="h-full gradient-bg transition-all" style={{ width: `${pr.pct}%` }} />
+                      </div>
+                      {next && (
+                        <p className="text-xs text-muted-foreground line-clamp-1 mt-2">
+                          Prossimo: {next.title}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+                        <span>{p.product_type ?? "Progetto"}</span>
+                        <span className="flex items-center gap-1 text-primary group-hover:translate-x-1 transition-transform">
+                          Continua costruzione <ArrowRight className="size-3" />
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
               </Link>
             ))}
           </div>

@@ -1,30 +1,23 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Copy, CheckCircle2, Circle, CircleDot, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen } from "lucide-react";
+import { ArrowLeft, Copy, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { ToolBadge } from "@/components/ToolBadge";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
+import { AppRoadmap, useAppRoadmap } from "@/components/AppRoadmap";
+import { computeProgress, currentPhase, nextActionableStep } from "@/lib/app-roadmap";
 
 export const Route = createFileRoute("/_authenticated/projects/$id")({
   head: () => ({ meta: [{ title: "Progetto — Da Idea ad App" }] }),
   component: ProjectPage,
 });
 
-type StatusValue = "todo" | "in_progress" | "done";
-const STATUS_LABEL: Record<StatusValue, string> = {
-  todo: "Da fare",
-  in_progress: "In corso",
-  done: "Completato",
-};
-const STATUS_ORDER: StatusValue[] = ["todo", "in_progress", "done"];
-
 function ProjectPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
   const { data: project } = useQuery({
     queryKey: ["project", id],
@@ -59,29 +52,16 @@ function ProjectPage() {
     },
   });
 
-  const { data: roadmap } = useQuery({
-    queryKey: ["roadmap", id],
-    queryFn: async () => {
-      const { data } = await supabase.from("roadmap_items").select("*").eq("project_id", id).order("priority");
-      return data ?? [];
-    },
-  });
+  const { data: roadmap = [] } = useAppRoadmap(id);
 
   const copy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Copiato negli appunti");
   };
 
-  const cycleStatus = async (itemId: string, current: string) => {
-    const idx = STATUS_ORDER.indexOf((current as StatusValue) ?? "todo");
-    const next = STATUS_ORDER[(idx + 1) % STATUS_ORDER.length];
-    await supabase.from("roadmap_items").update({ status: next }).eq("id", itemId);
-    qc.invalidateQueries({ queryKey: ["roadmap", id] });
-  };
-
-  const completed = roadmap?.filter((r) => r.status === "done").length ?? 0;
-  const total = roadmap?.length ?? 0;
-  const pct = total ? Math.round((completed / total) * 100) : 0;
+  const progress = computeProgress(roadmap);
+  const phaseNow = currentPhase(roadmap);
+  const nextStep = nextActionableStep(roadmap);
 
   // Recommended stack: derived from product type with sensible defaults
   const stackOrder: { tool: string; why: string; required?: boolean; optional?: boolean }[] = [
@@ -119,13 +99,20 @@ function ProjectPage() {
           </div>
           <div className="shrink-0 text-right">
             <div className="text-xs text-muted-foreground uppercase tracking-wider">Avanzamento</div>
-            <div className="text-3xl font-display font-semibold gradient-text">{pct}%</div>
-            <div className="text-xs text-muted-foreground">{completed}/{total} step</div>
+            <div className="text-3xl font-display font-semibold gradient-text">{progress.pct}%</div>
+            <div className="text-xs text-muted-foreground">{progress.completed}/{progress.total} step</div>
+            {phaseNow && <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">Fase: {phaseNow}</div>}
           </div>
         </div>
         <div className="mt-4 h-2 rounded-full bg-secondary overflow-hidden">
-          <div className="h-full gradient-bg transition-all" style={{ width: `${pct}%` }} />
+          <div className="h-full gradient-bg transition-all" style={{ width: `${progress.pct}%` }} />
         </div>
+        {nextStep && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            <span className="text-foreground/90 font-medium">Prossimo step:</span> {nextStep.title}
+            {nextStep.recommended_tool && <> · <span className="text-foreground/90">{nextStep.recommended_tool}</span></>}
+          </p>
+        )}
       </div>
 
       <Tabs defaultValue="scheda">
@@ -134,7 +121,7 @@ function ProjectPage() {
           <TabsTrigger value="stack"><Layers className="size-4" /> Stack</TabsTrigger>
           <TabsTrigger value="agents"><Users className="size-4" /> Agenti</TabsTrigger>
           <TabsTrigger value="prompts"><Sparkles className="size-4" /> Prompt</TabsTrigger>
-          <TabsTrigger value="roadmap"><ListChecks className="size-4" /> Roadmap</TabsTrigger>
+          <TabsTrigger value="roadmap"><ListChecks className="size-4" /> Roadmap App</TabsTrigger>
         </TabsList>
 
         <TabsContent value="scheda" className="mt-6">
@@ -244,35 +231,7 @@ function ProjectPage() {
         </TabsContent>
 
         <TabsContent value="roadmap" className="mt-6">
-          <div className="glass-card rounded-2xl p-6 space-y-2">
-            {roadmap?.map((r) => {
-              const Icon = r.status === "done" ? CheckCircle2 : r.status === "in_progress" ? CircleDot : Circle;
-              const color = r.status === "done" ? "text-primary" : r.status === "in_progress" ? "text-accent" : "text-muted-foreground";
-              return (
-                <button
-                  key={r.id}
-                  onClick={() => cycleStatus(r.id, r.status)}
-                  className="w-full flex items-start gap-4 p-3 rounded-lg hover:bg-secondary/50 transition-colors text-left"
-                >
-                  <Icon className={`size-5 mt-0.5 ${color} shrink-0`} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`font-medium ${r.status === "done" ? "line-through text-muted-foreground" : ""}`}>
-                        {r.title}
-                      </span>
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                        {STATUS_LABEL[r.status as StatusValue]}
-                      </span>
-                    </div>
-                    {r.description && <p className="text-sm text-muted-foreground mt-1">{r.description}</p>}
-                  </div>
-                </button>
-              );
-            })}
-            <p className="text-xs text-muted-foreground text-center pt-4">
-              Clicca su uno step per cambiare stato → Da fare → In corso → Completato.
-            </p>
-          </div>
+          <AppRoadmap projectId={id} />
         </TabsContent>
       </Tabs>
 
