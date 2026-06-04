@@ -180,6 +180,35 @@ function Index() {
 
         {/* CTA */}
         <section className="max-w-5xl mx-auto px-6 py-20">
+          <div className="mb-16">
+            <p className="text-xs uppercase tracking-wider text-primary font-semibold">La tua infrastruttura</p>
+            <h2 className="text-3xl sm:text-4xl font-display font-semibold mt-2 mb-3">
+              La tua <span className="gradient-text">cassetta degli attrezzi AI</span>
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mb-8">
+              Una volta imparato il metodo, gli strumenti che attivi non servono solo per completare questo percorso. Puoi usarli per validare nuove idee, creare prototipi, costruire app, preparare demo, generare contenuti e migliorare progetti già esistenti.
+            </p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { icon: Boxes, t: "Crea più app", d: "Usa lo stesso metodo per trasformare nuove idee in prime versioni funzionanti." },
+                { icon: TrendingDown, t: "Riduci il costo per progetto", d: "Più usi gli strumenti, più ogni singolo progetto pesa meno sul costo mensile." },
+                { icon: GraduationCap, t: "Costruisci competenza", d: "Non impari solo a usare un tool: impari un processo replicabile." },
+                { icon: Recycle, t: "Riutilizza prompt e agenti", d: "Gli agenti, i prompt e le roadmap che crei diventano patrimonio riutilizzabile." },
+              ].map((c) => (
+                <div key={c.t} className="glass-card rounded-xl p-5">
+                  <div className="size-9 rounded-lg gradient-bg grid place-items-center glow-soft">
+                    <c.icon className="size-4 text-primary-foreground" />
+                  </div>
+                  <h3 className="font-display font-semibold mt-3">{c.t}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{c.d}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-foreground/85 mt-6 italic">
+              Non stai pagando strumenti per una sola idea. Stai costruendo il tuo laboratorio personale per trasformare più idee in progetti reali.
+            </p>
+          </div>
+
           <div className="glass-card rounded-3xl p-10 sm:p-14 text-center relative overflow-hidden">
             <div className="absolute inset-0 hero-bg opacity-60 pointer-events-none" />
             <div className="relative">
