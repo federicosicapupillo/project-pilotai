@@ -97,11 +97,13 @@ Non promettere guadagni garantiti, idee originali garantite, business automatico
 
 Dati utente:
 - Budget operativo: ${d.budget || "non specificato"}
-- Settore: ${d.sector || "non specificato"}
-- Tipo app desiderata: ${d.appType || "non specificato"}
-- Livello complessità: ${d.complexity || "non specificato"}
-- Obiettivo principale: ${d.goal || "non specificato"}
-- Interessi/competenze: ${d.interests || "non specificati"}
+- Target ("A chi vuoi venderla?"): ${d.target || "non specificato"}
+- Modello di ricavo ("Come pensi di guadagnarci?"): ${d.revenueModel || "non specificato"}
+- Prezzo desiderato ("Quanto vorresti far pagare?"): ${d.price || "non specificato"}
+${d.sector ? `- Settore: ${d.sector}\n` : ""}${d.appType ? `- Tipo app desiderata: ${d.appType}\n` : ""}${d.complexity ? `- Livello complessità: ${d.complexity}\n` : ""}${d.goal ? `- Obiettivo principale: ${d.goal}\n` : ""}${d.interests ? `- Interessi/competenze: ${d.interests}\n` : ""}
+
+Usa SOLO i parametri qui sopra. Se target / modello / prezzo sono "Non lo so" o "Non lo so ancora", usali come informazione ma non inventare dati extra. Non chiedere altro.
+Se il prezzo è indicato (es. "9€–29€", "49€–97€", "Abbonamento mensile"), usa quel range come prezzo consigliato concreto. Se il modello di ricavo è indicato, allinea revenue_model e scenari a quel modello.
 
 Per ogni idea restituisci nello schema JSON:
 - name: nome provvisorio dell'app, breve e memorabile
