@@ -18,18 +18,18 @@ const InputSchema = z.object({
 const PhaseEnum = z.enum(APP_ROADMAP_PHASES as unknown as [string, ...string[]]);
 
 const StepSchema = z.object({
-  title: z.string().min(3).max(140),
-  description: z.string().min(10).max(800),
+  title: z.string(),
+  description: z.string(),
   phase: PhaseEnum,
-  recommended_agent: z.string().min(1).max(80),
-  recommended_tool: z.string().min(1).max(80),
-  prompt_text: z.string().min(20).max(2000),
-  expected_output: z.string().min(5).max(500),
-  checklist_items: z.array(z.string().min(2).max(160)).min(2).max(6),
+  recommended_agent: z.string(),
+  recommended_tool: z.string(),
+  prompt_text: z.string(),
+  expected_output: z.string(),
+  checklist_items: z.array(z.string()),
 });
 
 const OutputSchema = z.object({
-  steps: z.array(StepSchema).min(15).max(25),
+  steps: z.array(StepSchema),
 });
 
 const SYSTEM_PROMPT = `Sei un Product Manager esperto di app no-code, agenti AI, Lovable, Supabase e validazione MVP.
