@@ -67,9 +67,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     if (idea.trim().length < 8) return;
     const r = classify(idea, target, revenue, price);
     setResult(r);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, idea.trim());
-    }
+    saveIdeaParams({ idea: idea.trim(), budget, target: target || targetChoice, revenue, price });
     void trackEvent("idea_estimate_calculated", {
       hoursLow: r.hoursLow, hoursHigh: r.hoursHigh,
       difficulty: r.difficulty, projectType: r.projectType,
@@ -77,28 +75,23 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
       monthlyLow: r.monthlyLow, monthlyHigh: r.monthlyHigh,
       potentialLabel: r.potentialLabel,
     });
+    navigate({ to: "/riepilogo-idea" });
   };
 
   const handleGeneratedIdea = (description: string) => {
     setIdea(description);
     const r = classify(description, target, revenue, price);
     setResult(r);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, description.trim());
-    }
+    saveIdeaParams({ idea: description.trim(), budget, target: target || targetChoice, revenue, price });
     void trackEvent("idea_estimate_from_generator", {
       difficulty: r.difficulty, projectType: r.projectType,
     });
-    setTimeout(() => {
-      if (typeof document !== "undefined") {
-        document.getElementById("estimator-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 100);
+    navigate({ to: "/riepilogo-idea" });
   };
 
   const goToRoadmap = () => {
     if (typeof window !== "undefined" && idea.trim()) {
-      localStorage.setItem(STORAGE_KEY, idea.trim());
+      saveIdeaParams({ idea: idea.trim(), budget, target: target || targetChoice, revenue, price });
       localStorage.setItem(REDIRECT_KEY, "/new-project");
       localStorage.setItem("pending_plan", "roadmap");
     }
