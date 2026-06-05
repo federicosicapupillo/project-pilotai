@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Activity } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot } from "lucide-react";
 import { computeProgress, currentPhase, nextActionableStep, type RoadmapItem } from "@/lib/app-roadmap";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -80,6 +80,25 @@ function DashboardPage() {
           </Button>
         </Link>
       </div>
+
+      <Link to="/agente-ai" className="block mb-10">
+        <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 hover:border-primary/70 transition-all">
+          <div className="size-12 rounded-full gradient-bg grid place-items-center shrink-0">
+            <Bot className="size-6 text-primary-foreground" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-display font-semibold text-lg">
+              Inizia a far costruire l'app al tuo primo agente personale
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Apri il tuo agente AI e trasforma l'analisi nel piano operativo per la tua prima app.
+            </p>
+          </div>
+          <Button variant="hero" size="lg" className="shrink-0">
+            Vai all'agente <ArrowRight className="size-4" />
+          </Button>
+        </div>
+      </Link>
 
       <div className="grid lg:grid-cols-3 gap-6">
         <section className="lg:col-span-2 space-y-4">
