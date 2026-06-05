@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { Lock, Sparkles } from "lucide-react";
+import { Lock, Sparkles, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { getAgentAccess } from "@/lib/payments.functions";
@@ -42,6 +42,11 @@ export function AcademyLock() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-20">
+      <div className="mb-6">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/" })}>
+          <ArrowLeft className="size-4" /> Torna indietro
+        </Button>
+      </div>
       <div className="glass-card rounded-2xl p-10 text-center">
         <div className="size-14 rounded-2xl gradient-bg grid place-items-center glow-soft text-primary-foreground mx-auto mb-6">
           <Lock className="size-6" />
