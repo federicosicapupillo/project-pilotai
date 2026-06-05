@@ -4,9 +4,9 @@ import {
   Search,
   Rocket,
   LayoutGrid,
-  Sparkles,
-  Code2,
+  LayoutDashboard,
   Database,
+  ClipboardCheck,
   CheckCircle2,
   Check,
   Loader2,
@@ -24,73 +24,33 @@ type Step = {
   title: string;
   micro: string;
   icon: LucideIcon;
+  status: Status;
 };
 
 const STEPS: Step[] = [
-  { n: 1, title: "Idea definita", micro: "Idea chiarita e impostazione del progetto.", icon: Lightbulb },
-  { n: 2, title: "Analisi completata", micro: "Punti di forza, criticità e direzione individuati.", icon: Search },
-  { n: 3, title: "MVP impostato", micro: "Definizione della prima versione utile.", icon: Rocket },
-  { n: 4, title: "Schermate da creare", micro: "Struttura, flussi e schermate principali.", icon: LayoutGrid },
-  { n: 5, title: "Prompt pronti", micro: "Istruzioni operative pronte per gli agenti AI.", icon: Sparkles },
-  { n: 6, title: "Costruzione frontend", micro: "Realizzazione dell'interfaccia della prima versione.", icon: Code2 },
-  { n: 7, title: "Backend e database", micro: "Salvataggio dati, utenti e logica lato server.", icon: Database },
-  { n: 8, title: "Test finale e rilascio", micro: "Controlli, rifiniture e lancio della prima versione.", icon: CheckCircle2 },
+  { n: 1, title: "Progetto definito", micro: "La tua idea è stata trasformata in un progetto chiaro e pronto per partire.", icon: Lightbulb, status: "done" },
+  { n: 2, title: "Punti di forza e criticità", micro: "Il Team AI sta analizzando cosa funziona, cosa migliorare e quali rischi evitare.", icon: Search, status: "current" },
+  { n: 3, title: "MVP / prima versione", micro: "Definiremo solo le funzioni essenziali per creare una prima versione semplice.", icon: Rocket, status: "todo" },
+  { n: 4, title: "Schermate principali", micro: "Creeremo la struttura delle schermate principali dell'app.", icon: LayoutGrid, status: "todo" },
+  { n: 5, title: "Dashboard e area utente", micro: "Costruiremo l'area dove l'utente potrà vedere e gestire le informazioni.", icon: LayoutDashboard, status: "todo" },
+  { n: 6, title: "Backend e dati", micro: "Organizzeremo salvataggi, login, database e dati del progetto.", icon: Database, status: "todo" },
+  { n: 7, title: "Test e correzioni", micro: "Controlleremo errori, blocchi, flussi deboli e miglioramenti.", icon: ClipboardCheck, status: "todo" },
+  { n: 8, title: "Prima versione pronta", micro: "Prepareremo la prima versione da testare, mostrare o migliorare.", icon: CheckCircle2, status: "todo" },
 ];
 
-export type RoadmapSignals = {
-  hasProject?: boolean;
-  hasAnalysis?: boolean;
-  hasMvp?: boolean;
-  hasScreens?: boolean;
-  hasPrompts?: boolean;
-};
-
-function computeStatuses(s: RoadmapSignals): Status[] {
-  const done = [
-    !!s.hasProject,
-    !!s.hasAnalysis,
-    !!s.hasMvp,
-    !!s.hasScreens,
-    !!s.hasPrompts,
-    false,
-    false,
-    false,
-  ];
-  // ensure monotonic: once we hit a not-done, the rest are not-done for "done" calc
-  let stopped = false;
-  const monotonic = done.map((d) => {
-    if (stopped) return false;
-    if (!d) {
-      stopped = true;
-      return false;
-    }
-    return true;
-  });
-  const firstTodo = monotonic.findIndex((d) => !d);
-  return monotonic.map((d, i) => {
-    if (d) return "done";
-    if (i === firstTodo) return "current";
-    return "todo";
-  });
-}
-
 export function DashboardRoadmap({
-  signals,
   hasAccess,
   projectId,
   onActivate,
 }: {
-  signals: RoadmapSignals;
   hasAccess: boolean;
   projectId?: string;
   onActivate?: () => void;
 }) {
-  const statuses = computeStatuses(signals);
-  const doneCount = statuses.filter((s) => s === "done").length;
+  const doneCount = STEPS.filter((s) => s.status === "done").length;
   const total = STEPS.length;
   const pct = Math.round((doneCount / total) * 100);
-  const currentIdx = statuses.findIndex((s) => s === "current");
-  const current = currentIdx >= 0 ? STEPS[currentIdx] : null;
+  const current = STEPS.find((s) => s.status === "current") ?? null;
 
   return (
     <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.07] via-background to-accent/[0.07] p-6 sm:p-8 glow-soft">
@@ -108,7 +68,10 @@ export function DashboardRoadmap({
             Roadmap del tuo progetto
           </h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-            Qui vedi in modo semplice a che punto sei e quali sono i prossimi step per arrivare alla prima versione della tua app.
+            Il progetto è stato impostato. Ora il Team AI ti aiuterà a costruirlo passo dopo passo.
+          </p>
+          <p className="text-xs text-muted-foreground/80 mt-2 italic">
+            Non stai partendo da zero, ma la costruzione dell'app deve ancora iniziare.
           </p>
         </div>
         <div className="text-right shrink-0 hidden sm:block">
@@ -128,8 +91,8 @@ export function DashboardRoadmap({
       {/* Timeline */}
       <div className="mt-8 -mx-2 sm:mx-0 overflow-x-auto sm:overflow-visible">
         <ol className="flex sm:grid sm:grid-cols-4 lg:grid-cols-8 gap-3 px-2 sm:px-0 snap-x snap-mandatory">
-          {STEPS.map((step, i) => {
-            const status = statuses[i];
+          {STEPS.map((step) => {
+            const status = step.status;
             const Icon = step.icon;
             const isDone = status === "done";
             const isCurrent = status === "current";

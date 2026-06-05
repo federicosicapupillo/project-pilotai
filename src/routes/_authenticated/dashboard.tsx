@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-react";
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
+import { SyntheticRoadmapCompact, syntheticProgress } from "@/components/SyntheticRoadmap";
 import { DashboardRoadmap } from "@/components/DashboardRoadmap";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -71,32 +71,6 @@ function DashboardPage() {
   });
 
   const primaryProject = projects?.[0];
-  const { data: signals } = useQuery({
-    queryKey: ["dashboard-roadmap-signals", primaryProject?.id],
-    enabled: !!primaryProject,
-    queryFn: async () => {
-      const pid = primaryProject!.id;
-      const [{ data: analysis }, { count: promptsCount }] = await Promise.all([
-        supabase
-          .from("project_analysis")
-          .select("mvp_version, required_screens")
-          .eq("project_id", pid)
-          .maybeSingle(),
-        supabase
-          .from("prompts")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid),
-      ]);
-      const screens = analysis?.required_screens as unknown;
-      return {
-        hasProject: true,
-        hasAnalysis: !!analysis,
-        hasMvp: !!analysis?.mvp_version,
-        hasScreens: Array.isArray(screens) && screens.length > 0,
-        hasPrompts: (promptsCount ?? 0) > 0,
-      };
-    },
-  });
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -155,7 +129,6 @@ function DashboardPage() {
       {primaryProject && (
         <div className="mb-10">
           <DashboardRoadmap
-            signals={signals ?? { hasProject: true }}
             hasAccess={hasAccess}
             projectId={primaryProject.id}
             onActivate={() => activate("dashboard_roadmap_cta", primaryProject.id)}
@@ -213,14 +186,19 @@ function DashboardPage() {
                   const items = roadmaps?.get(p.id) ?? [];
                    const pr = computeProgress(items);
                    const phase = currentPhase(items);
+                  const sp = syntheticProgress();
+                  const displayPct = hasAccess ? sp.pct : pr.pct;
+                  const displayDone = hasAccess ? sp.done : pr.completed;
+                  const displayTotal = hasAccess ? sp.total : pr.total;
+                  const displayPhase = hasAccess ? "Progetto definito" : phase;
                   return (
                     <>
                       <div className="mt-4 flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">App {pr.pct}% · {pr.completed}/{pr.total}</span>
-                        {phase && <span className="text-muted-foreground">{phase}</span>}
+                        <span className="text-muted-foreground">App {displayPct}% · {displayDone}/{displayTotal}</span>
+                        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
                       </div>
                       <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
-                        <div className="h-full gradient-bg transition-all" style={{ width: `${pr.pct}%` }} />
+                        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
                       </div>
                       {hasAccess ? (
                         <SyntheticRoadmapCompact projectId={p.id} />
