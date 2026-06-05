@@ -147,6 +147,9 @@ function ProjectManagerPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["pm-op-prompts", activeId] });
       qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
+      requestAnimationFrame(() => {
+        opPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     },
   });
 
@@ -160,6 +163,7 @@ function ProjectManagerPage() {
   const [reviewMode, setReviewMode] = useState<"idle" | "schema-review" | "corrections">("idle");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const opPanelRef = useRef<HTMLElement>(null);
 
   const mutation = useMutation({
     mutationFn: (message: string) => send({ data: { projectId: activeId, message } }),
@@ -367,11 +371,12 @@ REGOLE:
       )}
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
-        {/* CHAT */}
-        <section className="order-2 lg:order-1 flex flex-col glass-card rounded-2xl border border-border/60 overflow-hidden">
+        {/* MAIN COLUMN: chat + operational prompt panel, stacked tight */}
+        <div className="order-2 lg:order-1 space-y-4 min-w-0">
+        <section className="flex flex-col glass-card rounded-2xl border border-border/60 overflow-hidden">
           <div
             ref={scrollerRef}
-            className="flex-1 overflow-y-auto px-4 sm:px-5 py-5 space-y-4 max-h-[60vh] min-h-[360px]"
+            className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-4 max-h-[48vh] min-h-[260px]"
           >
             {messages.map((m) => (
               <MessageBubble
@@ -523,37 +528,17 @@ REGOLE:
               </Button>
             </div>
           </form>
-
-          <div className="border-t border-border/40 p-3 sm:p-4 bg-background/20">
-            <Button
-              type="button"
-              variant="hero"
-              size="lg"
-              className="w-full"
-              onClick={continueAppCreation}
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <><Loader2 className="size-4 animate-spin" /> Sto preparando il prossimo step…</>
-              ) : (
-                <><ArrowRight className="size-4" /> Continuiamo con la creazione dell'app</>
-              )}
-            </Button>
-            <p className="text-[11px] text-muted-foreground text-center mt-2">
-              Avanza al prossimo step della roadmap (bloccata): {nextStep?.title ?? currentStep.title}
-            </p>
-          </div>
         </section>
 
-        {/* OPERATIONAL PROMPT PANEL — fuori dalla chat */}
-        <section className="order-3 lg:col-span-2 glass-card rounded-2xl border border-border/60 p-5">
+        {/* OPERATIONAL PROMPT PANEL — sotto la chat, stessa colonna */}
+        <section ref={opPanelRef} className="glass-card rounded-2xl border border-border/60 p-5 scroll-mt-24">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
                 <Wrench className="size-3.5 text-primary" /> Prompt operativo generato
               </div>
-              <h2 className="font-display font-semibold text-xl mt-1">
-                Prompt pronti da copiare nello strumento giusto
+              <h2 className="font-display font-semibold text-lg mt-1">
+                Prompt pronto da copiare nello strumento giusto
               </h2>
               <p className="text-xs text-muted-foreground mt-1">
                 Quando l'analisi di uno step è confermata, l'agente competente genera qui un prompt operativo separato dalla chat.
@@ -566,7 +551,7 @@ REGOLE:
               disabled={opGenMutation.isPending || !activeProject}
             >
               {opGenMutation.isPending ? (
-                <><Loader2 className="size-4 animate-spin" /> Sto generando…</>
+                <><Loader2 className="size-4 animate-spin" /> Sto generando il prompt operativo…</>
               ) : (
                 <><Sparkles className="size-4" /> Genera per: {currentStep.title}</>
               )}
@@ -579,10 +564,15 @@ REGOLE:
             </p>
           )}
 
-          <div className="mt-5 space-y-4">
+          <div className="mt-4 space-y-4">
             {(opPrompts?.prompts ?? []).length === 0 && !opGenMutation.isPending && (
-              <div className="text-sm text-muted-foreground border border-dashed border-border/60 rounded-xl p-6 text-center">
-                Nessun prompt operativo ancora generato. Clicca su "Genera per: {currentStep.title}" per crearne uno.
+              <div className="text-xs text-muted-foreground border border-dashed border-border/60 rounded-lg p-3 text-center">
+                Nessun prompt operativo generato. Clicca su "Genera il prompt operativo da copiare" per creare il prompt dello step corrente.
+              </div>
+            )}
+            {opGenMutation.isPending && (opPrompts?.prompts ?? []).length === 0 && (
+              <div className="text-xs text-muted-foreground border border-dashed border-primary/40 rounded-lg p-3 text-center inline-flex items-center justify-center gap-2 w-full">
+                <Loader2 className="size-3.5 animate-spin text-primary" /> Sto generando il prompt operativo…
               </div>
             )}
             {(opPrompts?.prompts ?? []).map((p) => (
@@ -594,6 +584,7 @@ REGOLE:
             ))}
           </div>
         </section>
+        </div>
 
         {/* SIDEBAR */}
         <aside className="order-1 lg:order-2 space-y-4">
