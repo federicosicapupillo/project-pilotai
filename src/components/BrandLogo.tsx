@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import markAsset from "@/assets/ideapilot-mark.png.asset.json";
 
 type Size = "sm" | "md" | "lg";
 
@@ -9,42 +10,16 @@ const sizeMap: Record<Size, { box: string; text: string; sub: string }> = {
 };
 
 export function BrandMark({ className = "", size = 20 }: { className?: string; size?: number }) {
-  // Icona: cornice arrotondata (window) + lampadina + sparkle/freccia
   return (
-    <svg
-      viewBox="0 0 64 64"
+    <img
+      src={markAsset.url}
+      alt="IdeaPilot AI"
       width={size}
       height={size}
       className={className}
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="ip-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="55%" stopColor="#a855f7" />
-          <stop offset="100%" stopColor="#ec4899" />
-        </linearGradient>
-      </defs>
-      {/* window frame */}
-      <rect x="4" y="4" width="56" height="56" rx="14" ry="14" fill="none" stroke="url(#ip-grad)" strokeWidth="3" />
-      <circle cx="12" cy="12" r="1.4" fill="url(#ip-grad)" />
-      <circle cx="17" cy="12" r="1.4" fill="url(#ip-grad)" />
-      <circle cx="22" cy="12" r="1.4" fill="url(#ip-grad)" />
-      {/* lampadina */}
-      <path
-        d="M32 20c-6 0-10 4.4-10 10 0 3.5 1.8 5.7 3.5 7.4 1 1 1.5 1.8 1.5 3v1.6h10v-1.6c0-1.2.5-2 1.5-3C40.2 35.7 42 33.5 42 30c0-5.6-4-10-10-10z"
-        fill="none"
-        stroke="url(#ip-grad)"
-        strokeWidth="2.4"
-        strokeLinejoin="round"
-      />
-      <path d="M28 46h8M29 49h6" stroke="url(#ip-grad)" strokeWidth="2.2" strokeLinecap="round" />
-      {/* sparkle/freccia interno */}
-      <path
-        d="M32 25.5l1.6 3.4 3.4 1.6-3.4 1.6L32 35.5l-1.6-3.4L27 30.5l3.4-1.6z"
-        fill="url(#ip-grad)"
-      />
-    </svg>
+      style={{ width: size, height: size, objectFit: "contain" }}
+      loading="lazy"
+    />
   );
 }
 
@@ -60,12 +35,10 @@ export function BrandLockup({
   asLink?: boolean;
 }) {
   const s = sizeMap[size];
-  const iconPx = size === "lg" ? 28 : size === "sm" ? 16 : 20;
+  const iconPx = size === "lg" ? 44 : size === "sm" ? 26 : 34;
   const inner = (
     <div className={"flex items-center gap-2 group " + className}>
-      <div className={`${s.box} rounded-lg gradient-bg grid place-items-center glow-soft shrink-0`}>
-        <BrandMark size={iconPx} className="text-primary-foreground" />
-      </div>
+      <BrandMark size={iconPx} className="shrink-0 drop-shadow-[0_0_12px_rgba(168,85,247,0.45)]" />
       <div className="flex flex-col leading-tight">
         <span className={`font-display font-semibold tracking-tight ${s.text}`}>
           IdeaPilot <span className="gradient-text">AI</span>
