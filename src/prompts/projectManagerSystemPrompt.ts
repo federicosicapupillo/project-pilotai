@@ -43,3 +43,9 @@ Cosa ti propongo:
 
 Vuoi approvare?
 <una sola domanda di conferma>`;
+
+/**
+ * Extra regole appese dinamicamente quando serve. Mantieni qui le regole
+ * che valgono sempre ma che vogliamo poter aggiornare senza toccare il
+ * prompt principale.
+ */
