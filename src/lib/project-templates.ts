@@ -46,13 +46,15 @@ export const ROADMAP_TEMPLATE = [
   { title: "Lancio beta", description: "Apertura ai primi utenti reali." },
 ];
 
+import { STRATEGIST_AGENT_SYSTEM_PROMPT } from "@/prompts/strategistAgentSystemPrompt";
+
 export const AGENT_TEMPLATE = (idea: string) => [
   {
     name: "Agente Stratega",
     role: "Chiarisce la visione e il posizionamento del progetto.",
     when_to_use: "All'inizio, quando l'idea è ancora grezza e poco focalizzata.",
     expected_output: "Posizionamento, target, value proposition in una pagina sintetica.",
-    prompt_text: `Sei uno stratega di prodotto. Analizza questa idea: "${idea}". Restituisci:\n1. Visione in una frase.\n2. Target principale (segmento + bisogno).\n3. 3 alternative oggi sul mercato e come ce ne differenziamo.\n4. Una promessa di valore chiara e concreta.\n5. Un rischio principale da affrontare subito.`,
+    prompt_text: `${STRATEGIST_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA ANALIZZARE:\n"${idea}"\n\nApplica il METODO DI ANALISI e rispondi con il FORMATO RISPOSTA STANDARD (10 sezioni) seguito da OUTPUT PER PROJECT MANAGER.`,
   },
   {
     name: "Agente Product Manager",
