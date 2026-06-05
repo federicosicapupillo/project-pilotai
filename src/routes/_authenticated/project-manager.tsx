@@ -2,11 +2,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User } from "lucide-react";
+import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { getPmHistory, sendPmMessage } from "@/lib/project-manager.functions";
+import { SYNTHETIC_STEPS, syntheticProgress } from "@/components/SyntheticRoadmap";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
   head: () => ({ meta: [{ title: "Il tuo AI Project Manager" }] }),
@@ -30,21 +31,25 @@ const TEAM = [
   "Lancio",
 ];
 
-const SUGGESTIONS = [
-  "Qual è il prossimo passo?",
-  "Fammi migliorare questa idea",
-  "Prepara il prompt per costruire la prima schermata",
+const QUICK_ACTIONS = [
+  "Andiamo avanti con il prossimo step",
+  "Voglio migliorare l'idea",
   "Controlla se manca qualcosa",
-  "Fammi lavorare sull'MVP",
-  "Cosa devo fare adesso?",
+  "Rivedi i punti deboli",
+  "Fammi semplificare l'MVP",
+  "Prepara il prossimo prompt",
+  "Aggiorna la roadmap",
+  "Dimmi cosa fare adesso",
 ];
 
-const INTRO = {
-  role: "assistant" as const,
-  id: "intro",
-  content:
-    "Ciao, sono il tuo AI Project Manager. Dimmi cosa vuoi fare con questo progetto: posso aiutarti a chiarire il prossimo step, migliorare una funzione, preparare un prompt, controllare la roadmap o far lavorare gli altri agenti.",
-};
+const FOLLOWUP_ACTIONS = [
+  "Approvo, vai avanti",
+  "Modifica la proposta",
+  "Fammi vedere un'alternativa",
+  "Semplifica",
+  "Approfondisci",
+  "Aggiorna roadmap",
+];
 
 function ProjectManagerPage() {
   const navigate = useNavigate();
@@ -84,6 +89,15 @@ function ProjectManagerPage() {
 
   const activeProject = projects?.find((p) => p.id === activeId) ?? null;
 
+  const { pct, next: nextStep } = syntheticProgress();
+  const currentStep = SYNTHETIC_STEPS.find((s) => s.status === "in_progress") ?? SYNTHETIC_STEPS[0];
+
+  const introContent = activeProject
+    ? `Ciao, sono il tuo AI Project Manager.\n\nAbbiamo già impostato il progetto: ${activeProject.title}.\n\nIn questo momento siamo allo step: ${currentStep.title} — ${currentStep.description}\n\nIl prossimo passo consigliato è: ${nextStep?.title ?? "definire la prima versione"}.\n\nVuoi che andiamo avanti con questo step oppure preferisci prima migliorare l'idea o controllare se manca qualcosa?`
+    : "Ciao, sono il tuo AI Project Manager. Seleziona un progetto attivo per partire dallo step giusto.";
+
+  const INTRO = { role: "assistant" as const, id: "intro", content: introContent };
+
   const fetchHistory = useServerFn(getPmHistory);
   const send = useServerFn(sendPmMessage);
 
@@ -105,6 +119,11 @@ function ProjectManagerPage() {
       requestAnimationFrame(() => inputRef.current?.focus());
     },
   });
+
+  function sendQuick(text: string) {
+    if (mutation.isPending) return;
+    mutation.mutate(text);
+  }
 
   const messages = [INTRO, ...(history?.messages ?? [])];
 
@@ -176,29 +195,45 @@ function ProjectManagerPage() {
           <Bot className="size-3 text-primary" /> AI Project Manager
         </div>
         <h1 className="text-3xl sm:text-4xl font-display font-semibold mt-4">
-          Il tuo <span className="gradient-text">AI Project Manager</span>
+          Parla con il tuo <span className="gradient-text">AI Project Manager</span>
         </h1>
         <p className="text-muted-foreground mt-2 max-w-2xl">
-          Fagli una domanda, dagli una direttiva o chiedigli qual è il prossimo passo. Lui coordina il Team AI e ti restituisce una risposta operativa.
+          Lui conosce il tuo progetto, segue la roadmap e coordina gli agenti per farti avanzare uno step alla volta.
         </p>
       </div>
+
+      {/* PROJECT STATUS CARD */}
+      {activeProject && (
+        <div className="mb-6 glass-card rounded-2xl p-5 border border-border/60">
+          <div className="grid sm:grid-cols-4 gap-4">
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Progetto</div>
+              <div className="font-display font-semibold mt-1 truncate">{activeProject.title}</div>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Stato</div>
+              <div className="font-medium mt-1 truncate">{currentStep.title}</div>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Avanzamento</div>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
+                  <div className="h-full gradient-bg" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="text-sm font-semibold gradient-text">{pct}%</span>
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Prossimo output</div>
+              <div className="font-medium mt-1 truncate">{nextStep?.title ?? "—"}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* CHAT */}
         <section className="order-2 lg:order-1 flex flex-col glass-card rounded-2xl border border-border/60 overflow-hidden">
-          <div className="px-5 py-4 border-b border-border/40">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">Concetto</div>
-            <h2 className="font-display font-semibold mt-0.5">
-              Parli con un solo agente. Lui coordina tutti gli altri.
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Scrivi cosa vuoi fare. Il tuo Project Manager AI analizza la richiesta, capisce quali agenti coinvolgere e ti propone il prossimo passo operativo.
-            </p>
-            <p className="text-xs text-primary mt-2">
-              Tu dai la direttiva. Il Project Manager organizza il lavoro.
-            </p>
-          </div>
-
           <div
             ref={scrollerRef}
             className="flex-1 overflow-y-auto px-4 sm:px-5 py-5 space-y-4 max-h-[60vh] min-h-[360px]"
@@ -210,6 +245,38 @@ function ProjectManagerPage() {
                 content={m.content}
               />
             ))}
+            {/* Quick actions under the intro, before the user has sent anything */}
+            {messages.length === 1 && !mutation.isPending && (
+              <div className="flex flex-wrap gap-2 pl-11">
+                {QUICK_ACTIONS.map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    onClick={() => sendQuick(a)}
+                    className="text-xs px-3 py-1.5 rounded-full border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/60 text-foreground/90 transition-colors"
+                  >
+                    {a}
+                  </button>
+                ))}
+              </div>
+            )}
+            {/* Follow-up actions after the latest assistant reply */}
+            {messages.length > 1 &&
+              messages[messages.length - 1].role === "assistant" &&
+              !mutation.isPending && (
+                <div className="flex flex-wrap gap-2 pl-11">
+                  {FOLLOWUP_ACTIONS.map((a) => (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => sendQuick(a)}
+                      className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
+                    >
+                      {a}
+                    </button>
+                  ))}
+                </div>
+              )}
             {mutation.isPending && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="size-3.5 animate-spin text-primary" />
@@ -240,11 +307,11 @@ function ProjectManagerPage() {
               disabled={mutation.isPending}
             />
             <div className="flex flex-wrap gap-2">
-              {SUGGESTIONS.map((s) => (
+              {QUICK_ACTIONS.slice(0, 4).map((s) => (
                 <button
                   key={s}
                   type="button"
-                  onClick={() => setInput(s)}
+                  onClick={() => sendQuick(s)}
                   className="text-xs px-2.5 py-1 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
                   disabled={mutation.isPending}
                 >
@@ -303,6 +370,40 @@ function ProjectManagerPage() {
               )}
             </div>
           ) : null}
+
+          {/* MINI ROADMAP */}
+          <div className="glass-card rounded-2xl p-5 border border-border/60">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-semibold">Roadmap sintetica</h3>
+              <span className="text-xs text-muted-foreground">{pct}%</span>
+            </div>
+            <ol className="mt-3 space-y-2">
+              {SYNTHETIC_STEPS.map((s) => (
+                <li key={s.n} className="flex items-start gap-2 text-xs">
+                  <span className="mt-0.5 shrink-0">
+                    {s.status === "done" ? (
+                      <Check className="size-3.5 text-primary" />
+                    ) : s.status === "in_progress" ? (
+                      <Loader2 className="size-3.5 text-accent animate-spin" />
+                    ) : (
+                      <Circle className="size-3 text-muted-foreground" />
+                    )}
+                  </span>
+                  <span
+                    className={
+                      s.status === "in_progress"
+                        ? "text-foreground font-medium"
+                        : s.status === "done"
+                        ? "text-muted-foreground line-through"
+                        : "text-muted-foreground"
+                    }
+                  >
+                    {s.title}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
 
           <div className="glass-card rounded-2xl p-5 border border-border/60">
             <div className="flex items-center gap-2">
