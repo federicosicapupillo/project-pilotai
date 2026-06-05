@@ -6,17 +6,18 @@ import { Input } from "@/components/ui/input";
 import { ToolIcon } from "@/components/ToolIcon";
 import { IdeaGenerator } from "@/components/IdeaGenerator";
 import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
+import { IdeaAnalysisDialog } from "@/components/IdeaAnalysisDialog";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
-  Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb,
+  Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb, Eye,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import {
   classify, getBudget, fmt, BUDGET_OPTIONS,
   saveIdeaParams,
   type Difficulty, type RevenueModel, type PriceBand,
-  type BudgetBand, type Estimate,
+  type BudgetBand, type Estimate, type IdeaParams,
 } from "@/lib/idea-estimate";
 
 const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
@@ -60,13 +61,18 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [revenue, setRevenue] = useState<RevenueModel>("Non lo so ancora");
   const [price, setPrice] = useState<PriceBand>("Non lo so");
   const [result, setResult] = useState<Estimate | null>(null);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
+  const [analysisParams, setAnalysisParams] = useState<IdeaParams | null>(null);
   const navigate = useNavigate();
 
   const onCalc = () => {
     if (idea.trim().length < 8) return;
     const r = classify(idea, target, revenue, price);
     setResult(r);
-    saveIdeaParams({ idea: idea.trim(), budget, target: target || targetChoice, revenue, price });
+    const p: IdeaParams = { idea: idea.trim(), budget, target: target || targetChoice, revenue, price };
+    saveIdeaParams(p);
+    setAnalysisParams(p);
+    setAnalysisOpen(true);
     void trackEvent("idea_estimate_calculated", {
       hoursLow: r.hoursLow, hoursHigh: r.hoursHigh,
       difficulty: r.difficulty, projectType: r.projectType,
@@ -74,18 +80,19 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
       monthlyLow: r.monthlyLow, monthlyHigh: r.monthlyHigh,
       potentialLabel: r.potentialLabel,
     });
-    navigate({ to: "/riepilogo-idea" });
   };
 
   const handleGeneratedIdea = (description: string) => {
     setIdea(description);
     const r = classify(description, target, revenue, price);
     setResult(r);
-    saveIdeaParams({ idea: description.trim(), budget, target: target || targetChoice, revenue, price });
+    const p: IdeaParams = { idea: description.trim(), budget, target: target || targetChoice, revenue, price };
+    saveIdeaParams(p);
+    setAnalysisParams(p);
+    setAnalysisOpen(true);
     void trackEvent("idea_estimate_from_generator", {
       difficulty: r.difficulty, projectType: r.projectType,
     });
-    navigate({ to: "/riepilogo-idea" });
   };
 
   const goToRoadmap = () => {
@@ -334,9 +341,24 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         </details>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Button variant="hero" size="lg" onClick={onCalc} disabled={idea.trim().length < 8}>
-            <Wand2 className="size-4" /> Calcola ore, costi e budget consigliato
+          <Button
+            variant="hero"
+            size="lg"
+            onClick={onCalc}
+            disabled={idea.trim().length < 8 || analysisOpen}
+          >
+            <Wand2 className="size-4" />
+            {analysisOpen ? "Analisi in corso…" : "Calcola ore, costi e budget consigliato"}
           </Button>
+          {analysisParams && !analysisOpen && (
+            <Button
+              variant="glass"
+              size="lg"
+              onClick={() => setAnalysisOpen(true)}
+            >
+              <Eye className="size-4" /> Rivedi analisi
+            </Button>
+          )}
           <p className="text-xs text-muted-foreground">
             Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.
           </p>
@@ -353,6 +375,11 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
       </div>
 
       {result && <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />}
+      <IdeaAnalysisDialog
+        open={analysisOpen}
+        onOpenChange={setAnalysisOpen}
+        params={analysisParams}
+      />
     </div>
   );
 
