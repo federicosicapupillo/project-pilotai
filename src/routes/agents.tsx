@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Bot, ClipboardCopy, Sparkles, ArrowRight, CheckCircle2, Crown, MessageSquare } from "lucide-react";
+import { Bot, Sparkles, ArrowRight, CheckCircle2, Crown, MessageSquare } from "lucide-react";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { resolveAgentIdentity } from "@/lib/agent-identity";
 import { ToolBadge } from "@/components/ToolBadge";
