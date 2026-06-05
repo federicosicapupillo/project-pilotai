@@ -1,22 +1,11 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LogOut, ShieldCheck, Lock, MessageSquare, UserCircle2, Mail } from "lucide-react";
-import { useState } from "react";
+import { LogOut, ShieldCheck, Lock, MessageSquare, UserCircle2 } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLogo";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
 
 const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/", label: "Home" },
@@ -34,11 +23,7 @@ export function AppHeader() {
   const { activate, hasAccess } = useActivateTeam();
   const handleActivate = () => void activate("navbar");
 
-  const [confirmOpen, setConfirmOpen] = useState(false);
-
-  const requestSignOut = () => setConfirmOpen(true);
   const handleSignOut = async () => {
-    setConfirmOpen(false);
     await supabase.auth.signOut();
     navigate({ to: "/" });
   };
@@ -148,7 +133,7 @@ export function AppHeader() {
                   <span className="sm:hidden">{firstName}</span>
                 </span>
               </div>
-              <Button variant="ghost" size="sm" onClick={requestSignOut}>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="size-4" />
                 <span className="hidden sm:inline">Esci</span>
               </Button>
@@ -177,27 +162,6 @@ export function AppHeader() {
           </Button>
         </div>
       )}
-
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent className="border-primary/50 shadow-[0_0_40px_-10px_hsl(var(--primary)/0.6)]">
-          <AlertDialogHeader>
-            <div className="mx-auto sm:mx-0 mb-2 inline-grid place-items-center size-10 rounded-full bg-primary/10 border border-primary/40 text-primary">
-              <Mail className="size-5" />
-            </div>
-            <AlertDialogTitle>Prima di uscire, controlla la tua mail</AlertDialogTitle>
-            <AlertDialogDescription>
-              Potresti aver ricevuto comunicazioni importanti su pagamento, accesso,
-              progetto o aggiornamenti della piattaforma. Controlla anche spam e promozioni.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="h-11 sm:h-10">Resta nella piattaforma</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSignOut} className="h-11 sm:h-10">
-              Esci comunque
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </header>
   );
 }
