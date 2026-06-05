@@ -11,6 +11,7 @@ import {
   Monitor, Plug, Wand2, TrendingUp, Euro,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 import {
   classify, loadIdeaParams,
   type Estimate, type IdeaParams,
@@ -132,12 +133,10 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
   const stableDifficulty = useMemo(() => tierDifficultyLabel(tier), [tier]);
   const stableDifficultyReason = useMemo(() => tierDifficultyReason(tier), [tier]);
 
+  const { activate } = useActivateTeam();
   const goToRoadmap = () => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("post_auth_redirect", "/checkout-agente");
-    }
     void trackEvent("riepilogo_cta_attiva_agente_29");
-    navigate({ to: "/checkout-agente" });
+    void activate("riepilogo_idea");
   };
 
   return (
