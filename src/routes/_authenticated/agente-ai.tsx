@@ -16,7 +16,13 @@ function AgenteAIPage() {
   const fetchAccess = useServerFn(getAgentAccess);
   const { data, isLoading } = useQuery({
     queryKey: ["agent-access"],
-    queryFn: () => fetchAccess(),
+    queryFn: async () => {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session?.access_token) {
+        return { hasAccess: false, status: null, idea: null, paidAt: null, projectId: null };
+      }
+      return fetchAccess();
+    },
     staleTime: 30_000,
   });
 
