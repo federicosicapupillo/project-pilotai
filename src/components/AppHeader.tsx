@@ -13,6 +13,7 @@ const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/academy", label: "Academy" },
   { to: "/tools", label: "Strumenti" },
   { to: "/agents", label: "Agenti" },
+  { to: "/prezzi", label: "Prezzi" },
   { to: "/dashboard", label: "Dashboard", auth: true },
   { to: "/my-path", label: "Il mio percorso", auth: true },
 ];
