@@ -794,6 +794,19 @@ function OperationalPromptCard({
         )}
       </div>
       <p className="text-xs text-muted-foreground mt-3">{prompt.instructions}</p>
+      <div className="mt-3 rounded-lg border border-primary/30 bg-primary/10 p-3">
+        <div className="text-[10px] uppercase tracking-wider text-primary font-semibold">
+          Cosa fare dopo
+        </div>
+        <p className="text-xs text-foreground/90 mt-1 leading-relaxed">
+          Dopo aver copiato questo prompt e averlo incollato in{" "}
+          <span className="font-medium">{prompt.recommended_tool}</span>, copia la
+          risposta generata da quella AI e incollala qui nella chat del Project
+          Manager. In questo modo il Project Manager potrà validare il risultato,
+          capire se è coerente con la roadmap e decidere se possiamo proseguire
+          allo step successivo oppure se serve correggere qualcosa.
+        </p>
+      </div>
       <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-relaxed bg-background/60 border border-border/50 rounded-lg p-3 text-foreground/90">
         {prompt.prompt_text}
       </pre>
