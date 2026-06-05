@@ -53,16 +53,35 @@ function NewProjectPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const draft = localStorage.getItem("draft_idea_description");
+    const draftTitle = localStorage.getItem("draft_idea_title");
+    const draftTarget = localStorage.getItem("draft_idea_target");
+    const draftProblem = localStorage.getItem("draft_idea_problem");
+    const draftSolution = localStorage.getItem("draft_idea_solution");
+    const draftProductType = localStorage.getItem("draft_idea_product_type");
     if (draft && draft.trim()) {
       setForm((f) => {
         if (f.idea_description.trim()) return f;
         return {
           ...f,
           idea_description: draft,
-          title: f.title || draft.slice(0, 60),
+          title: f.title || draftTitle || draft.slice(0, 60),
+          target: f.target || draftTarget || "",
+          problem: f.problem || draftProblem || "",
+          solution: f.solution || draftSolution || "",
+          product_type:
+            f.product_type && f.product_type !== "Web app"
+              ? f.product_type
+              : draftProductType && PRODUCT_TYPES.includes(draftProductType as (typeof PRODUCT_TYPES)[number])
+                ? draftProductType
+                : f.product_type,
         };
       });
       localStorage.removeItem("draft_idea_description");
+      localStorage.removeItem("draft_idea_title");
+      localStorage.removeItem("draft_idea_target");
+      localStorage.removeItem("draft_idea_problem");
+      localStorage.removeItem("draft_idea_solution");
+      localStorage.removeItem("draft_idea_product_type");
     }
   }, []);
 
