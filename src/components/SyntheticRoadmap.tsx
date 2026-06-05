@@ -135,7 +135,7 @@ export function SyntheticRoadmap({ projectId }: { projectId: string }) {
   );
 }
 
-export function SyntheticRoadmapCompact({ projectId }: { projectId: string }) {
+export function SyntheticRoadmapCompact(_props: { projectId: string }) {
   const { pct, done, total, next } = syntheticProgress();
   return (
     <div className="mt-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
