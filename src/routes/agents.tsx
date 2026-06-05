@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Bot, ClipboardCopy, Sparkles, ArrowRight, CheckCircle2, Crown, MessageSquare } from "lucide-react";
+import { Bot, Sparkles, ArrowRight, CheckCircle2, Crown, MessageSquare } from "lucide-react";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { resolveAgentIdentity } from "@/lib/agent-identity";
 import { ToolBadge } from "@/components/ToolBadge";
@@ -281,17 +281,6 @@ function AgentsPage() {
                   </div>
                 </div>
               )}
-              {pm.base_prompt && (
-                <div className="bg-secondary/40 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider text-muted-foreground">Prompt base</span>
-                    <Button variant="ghost" size="sm" onClick={async () => { await navigator.clipboard.writeText(pm.base_prompt!); toast.success("Prompt copiato!"); }}>
-                      <ClipboardCopy className="size-3.5" /> Copia
-                    </Button>
-                  </div>
-                  <pre className="text-xs whitespace-pre-wrap font-sans">{pm.base_prompt}</pre>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -329,17 +318,6 @@ function AgentsPage() {
                       <div className="flex flex-wrap gap-1">
                         {(a.recommended_tools as string[]).map((t) => <ToolBadge key={t} name={t} size="sm" />)}
                       </div>
-                    </div>
-                  )}
-                  {a.base_prompt && (
-                    <div className="bg-secondary/40 rounded-lg p-2.5">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Prompt</span>
-                        <Button variant="ghost" size="sm" onClick={async () => { await navigator.clipboard.writeText(a.base_prompt!); toast.success("Prompt copiato!"); }}>
-                          <ClipboardCopy className="size-3" /> Copia
-                        </Button>
-                      </div>
-                      <pre className="text-[11px] whitespace-pre-wrap font-sans">{a.base_prompt}</pre>
                     </div>
                   )}
                 </div>
@@ -489,24 +467,6 @@ function _LegacyUnused() {
                 </dd>
               </>)}
                 </dl>
-                {a.base_prompt && (
-              <div className="mt-4 bg-secondary/40 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground">Prompt base</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(a.base_prompt!);
-                      toast.success("Prompt copiato!");
-                    }}
-                  >
-                    <ClipboardCopy className="size-3.5" /> Copia
-                  </Button>
-                </div>
-                <pre className="text-xs whitespace-pre-wrap font-sans">{a.base_prompt}</pre>
-              </div>
-                )}
               </>
             ) : (
               <div
