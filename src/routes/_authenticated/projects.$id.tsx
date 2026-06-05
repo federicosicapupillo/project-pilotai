@@ -122,7 +122,7 @@ function ProjectPage() {
         defaultValue="scheda"
         onValueChange={(v) => {
           if (v === "agents") {
-            navigate({ to: "/agents", search: { projectId: id } });
+            navigate({ to: "/agents", search: { projectId: id } as never });
           }
         }}
       >
