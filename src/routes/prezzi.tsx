@@ -6,12 +6,7 @@ import {
   Hammer, ShieldAlert, Rocket, LineChart, GraduationCap,
   type LucideIcon,
 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
-import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { getAgentAccess } from "@/lib/payments.functions";
-import { loadIdeaParams } from "@/lib/idea-estimate";
-import { trackEvent } from "@/lib/tracking";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 
 export const Route = createFileRoute("/prezzi")({
   head: () => ({
@@ -62,34 +57,9 @@ const WITH_AGENT: string[] = [
 ];
 
 function PrezziPage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const fetchAccess = useServerFn(getAgentAccess);
-  const { data: access } = useQuery({
-    queryKey: ["agent-access"],
-    queryFn: () => fetchAccess(),
-    enabled: !!user,
-    staleTime: 15_000,
-  });
-  const hasAccess = !!access?.hasAccess;
-
-  const handleActivate = async () => {
-    await trackEvent("pricing_activate_click", { price: "29" });
-    if (!user) {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("post_auth_redirect", "/prezzi");
-      }
-      navigate({ to: "/auth" });
-      return;
-    }
-    const saved = loadIdeaParams();
-    if (saved && saved.idea.trim().length >= 8) {
-      navigate({ to: "/riepilogo-idea" });
-    } else {
-      navigate({ to: "/analizza-idea" });
-    }
-  };
+  const { activate, hasAccess } = useActivateTeam();
+  const handleActivate = () => void activate("prezzi");
 
   const goToAgent = () => navigate({ to: "/agente-ai" });
 

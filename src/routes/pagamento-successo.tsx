@@ -24,16 +24,15 @@ function SuccessPage() {
           <CheckCircle2 className="size-8 text-primary" />
         </div>
         <h1 className="text-4xl sm:text-5xl font-display font-semibold leading-tight">
-          Pagamento <span className="gradient-text">completato</span>
+          Team AI <span className="gradient-text">attivato</span>
         </h1>
         <p className="text-muted-foreground mt-4 text-base sm:text-lg">
-          Il tuo agente AI è stato attivato. Ora puoi iniziare a trasformare la tua idea nella
-          prima versione della tua app.
+          Il tuo Team AI è pronto. Ora puoi iniziare a dare direttive al Project Manager e sbloccare strumenti, prompt e istruzioni operative.
         </p>
         <div className="mt-8">
-          <Link to="/agente-ai">
+          <Link to="/agents">
             <Button variant="hero" size="xl">
-              Inizia con il mio agente AI <ArrowRight className="size-4" />
+              Vai al mio Team AI <ArrowRight className="size-4" />
             </Button>
           </Link>
         </div>

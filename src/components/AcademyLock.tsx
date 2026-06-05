@@ -5,7 +5,7 @@ import { Lock, Sparkles, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { getAgentAccess } from "@/lib/payments.functions";
-import { loadIdeaParams } from "@/lib/idea-estimate";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 
 export function useAcademyAccess() {
   const { user, loading } = useAuth();
@@ -26,19 +26,8 @@ export function useAcademyAccess() {
 export function AcademyLock() {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  const handleActivate = () => {
-    if (!user) {
-      navigate({ to: "/auth" });
-      return;
-    }
-    const saved = loadIdeaParams();
-    if (saved && saved.idea.trim().length >= 8) {
-      navigate({ to: "/riepilogo-idea" });
-    } else {
-      navigate({ to: "/" });
-    }
-  };
+  const { activate } = useActivateTeam();
+  const handleActivate = () => void activate("academy_lock");
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-20">
@@ -59,7 +48,7 @@ export function AcademyLock() {
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Button variant="hero" size="lg" onClick={handleActivate}>
-            <Sparkles className="size-4" /> Attiva agente AI - 29€
+            <Sparkles className="size-4" /> Attiva il mio Team AI - 29€
           </Button>
           {!user && (
             <Link to="/auth">

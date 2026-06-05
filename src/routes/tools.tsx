@@ -6,6 +6,7 @@ import { ToolIcon } from "@/components/ToolIcon";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { Button } from "@/components/ui/button";
 import { useAcademyAccess } from "@/components/AcademyLock";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 
 const AGENT_OVERRIDES: Record<string, { role: string; when: string }> = {
   Idea:        { role: "Lo stratega che dà forma all'idea grezza",          when: "Entra in gioco appena hai un'intuizione" },
@@ -48,6 +49,8 @@ const CATEGORY_ORDER = [
 
 function ToolsPage() {
   const { hasAccess } = useAcademyAccess();
+  const { activate } = useActivateTeam();
+  const handleActivate = () => void activate("tools");
   const { data, isLoading } = useQuery({
     queryKey: ["tool-library"],
     queryFn: async () => {
@@ -97,8 +100,8 @@ function ToolsPage() {
           footerNote="Ogni agente ha un compito specifico. Insieme non sono solo strumenti: sono il tuo team operativo AI."
           hideTools={!hasAccess}
           lockCta={!hasAccess ? (
-            <Button variant="hero" size="sm" asChild>
-              <Link to="/prezzi">Attiva Team AI - 29€ <ArrowRight className="size-4" /></Link>
+            <Button variant="hero" size="sm" onClick={handleActivate}>
+              Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
             </Button>
           ) : undefined}
         />
@@ -163,10 +166,8 @@ function ToolsPage() {
               Porta la tua idea. Guarda cosa preparano. Approva solo ciò che ti convince.
             </p>
             <div className="mt-5">
-              <Button variant="hero" size="lg" asChild>
-                <Link to="/prezzi">
-                  Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-                </Link>
+              <Button variant="hero" size="lg" onClick={handleActivate}>
+                Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
               </Button>
             </div>
           </div>
@@ -205,10 +206,8 @@ function ToolsPage() {
               Attiva il Team AI per scoprire anche <strong className="text-foreground/90">con quali strumenti</strong> lavora ogni agente e sbloccare il motore operativo reale dietro al team.
             </p>
             <div className="mt-6">
-              <Button variant="hero" size="lg" asChild>
-                <Link to="/prezzi">
-                  Attiva Team AI - 29€ <ArrowRight className="size-4" />
-                </Link>
+              <Button variant="hero" size="lg" onClick={handleActivate}>
+                Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-3">
@@ -302,11 +301,9 @@ function ToolsPage() {
             Attiva il tuo agente AI personale e inizia a costruire la tua app con il supporto della squadra giusta.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/">
-              <Button variant="hero" size="lg">
-                <Sparkles className="size-4" /> Attiva il mio team AI
-              </Button>
-            </Link>
+            <Button variant="hero" size="lg" onClick={handleActivate}>
+              <Sparkles className="size-4" /> Attiva il mio Team AI - 29€
+            </Button>
             <Link to="/academy">
               <Button variant="outline" size="lg">
                 Scopri da dove partire <ArrowRight className="size-4" />

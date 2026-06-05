@@ -3,10 +3,7 @@ import { Sparkles, LogOut, Check, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { getAgentAccess } from "@/lib/payments.functions";
-import { loadIdeaParams } from "@/lib/idea-estimate";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 
 const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/", label: "Home" },
@@ -23,23 +20,8 @@ export function AppHeader() {
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
 
-  const fetchAccess = useServerFn(getAgentAccess);
-  const { data: access } = useQuery({
-    queryKey: ["agent-access"],
-    queryFn: () => fetchAccess(),
-    enabled: !!user,
-    staleTime: 15_000,
-  });
-  const hasAccess = !!access?.hasAccess;
-
-  const handleActivate = () => {
-    const saved = loadIdeaParams();
-    if (saved && saved.idea.trim().length >= 8) {
-      navigate({ to: "/riepilogo-idea" });
-    } else {
-      navigate({ to: "/" });
-    }
-  };
+  const { activate, hasAccess } = useActivateTeam();
+  const handleActivate = () => void activate("navbar");
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

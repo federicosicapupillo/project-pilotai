@@ -8,6 +8,7 @@ import { resolveAgentIdentity } from "@/lib/agent-identity";
 import { ToolBadge } from "@/components/ToolBadge";
 import { toast } from "sonner";
 import { useAcademyAccess } from "@/components/AcademyLock";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 
 export const Route = createFileRoute("/agents")({
   head: () => ({ meta: [{ title: "Libreria Agenti — Da Idea ad App" }] }),
@@ -141,6 +142,8 @@ function isProjectManager(name: string, role: string | null | undefined) {
 
 function AgentsPage() {
   const { hasAccess } = useAcademyAccess();
+  const { activate } = useActivateTeam();
+  const handleActivate = () => void activate("agents");
   const { data, isLoading } = useQuery({
     queryKey: ["agent-library"],
     queryFn: async () => {
@@ -196,10 +199,8 @@ function AgentsPage() {
         </p>
         {!hasAccess && (
           <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/prezzi">
-                <Sparkles className="size-4" /> Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-              </Link>
+            <Button variant="hero" size="lg" onClick={handleActivate}>
+              <Sparkles className="size-4" /> Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
             </Button>
             <p className="text-xs text-muted-foreground">Dopo l'attivazione sblocchi tool, prompt e istruzioni operative.</p>
           </div>
@@ -344,10 +345,8 @@ function AgentsPage() {
             Con l'attivazione sblocchi tool, prompt e istruzioni operative. Tu dai le direttive al Project Manager, lui coordina gli agenti e ti mostra il lavoro da approvare.
           </p>
           <div className="mt-5 flex flex-col items-center gap-2">
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/prezzi">
-                <Sparkles className="size-4" /> Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-              </Link>
+            <Button variant="hero" size="lg" onClick={handleActivate}>
+              <Sparkles className="size-4" /> Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
             </Button>
             <p className="text-xs text-muted-foreground">Accesso immediato dopo il pagamento.</p>
           </div>

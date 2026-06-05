@@ -18,12 +18,12 @@ function CancelPage() {
           Pagamento non completato
         </h1>
         <p className="text-muted-foreground mt-4 text-base">
-          Nessun importo è stato addebitato. Puoi tornare al riepilogo della tua idea e riprovare quando vuoi.
+          Nessun importo è stato addebitato. Puoi tornare quando vuoi e attivare il tuo Team AI.
         </p>
         <div className="mt-8">
-          <Link to="/riepilogo-idea">
+          <Link to="/prezzi">
             <Button variant="hero" size="lg">
-              <ArrowLeft className="size-4" /> Torna al riepilogo
+              <ArrowLeft className="size-4" /> Torna ai prezzi
             </Button>
           </Link>
         </div>
