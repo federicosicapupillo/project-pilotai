@@ -15,6 +15,29 @@ export const Route = createFileRoute("/prezzi")({
       { name: "description", content: "Pacchetto Team AI Operativo a 29€. Tu dai le direttive, gli agenti AI preparano struttura, schermate, funzioni e prompt per la prima versione della tua app." },
       { property: "og:title", content: "Prezzi — Attiva il tuo Team AI operativo" },
       { property: "og:description", content: "29€ per attivare il pacchetto Team AI: 8 agenti, percorso personale e metodo operativo guidato al lavoro sulla tua idea." },
+      { property: "og:url", content: "https://ideapilots.app/prezzi" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://ideapilots.app/prezzi" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: "Team AI Operativo — IdeaPilot AI",
+          description: "Pacchetto operativo IdeaPilot: 8 agenti AI, percorso personale e metodo guidato per costruire la prima versione della tua app.",
+          brand: { "@type": "Brand", name: "IdeaPilot AI" },
+          offers: {
+            "@type": "Offer",
+            price: "29.00",
+            priceCurrency: "EUR",
+            availability: "https://schema.org/InStock",
+            url: "https://ideapilots.app/prezzi",
+          },
+        }),
+      },
     ],
   }),
   component: PrezziPage,
