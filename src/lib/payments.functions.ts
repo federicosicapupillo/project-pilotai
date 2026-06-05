@@ -7,17 +7,23 @@ type CheckoutResult = { clientSecret: string } | { error: string };
 
 export const createAgentCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { returnUrl: string; environment: StripeEnv; idea?: string }) => {
+  .inputValidator((data: { returnUrl: string; environment: StripeEnv; idea?: string; projectId?: string }) => {
     if (data.environment !== "sandbox" && data.environment !== "live") {
       throw new Error("Invalid environment");
     }
     if (!data.returnUrl || !/^https?:\/\//.test(data.returnUrl)) {
       throw new Error("Invalid returnUrl");
     }
+    const projectId =
+      typeof data.projectId === "string" &&
+      /^[0-9a-fA-F-]{36}$/.test(data.projectId)
+        ? data.projectId
+        : undefined;
     return {
       returnUrl: data.returnUrl,
       environment: data.environment,
       idea: typeof data.idea === "string" ? data.idea.slice(0, 2000) : "",
+      projectId,
     };
   })
   .handler(async ({ data, context }): Promise<CheckoutResult> => {
@@ -73,7 +79,13 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
         return_url: data.returnUrl,
         customer: customerId,
         payment_intent_data: { description: product.name },
-        metadata: { userId, idea: data.idea.slice(0, 500) },
+        metadata: {
+          userId,
+          idea: data.idea.slice(0, 500),
+          product: "team_ai",
+          ...(email ? { email } : {}),
+          ...(data.projectId ? { project_id: data.projectId } : {}),
+        },
       });
 
       // Pre-record pending row so we have idea+session linked even before webhook
@@ -84,6 +96,7 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
             user_id: userId,
             email: email ?? null,
             idea: data.idea || null,
+            project_id: data.projectId ?? null,
             amount_cents: 2900,
             currency: "eur",
             payment_status: "pending",
@@ -106,7 +119,7 @@ export const getAgentAccess = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data } = await supabase
       .from("agent_access")
-      .select("accesso_agente_ai, payment_status, idea, paid_at")
+      .select("accesso_agente_ai, payment_status, idea, paid_at, project_id")
       .eq("user_id", context.userId)
       .maybeSingle();
     return {
@@ -114,5 +127,6 @@ export const getAgentAccess = createServerFn({ method: "GET" })
       status: data?.payment_status ?? null,
       idea: data?.idea ?? null,
       paidAt: data?.paid_at ?? null,
+      projectId: data?.project_id ?? null,
     };
   });

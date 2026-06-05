@@ -16,6 +16,7 @@ async function handleCheckoutCompleted(session: any) {
     console.error("checkout.session.completed without userId metadata", session.id);
     return;
   }
+  const projectId = session.metadata?.project_id ?? null;
   const supabase = getSupabase();
   await supabase
     .from("agent_access")
@@ -24,6 +25,7 @@ async function handleCheckoutCompleted(session: any) {
         user_id: userId,
         email: session.customer_details?.email ?? session.customer_email ?? null,
         idea: session.metadata?.idea ?? null,
+        project_id: projectId,
         amount_cents: session.amount_total ?? 2900,
         currency: (session.currency ?? "eur").toLowerCase(),
         payment_status: "paid",

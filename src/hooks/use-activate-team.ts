@@ -34,8 +34,12 @@ export function useActivateTeam() {
 
   const hasAccess = !!access?.hasAccess;
 
-  const activate = async (source?: string) => {
-    void trackEvent("activate_team_ai_click", { source: source ?? "unknown" });
+  const activate = async (source?: string, projectId?: string) => {
+    void trackEvent("activate_team_ai_click", { source: source ?? "unknown", projectId });
+    if (typeof window !== "undefined" && projectId) {
+      // Persist so the checkout page (and recovery flow) can pick the project back up
+      try { localStorage.setItem("pending_project_id", projectId); } catch { /* noop */ }
+    }
     if (hasAccess) {
       navigate({ to: "/agents" });
       return;
