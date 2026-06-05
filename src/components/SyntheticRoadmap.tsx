@@ -1,6 +1,7 @@
 import { Check, Loader2, Circle, MessageSquare, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { useRoadmapProgress } from "@/lib/roadmap-progress";
 
 export type StepStatus = "done" | "in_progress" | "todo";
 
@@ -22,6 +23,8 @@ export const SYNTHETIC_STEPS: SyntheticStep[] = [
   { n: 8, title: "Prima versione pronta", description: "Prepareremo la prima versione da testare, mostrare o migliorare.", status: "todo" },
 ];
 
+// Deprecato: usare useRoadmapProgress(projectId) per ottenere stato live.
+// Mantenuto per retrocompatibilità: ritorna lo stato statico iniziale.
 export function syntheticProgress() {
   const done = SYNTHETIC_STEPS.filter((s) => s.status === "done").length;
   const pct = Math.round((done / SYNTHETIC_STEPS.length) * 100);
@@ -66,7 +69,7 @@ function StatusBadge({ status }: { status: StepStatus }) {
 }
 
 export function SyntheticRoadmap({ projectId }: { projectId: string }) {
-  const { done, total, pct } = syntheticProgress();
+  const { done, total, pct, steps } = useRoadmapProgress(projectId);
   return (
     <div className="glass-card rounded-2xl p-6 sm:p-8">
       <p className="text-sm text-muted-foreground italic">
@@ -90,7 +93,7 @@ export function SyntheticRoadmap({ projectId }: { projectId: string }) {
       </div>
 
       <ol className="mt-6 space-y-3">
-        {SYNTHETIC_STEPS.map((s) => (
+        {steps.map((s) => (
           <li
             key={s.n}
             className={`flex items-start gap-3 rounded-xl p-4 border ${
@@ -135,15 +138,16 @@ export function SyntheticRoadmap({ projectId }: { projectId: string }) {
   );
 }
 
-export function SyntheticRoadmapCompact(_props: { projectId: string }) {
-  const { pct, done, total, next } = syntheticProgress();
+export function SyntheticRoadmapCompact({ projectId }: { projectId: string }) {
+  const { pct, done, total, nextStep, currentStep } = useRoadmapProgress(projectId);
+  const label = nextStep?.title ?? currentStep?.title ?? "Tutti gli step completati";
   return (
     <div className="mt-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
       <div className="flex items-center justify-between text-xs">
         <span className="text-muted-foreground uppercase tracking-wider">Prossimo step</span>
         <span className="text-muted-foreground">{pct}% · {done}/{total}</span>
       </div>
-      <p className="text-sm font-medium mt-1 line-clamp-1">{next?.title ?? "Tutti gli step completati"}</p>
+      <p className="text-sm font-medium mt-1 line-clamp-1">{label}</p>
       <div className="mt-1.5 h-1 rounded-full bg-secondary overflow-hidden">
         <div className="h-full gradient-bg" style={{ width: `${pct}%` }} />
       </div>

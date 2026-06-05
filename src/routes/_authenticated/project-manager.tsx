@@ -15,6 +15,7 @@ import {
   markOperationalPromptCopied,
 } from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS } from "@/components/SyntheticRoadmap";
+import { writeCompletedSteps } from "@/lib/roadmap-progress";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { ToolIcon } from "@/components/ToolIcon";
 import { resolveAgentIdentity } from "@/lib/agent-identity";
@@ -327,12 +328,7 @@ REGOLE:
       ? completedSteps
       : [...completedSteps, closed];
     setCompletedSteps(newCompleted);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(
-        `pm_completed_steps:${activeProject.id}`,
-        JSON.stringify(newCompleted),
-      );
-    }
+    writeCompletedSteps(activeProject.id, newCompleted);
     setReviewMode("schema-review");
     if (!next) {
       mutation.mutate({

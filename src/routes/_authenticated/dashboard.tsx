@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-react";
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import { SyntheticRoadmapCompact, syntheticProgress } from "@/components/SyntheticRoadmap";
+import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
+import { useRoadmapProgress } from "@/lib/roadmap-progress";
 import { DashboardRoadmap } from "@/components/DashboardRoadmap";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -164,59 +165,12 @@ function DashboardPage() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             {projects?.map((p) => (
-              <Link
+              <ProjectCard
                 key={p.id}
-                to="/projects/$id"
-                params={{ id: p.id }}
-                className="glass-card rounded-xl p-5 hover:border-primary/50 transition-all group"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="size-10 rounded-lg bg-secondary grid place-items-center">
-                    <Folder className="size-5 text-primary" />
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-secondary text-muted-foreground">
-                    {statusBadge(p.status)}
-                  </span>
-                </div>
-                <h3 className="font-display font-semibold mt-4 line-clamp-1">{p.title}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
-                  {p.idea_description ?? "—"}
-                </p>
-                {(() => {
-                  const items = roadmaps?.get(p.id) ?? [];
-                   const pr = computeProgress(items);
-                   const phase = currentPhase(items);
-                  const sp = syntheticProgress();
-                  const displayPct = hasAccess ? sp.pct : pr.pct;
-                  const displayDone = hasAccess ? sp.done : pr.completed;
-                  const displayTotal = hasAccess ? sp.total : pr.total;
-                  const displayPhase = hasAccess ? "Progetto definito" : phase;
-                  return (
-                    <>
-                      <div className="mt-4 flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">App {displayPct}% · {displayDone}/{displayTotal}</span>
-                        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
-                      </div>
-                      <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
-                        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
-                      </div>
-                      {hasAccess ? (
-                        <SyntheticRoadmapCompact projectId={p.id} />
-                      ) : (
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
-                          Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
-                        <span>{p.product_type ?? "Progetto"}</span>
-                        <span className="flex items-center gap-1 text-primary group-hover:translate-x-1 transition-transform">
-                          Continua costruzione <ArrowRight className="size-3" />
-                        </span>
-                      </div>
-                    </>
-                  );
-                })()}
-              </Link>
+                project={p}
+                roadmapItems={roadmaps?.get(p.id) ?? []}
+                hasAccess={hasAccess}
+              />
             ))}
           </div>
         </section>
@@ -273,5 +227,72 @@ function DashboardPage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+type ProjectRow = {
+  id: string;
+  title: string;
+  idea_description: string | null;
+  status: string;
+  product_type: string | null;
+  updated_at: string;
+};
+
+function ProjectCard({
+  project: p,
+  roadmapItems,
+  hasAccess,
+}: {
+  project: ProjectRow;
+  roadmapItems: RoadmapItem[];
+  hasAccess: boolean;
+}) {
+  const pr = computeProgress(roadmapItems);
+  const phase = currentPhase(roadmapItems);
+  const rm = useRoadmapProgress(p.id);
+  const displayPct = hasAccess ? rm.pct : pr.pct;
+  const displayDone = hasAccess ? rm.done : pr.completed;
+  const displayTotal = hasAccess ? rm.total : pr.total;
+  const displayPhase = hasAccess ? (rm.currentStep?.title ?? "Roadmap") : phase;
+  return (
+    <Link
+      to="/projects/$id"
+      params={{ id: p.id }}
+      className="glass-card rounded-xl p-5 hover:border-primary/50 transition-all group"
+    >
+                <div className="flex items-start justify-between">
+                  <div className="size-10 rounded-lg bg-secondary grid place-items-center">
+                    <Folder className="size-5 text-primary" />
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-secondary text-muted-foreground">
+                    {statusBadge(p.status)}
+                  </span>
+                </div>
+                <h3 className="font-display font-semibold mt-4 line-clamp-1">{p.title}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
+                  {p.idea_description ?? "—"}
+                </p>
+                      <div className="mt-4 flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">App {displayPct}% · {displayDone}/{displayTotal}</span>
+                        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
+                      </div>
+                      <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
+                        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
+                      </div>
+                      {hasAccess ? (
+                        <SyntheticRoadmapCompact projectId={p.id} />
+                      ) : (
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
+                          Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+                        <span>{p.product_type ?? "Progetto"}</span>
+                        <span className="flex items-center gap-1 text-primary group-hover:translate-x-1 transition-transform">
+                          Continua costruzione <ArrowRight className="size-3" />
+                        </span>
+                      </div>
+    </Link>
   );
 }
