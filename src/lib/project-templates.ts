@@ -49,6 +49,7 @@ export const ROADMAP_TEMPLATE = [
 import { STRATEGIST_AGENT_SYSTEM_PROMPT } from "@/prompts/strategistAgentSystemPrompt";
 import { VALIDATOR_AGENT_SYSTEM_PROMPT } from "@/prompts/validatorAgentSystemPrompt";
 import { RESEARCHER_AGENT_SYSTEM_PROMPT } from "@/prompts/researcherAgentSystemPrompt";
+import { VALIDATING_AGENT_SYSTEM_PROMPT } from "@/prompts/validatingAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -71,6 +72,13 @@ export const AGENT_TEMPLATE = (idea: string) => [
     when_to_use: "Quando serve capire settore, alternative esistenti, ipotesi da verificare e dati mancanti prima di costruire.",
     expected_output: "Analisi strutturata in 12 sezioni con brief di ricerca finale per Stratega, Project Manager, Validatore e Agente Tecnico.",
     prompt_text: `${RESEARCHER_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA ANALIZZARE:\n"${idea}"\n\nClassifica prima il tipo di progetto, poi adatta l'analisi e rispondi con il FORMATO RISPOSTA STANDARD (12 sezioni in markdown) chiudendo con il BRIEF DI RICERCA PER GLI ALTRI AGENTI. Se non hai accesso a fonti aggiornate, dichiaralo e marca i dati come "Dato da verificare", "Stima indicativa" o "Inferenza logica".`,
+  },
+  {
+    name: "Agente Validante",
+    role: "Mette alla prova problema, target pagante, modello economico, prezzo, domanda, MVP e decide GO / NO GO.",
+    when_to_use: "Prima di investire tempo o budget nello sviluppo: per capire se l'idea regge davvero o se va testata prima.",
+    expected_output: "Analisi strutturata in 12 sezioni con decisione di validazione e brief operativo per gli altri agenti.",
+    prompt_text: `${VALIDATING_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA VALIDARE:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta la validazione e rispondi con il FORMATO RISPOSTA STANDARD (12 sezioni in markdown) chiudendo con il BRIEF DI VALIDAZIONE PER GLI ALTRI AGENTI. Dichiara esplicitamente la decisione di validazione (es. PRONTO PER MVP, NON ANCORA VALIDATO, DA TESTARE SUBITO).`,
   },
   {
     name: "Agente Product Manager",
