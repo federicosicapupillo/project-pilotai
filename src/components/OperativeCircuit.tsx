@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import { ToolIcon } from "./ToolIcon";
 import {
   ArrowRight, Lightbulb, Search, Brain, Code2, GitBranch,
-  Database, ShieldCheck, ImageIcon, Rocket, LucideIcon,
+  Database, ShieldCheck, ImageIcon, Rocket, LucideIcon, Lock as LockIcon,
 } from "lucide-react";
 
 type Tool = { name: string; role: "principale" | "supporto" | "opzionale" };
