@@ -587,7 +587,7 @@ ${text}`;
         )}
         <section className="flex flex-col glass-card rounded-2xl border border-border/60 overflow-hidden">
           <header className="flex items-center gap-3 px-4 sm:px-5 py-3 border-b border-border/60 bg-background/40">
-            <AgentAvatar identity={resolveAgentIdentity("Project Manager")} size={40} />
+            <AgentAvatar identity={resolveAgentIdentity("Project Manager")} size="sm" />
             <div className="min-w-0 flex-1">
               <div className="font-display font-semibold text-sm leading-tight">
                 Chat del Project Manager
