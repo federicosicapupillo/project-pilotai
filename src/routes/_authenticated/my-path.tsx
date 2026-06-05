@@ -10,7 +10,7 @@ import { useActiveProject } from "@/hooks/use-active-project";
 import { ToolBadge } from "@/components/ToolBadge";
 
 export const Route = createFileRoute("/_authenticated/my-path")({
-  head: () => ({ meta: [{ title: "Il mio percorso — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "I miei progetti — Da Idea ad App" }] }),
   component: MyPathPage,
 });
 
@@ -57,9 +57,9 @@ function MyPathPage() {
     <div className="max-w-6xl mx-auto px-6 py-10">
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/60 text-xs text-muted-foreground mb-3">
-          <Compass className="size-3.5 text-primary" /> Il tuo percorso
+          <Compass className="size-3.5 text-primary" /> I tuoi progetti
         </div>
-        <h1 className="text-3xl sm:text-4xl font-display font-semibold">A che punto sei</h1>
+        <h1 className="text-3xl sm:text-4xl font-display font-semibold">I miei progetti</h1>
       </div>
 
       <div className="mb-6">
