@@ -21,7 +21,18 @@ const AGENT_OVERRIDES: Record<string, { role: string; when: string }> = {
 };
 
 export const Route = createFileRoute("/tools")({
-  head: () => ({ meta: [{ title: "Tool Stack — IdeaPilot AI" }] }),
+  head: () => ({
+    meta: [
+      { title: "Tool Stack consigliato — IdeaPilot AI" },
+      { name: "description", content: "Lo stack di strumenti no-code e AI consigliato da IdeaPilot per costruire la tua app: quando usare ogni tool, il livello richiesto e quale agente lo guida nel tuo percorso." },
+      { property: "og:title", content: "Tool Stack consigliato — IdeaPilot AI" },
+      { property: "og:description", content: "Quali strumenti no-code e AI usare per costruire la prima versione della tua app, con il livello richiesto e l'agente che li coordina." },
+      { property: "og:url", content: "https://ideapilots.app/tools" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://ideapilots.app/tools" },
+    ],
+  }),
   component: ToolsPage,
 });
 
