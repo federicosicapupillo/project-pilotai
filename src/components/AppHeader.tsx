@@ -1,8 +1,12 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Sparkles, LogOut } from "lucide-react";
+import { Sparkles, LogOut, Check, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { getAgentAccess } from "@/lib/payments.functions";
+import { loadIdeaParams } from "@/lib/idea-estimate";
 
 const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/", label: "Home" },
@@ -17,6 +21,24 @@ export function AppHeader() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
+
+  const fetchAccess = useServerFn(getAgentAccess);
+  const { data: access } = useQuery({
+    queryKey: ["agent-access"],
+    queryFn: () => fetchAccess(),
+    enabled: !!user,
+    staleTime: 15_000,
+  });
+  const hasAccess = !!access?.hasAccess;
+
+  const handleActivate = () => {
+    const saved = loadIdeaParams();
+    if (saved && saved.idea.trim().length >= 8) {
+      navigate({ to: "/riepilogo-idea" });
+    } else {
+      navigate({ to: "/" });
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -60,6 +82,23 @@ export function AppHeader() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              {hasAccess ? (
+                <Link to="/agente-ai" title="Accesso sbloccato">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-primary/50 bg-primary/10 text-primary glow-soft">
+                    <Check className="size-3.5" /> Agente AI attivo
+                  </span>
+                </Link>
+              ) : (
+                <Button
+                  variant="hero"
+                  size="sm"
+                  onClick={handleActivate}
+                  title="Sblocca il tuo agente personale"
+                  className="hidden sm:inline-flex"
+                >
+                  <Lock className="size-3.5" /> Attiva agente AI - 29€
+                </Button>
+              )}
               <span className="hidden sm:block text-xs text-muted-foreground max-w-[160px] truncate">
                 {user.email}
               </span>
@@ -75,7 +114,7 @@ export function AppHeader() {
                   Accedi
                 </Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/">
                 <Button variant="hero" size="sm">
                   Inizia ora
                 </Button>
@@ -84,6 +123,14 @@ export function AppHeader() {
           )}
         </div>
       </div>
+
+      {user && !hasAccess && (
+        <div className="sm:hidden border-t border-border/40 px-6 py-2 flex justify-center">
+          <Button variant="hero" size="sm" onClick={handleActivate} className="w-full">
+            <Lock className="size-3.5" /> Attiva agente AI - 29€
+          </Button>
+        </div>
+      )}
     </header>
   );
 }
