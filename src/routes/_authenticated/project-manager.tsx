@@ -497,19 +497,6 @@ REGOLE:
               className="w-full resize-none rounded-lg bg-secondary/40 border border-border/50 px-3 py-2 text-sm focus:outline-none focus:border-primary/60"
               disabled={mutation.isPending}
             />
-            <div className="flex flex-wrap gap-2">
-              {QUICK_ACTIONS.slice(0, 4).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => sendQuick(s)}
-                  className="text-xs px-2.5 py-1 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
-                  disabled={mutation.isPending}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
             <div className="flex justify-end">
               <Button type="submit" variant="hero" disabled={mutation.isPending || !input.trim()}>
                 {mutation.isPending ? (
