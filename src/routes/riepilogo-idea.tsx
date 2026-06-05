@@ -133,13 +133,11 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
   const stableDifficulty = useMemo(() => tierDifficultyLabel(tier), [tier]);
   const stableDifficultyReason = useMemo(() => tierDifficultyReason(tier), [tier]);
 
-  const { activate } = useActivateTeam();
+  const { activate, isAuthed } = useActivateTeam();
   const goToRoadmap = () => {
     void trackEvent("riepilogo_cta_attiva_agente_29");
     void activate("riepilogo_idea");
   };
-
-  const { isAuthed } = useActivateTeam();
   const generateProjectFromIdea = () => {
     void trackEvent("riepilogo_cta_genera_progetto_loggato");
     if (typeof window !== "undefined") {
