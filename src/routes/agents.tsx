@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Bot, ClipboardCopy, Sparkles, ArrowRight, CheckCircle2, Crown, MessageSquare } from "lucide-react";
 import { AgentAvatar } from "@/components/AgentAvatar";
-import { resolveAgentIdentity, isProjectManagerIdentity } from "@/lib/agent-identity";
+import { resolveAgentIdentity } from "@/lib/agent-identity";
 import { ToolBadge } from "@/components/ToolBadge";
 import { toast } from "sonner";
 import { useAcademyAccess } from "@/components/AcademyLock";
