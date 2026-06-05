@@ -1,7 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, MessageSquare, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/pagamento-successo")({
   head: () => ({ meta: [{ title: "Pagamento completato" }] }),
@@ -45,6 +46,13 @@ function SuccessPage() {
         <p className="text-muted-foreground mt-4 text-base sm:text-lg">
           Stiamo attivando il tuo Team AI e ti riportiamo al tuo progetto…
         </p>
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <Link to="/project-manager">
+            <Button variant="hero" size="lg">
+              <MessageSquare className="size-4" /> Parla con il mio Project Manager <ArrowRight className="size-4" />
+            </Button>
+          </Link>
+        </div>
         <div className="mt-8 inline-flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin text-primary" /> Reindirizzamento alla dashboard…
         </div>
