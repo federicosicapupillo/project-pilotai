@@ -139,6 +139,23 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
     void activate("riepilogo_idea");
   };
 
+  const { isAuthed } = useActivateTeam();
+  const generateProjectFromIdea = () => {
+    void trackEvent("riepilogo_cta_genera_progetto_loggato");
+    if (typeof window !== "undefined") {
+      try {
+        const title = (summary?.title ?? params.idea).slice(0, 80);
+        localStorage.setItem("draft_idea_title", title);
+        localStorage.setItem("draft_idea_description", summary?.short_description ?? params.idea);
+        if (summary?.target) localStorage.setItem("draft_idea_target", summary.target);
+        if (summary?.problem) localStorage.setItem("draft_idea_problem", summary.problem);
+        if (summary?.solution) localStorage.setItem("draft_idea_solution", summary.solution);
+        if (summary?.project_type) localStorage.setItem("draft_idea_product_type", summary.project_type);
+      } catch { /* noop */ }
+    }
+    navigate({ to: "/new-project" });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 w-full">
@@ -196,6 +213,8 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
               potentialAmount={stablePotential.amount}
               costAmount={stableCost.amount}
               onActivate={goToRoadmap}
+              isAuthed={isAuthed}
+              onGenerateProject={generateProjectFromIdea}
             />
 
             {/* 2 — Target */}
