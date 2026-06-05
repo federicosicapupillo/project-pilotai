@@ -53,6 +53,7 @@ import { VALIDATING_AGENT_SYSTEM_PROMPT } from "@/prompts/validatingAgentSystemP
 import { MVP_AGENT_SYSTEM_PROMPT } from "@/prompts/mvpAgentSystemPrompt";
 import { UX_AGENT_SYSTEM_PROMPT } from "@/prompts/uxAgentSystemPrompt";
 import { INSTRUCTOR_AGENT_SYSTEM_PROMPT } from "@/prompts/instructorAgentSystemPrompt";
+import { BUILDER_AGENT_SYSTEM_PROMPT } from "@/prompts/builderAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -103,6 +104,13 @@ export const AGENT_TEMPLATE = (idea: string) => [
     when_to_use: "Quando hai bisogno di un prompt chiaro e copiabile per costruire, correggere bug, aggiungere funzioni o controllare qualità senza ambiguità.",
     expected_output: "Prompt operativo in blocco copiabile con contesto, obiettivo, intervento, regole, cosa non modificare, controllo qualità e risultato atteso.",
     prompt_text: `${INSTRUCTOR_AGENT_SYSTEM_PROMPT}\n\n---\nRICHIESTA DELL'UTENTE DA TRASFORMARE IN ISTRUZIONI OPERATIVE:\n"${idea}"\n\nSegui il METODO DI LAVORO e rispondi nel FORMATO RISPOSTA STANDARD (blocco \`\`\`txt copiabile). Proteggi sempre routing, login, database, permessi, layout esistente e funzioni già funzionanti. Se la richiesta è troppo ampia, dichiara che va divisa in più prompt.`,
+  },
+  {
+    name: "Agente Costruttore",
+    role: "Costruisce e modifica funzioni, schermate e integrazioni rispettando UX, dati, permessi e funzioni esistenti.",
+    when_to_use: "Quando hai brief, prompt o decisioni operative e devi tradurli in costruzione concreta, stabile e non distruttiva.",
+    expected_output: "Analisi strutturata in 10 sezioni con piano di implementazione, controlli responsive, anti-regressione e brief costruzione per gli altri agenti.",
+    prompt_text: `${BUILDER_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA / RICHIESTA DI COSTRUZIONE:\n"${idea}"\n\nClassifica prima la categoria del progetto, applica la modifica minima necessaria e rispondi con il FORMATO RISPOSTA STANDARD (10 sezioni in markdown) chiudendo con il BRIEF COSTRUZIONE PER GLI ALTRI AGENTI. Se l'utente chiede se la costruzione è pronta, dichiara COSTRUZIONE PRONTA / DA TESTARE / INCOMPLETA / TROPPO AMPIA / RISCHIO REGRESSIONE / DA PASSARE AL CONTROLLO QUALITÀ / DA PASSARE ALL'AGENTE SICUREZZA.`,
   },
   {
     name: "Agente Tester",
