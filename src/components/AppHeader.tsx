@@ -109,11 +109,10 @@ export function AppHeader() {
                   <Link
                     to="/dashboard"
                     title="Il tuo Team AI è attivo"
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide border border-primary/40 bg-primary/5 text-primary/90 hover:bg-primary/10 transition-colors"
+                    aria-label="Accesso attivo"
+                    className="inline-grid place-items-center size-7 rounded-full border border-primary/40 bg-primary/5 text-primary/90 hover:bg-primary/10 transition-colors"
                   >
                     <ShieldCheck className="size-3.5" />
-                    <span className="hidden sm:inline">Accesso attivo</span>
-                    <span className="sm:hidden">Attivo</span>
                   </Link>
                 </>
               ) : (
