@@ -6,7 +6,7 @@ import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle } f
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import { getPmHistory, sendPmMessage } from "@/lib/project-manager.functions";
+import { getPmHistory, sendPmMessage, getPmLogs } from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS, syntheticProgress } from "@/components/SyntheticRoadmap";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
@@ -98,11 +98,18 @@ function ProjectManagerPage() {
 
   const fetchHistory = useServerFn(getPmHistory);
   const send = useServerFn(sendPmMessage);
+  const fetchLogs = useServerFn(getPmLogs);
 
   const { data: history } = useQuery({
     queryKey: ["pm-history", activeId],
     enabled: !!hasAccess && !!activeId,
     queryFn: () => fetchHistory({ data: { projectId: activeId } }),
+  });
+
+  const { data: logs } = useQuery({
+    queryKey: ["pm-logs", activeId],
+    enabled: !!hasAccess && !!activeId,
+    queryFn: () => fetchLogs({ data: { projectId: activeId, limit: 30 } }),
   });
 
   const [input, setInput] = useState("");
@@ -113,6 +120,7 @@ function ProjectManagerPage() {
     mutationFn: (message: string) => send({ data: { projectId: activeId, message } }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["pm-history", activeId] });
+      qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
       setInput("");
       requestAnimationFrame(() => inputRef.current?.focus());
     },
