@@ -14,7 +14,7 @@ import { useActivateTeam } from "@/hooks/use-activate-team";
 import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/projects/$id")({
-  head: () => ({ meta: [{ title: "Progetto — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "Progetto — IdeaPilot AI" }] }),
   component: ProjectPage,
 });
 

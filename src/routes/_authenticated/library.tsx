@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Copy, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/library")({
-  head: () => ({ meta: [{ title: "Libreria prompt — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "Libreria prompt — IdeaPilot AI" }] }),
   component: LibraryPage,
 });
 

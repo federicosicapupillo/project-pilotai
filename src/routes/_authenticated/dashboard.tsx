@@ -12,7 +12,7 @@ import { AgentPromptsSection } from "@/components/AgentPromptsSection";
 import { useActiveProject } from "@/hooks/use-active-project";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — IdeaPilot AI" }] }),
   component: DashboardPage,
 });
 

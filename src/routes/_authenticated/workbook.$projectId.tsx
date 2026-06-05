@@ -19,7 +19,7 @@ function Field({ label, hint, value, onChange, lines = false, rows = 3 }: { labe
 }
 
 export const Route = createFileRoute("/_authenticated/workbook/$projectId")({
-  head: () => ({ meta: [{ title: "Workbook progetto — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "Workbook progetto — IdeaPilot AI" }] }),
   component: WorkbookPage,
 });
 

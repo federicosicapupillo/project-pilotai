@@ -23,7 +23,7 @@ import { Sparkles, ArrowLeft } from "lucide-react";
 import { GenerationProgressDialog, type GenState } from "@/components/GenerationProgressDialog";
 
 export const Route = createFileRoute("/_authenticated/new-project")({
-  head: () => ({ meta: [{ title: "Nuovo progetto — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "Nuovo progetto — IdeaPilot AI" }] }),
   component: NewProjectPage,
 });
 
