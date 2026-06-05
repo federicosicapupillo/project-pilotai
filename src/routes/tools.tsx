@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Wrench, ExternalLink, Sparkles, Users, ArrowRight } from "lucide-react";
+import { Wrench, ExternalLink, Sparkles, Users, ArrowRight, Lock } from "lucide-react";
 import { ToolIcon } from "@/components/ToolIcon";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { Button } from "@/components/ui/button";
+import { useAcademyAccess } from "@/components/AcademyLock";
 
 const AGENT_OVERRIDES: Record<string, { role: string; when: string }> = {
   Idea:        { role: "Lo stratega che dà forma all'idea grezza",          when: "Entra in gioco appena hai un'intuizione" },
@@ -46,6 +47,7 @@ const CATEGORY_ORDER = [
 ];
 
 function ToolsPage() {
+  const { hasAccess } = useAcademyAccess();
   const { data, isLoading } = useQuery({
     queryKey: ["tool-library"],
     queryFn: async () => {
@@ -53,6 +55,7 @@ function ToolsPage() {
       if (error) throw error;
       return data;
     },
+    enabled: hasAccess,
   });
 
   const grouped = (data ?? []).reduce<Record<string, typeof data>>((acc, t) => {
@@ -92,6 +95,12 @@ function ToolsPage() {
           stepLabelPrefix="Agente"
           stepOverrides={AGENT_OVERRIDES}
           footerNote="Ogni agente ha un compito specifico. Insieme non sono solo strumenti: sono il tuo team operativo AI."
+          hideTools={!hasAccess}
+          lockCta={!hasAccess ? (
+            <Button variant="hero" size="sm" asChild>
+              <Link to="/prezzi">Attiva Team AI - 29€ <ArrowRight className="size-4" /></Link>
+            </Button>
+          ) : undefined}
         />
       </div>
 
