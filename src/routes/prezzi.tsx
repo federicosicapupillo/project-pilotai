@@ -11,33 +11,35 @@ import { trackEvent } from "@/lib/tracking";
 export const Route = createFileRoute("/prezzi")({
   head: () => ({
     meta: [
-      { title: "Prezzi — Attiva il tuo agente AI personale" },
-      { name: "description", content: "Attiva il tuo agente AI personale a 29€ e trasforma la tua idea nella prima versione funzionante della tua app." },
-      { property: "og:title", content: "Prezzi — Attiva il tuo agente AI personale" },
-      { property: "og:description", content: "29€ per attivare il tuo agente AI personale: analisi dell'idea, piano operativo, prompt pronti e percorso guidato." },
+      { title: "Prezzi — Attiva la tua squadra AI personale" },
+      { name: "description", content: "Attiva il tuo team AI operativo a 29€. Tu dai le direttive, gli agenti AI trasformano la tua idea nella prima versione della tua app." },
+      { property: "og:title", content: "Prezzi — Attiva la tua squadra AI personale" },
+      { property: "og:description", content: "29€ per attivare la tua squadra di agenti AI: struttura, schermate, funzioni, prompt e passaggi operativi per la tua app." },
     ],
   }),
   component: PrezziPage,
 });
 
 const TEAM: { role: string; line: string }[] = [
-  { role: "Stratega AI", line: "Analizza la tua idea e ne chiarisce il potenziale" },
-  { role: "Project manager AI", line: "Costruisce il tuo piano operativo personalizzato" },
-  { role: "Stimatore AI", line: "Sai subito in quante ore creare la prima versione" },
-  { role: "Architetto AI", line: "Ti aiuta a scegliere solo le funzioni che servono davvero" },
-  { role: "Designer AI", line: "Hai già le schermate giuste da costruire" },
-  { role: "Copy / Prompt AI", line: "Ricevi prompt operativi già pronti da usare" },
-  { role: "Agente AI personale", line: "Attivi il tuo agente AI dedicato al tuo progetto" },
-  { role: "Academy operativa", line: "Segui un percorso pratico, senza video inutili" },
-  { role: "Coach di costruzione", line: "La squadra ti accompagna step by step" },
-  { role: "Tracker di avanzamento", line: "Controlli il tuo avanzamento in ogni fase" },
+  { role: "Stratega AI", line: "Analizza la tua idea e decide da dove partire" },
+  { role: "Product Agent", line: "Trasforma l'idea in un piano operativo" },
+  { role: "UX Agent", line: "Ti suggerisce le schermate da creare" },
+  { role: "Logic Agent", line: "Definisce funzioni e flussi principali" },
+  { role: "Prompt Agent", line: "Prepara istruzioni pronte da usare" },
+  { role: "Build Agent", line: "Ti aiuta a generare le prime parti dell'app" },
+  { role: "Test Agent", line: "Controlla errori, blocchi e passaggi deboli" },
+  { role: "Launch Agent", line: "Ti prepara alla pubblicazione e alla vendita" },
+  { role: "Percorso & avanzamento", line: "Tiene traccia di ogni fase del progetto" },
+  { role: "Academy operativa", line: "Solo ciò che serve, senza video inutili" },
 ];
 
 const NOT_FOR: string[] = [
-  "Non promettiamo un'app completa in poche ore",
-  "Non serve saper programmare",
-  "Non devi partire da un progetto perfetto",
-  "L'obiettivo è creare una prima versione semplice, chiara e funzionante",
+  "Non serve saper programmare da zero",
+  "Non devi conoscere tutti gli strumenti",
+  "Non devi progettare tutto da solo",
+  "Tu dai le direttive e approvi i passaggi",
+  "Gli agenti AI preparano struttura, logica, schermate e prompt",
+  "L'obiettivo è arrivare a una prima versione semplice, chiara e funzionante",
 ];
 
 const ALONE: string[] = [
@@ -50,8 +52,8 @@ const ALONE: string[] = [
 const WITH_AGENT: string[] = [
   "Parti da un'analisi chiara",
   "Costruisci solo ciò che serve",
-  "Hai prompt e step guidati",
-  "Segui un percorso ordinato",
+  "Hai prompt e step già pronti",
+  "Tu controlli e approvi, loro lavorano",
 ];
 
 function PrezziPage() {
@@ -86,14 +88,14 @@ function PrezziPage() {
 
   const goToAgent = () => navigate({ to: "/agente-ai" });
 
-  const PrimaryCta = () =>
+  const PrimaryCta = ({ label = "Attiva il mio team AI - 29€" }: { label?: string }) =>
     hasAccess ? (
       <Button variant="hero" size="lg" className="w-full" onClick={goToAgent}>
-        Vai al mio agente AI <ArrowRight className="size-4" />
+        Vai al mio team AI <ArrowRight className="size-4" />
       </Button>
     ) : (
       <Button variant="hero" size="lg" className="w-full" onClick={handleActivate}>
-        <Lock className="size-4" /> Attiva agente AI - 29€
+        <Lock className="size-4" /> {label}
       </Button>
     );
 
@@ -106,13 +108,13 @@ function PrezziPage() {
             <Sparkles className="size-3 text-primary" /> Piano di accesso
           </div>
           <h1 className="text-4xl sm:text-5xl font-display font-semibold mt-4">
-            Attiva il tuo <span className="gradient-text">agente AI personale</span>
+            Attiva la tua <span className="gradient-text">squadra AI personale</span>
           </h1>
-          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Parti dalla tua idea e fatti guidare passo dopo passo nella creazione della prima versione della tua app.
+          <p className="text-muted-foreground mt-4 max-w-3xl mx-auto">
+            Non devi sapere programmare, progettare schermate o capire tutti gli strumenti. Tu racconti cosa vuoi creare, dai le direttive e il tuo team di agenti AI prepara struttura, logica, schermate, prompt e passaggi operativi per trasformare la tua idea in una prima app.
           </p>
-          <p className="text-sm text-muted-foreground/80 mt-3 max-w-2xl mx-auto">
-            Niente video lunghi. Niente teoria inutile. Il tuo agente AI ti aiuta a capire cosa creare, in che ordine farlo e quali prompt usare.
+          <p className="text-sm gradient-text font-medium mt-4 max-w-2xl mx-auto">
+            Tu decidi la direzione. Gli agenti AI lavorano sul progetto.
           </p>
         </section>
 
@@ -121,22 +123,22 @@ function PrezziPage() {
           <div className="glass-card rounded-3xl p-8 sm:p-10 w-full max-w-xl relative border-primary/60 glow-soft ring-1 ring-primary/30">
             {hasAccess && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-semibold gradient-bg text-primary-foreground glow-soft inline-flex items-center gap-1.5">
-                <Check className="size-3" /> Agente AI attivo
+                <Check className="size-3" /> Team AI attivo
               </div>
             )}
-            <h2 className="font-display font-semibold text-2xl text-center">Agente AI personale</h2>
+            <h2 className="font-display font-semibold text-2xl text-center">Team AI operativo</h2>
             <div className="mt-4 flex items-baseline justify-center gap-2">
               <div className="font-display font-semibold text-6xl gradient-text">29€</div>
             </div>
             <div className="text-center text-sm text-muted-foreground mt-1">Accesso iniziale</div>
             <p className="text-center text-muted-foreground mt-4 max-w-md mx-auto">
-              Il primo passo per trasformare la tua idea in una prima app funzionante con il supporto di un agente AI operativo.
+              Attiva la squadra di agenti AI che prende la tua idea, la organizza e inizia a trasformarla in un progetto operativo: struttura, funzioni, schermate, prompt e primi passaggi per costruire la tua app.
             </p>
 
             <div className="mt-7">
               <PrimaryCta />
               <p className="text-xs text-muted-foreground text-center mt-3 inline-flex items-center justify-center gap-1.5 w-full">
-                <ShieldCheck className="size-3.5" /> Pagamento sicuro. Accesso immediato dopo l'acquisto.
+                <ShieldCheck className="size-3.5" /> Pagamento sicuro. Accesso immediato alla tua squadra AI.
               </p>
             </div>
           </div>
@@ -149,10 +151,10 @@ function PrezziPage() {
               <Sparkles className="size-3 text-primary" /> La tua squadra operativa
             </div>
             <h2 className="text-2xl sm:text-3xl font-display font-semibold mt-4">
-              Con l'accesso attivi la tua <span className="gradient-text">squadra operativa AI</span>
+              Cosa <span className="gradient-text">si attiva per te</span>
             </h2>
             <p className="text-muted-foreground mt-4">
-              Non stai acquistando solo un accesso. Stai attivando il tuo team di agenti AI, configurati per aiutarti a trasformare la tua idea in una prima app, anche se parti da zero.
+              Con l'accesso non sblocchi solo contenuti. Attivi una squadra di agenti AI configurati per lavorare sulla tua idea e aiutarti a trasformarla in una prima app.
             </p>
             <p className="text-sm gradient-text font-medium mt-3">
               I tuoi agenti AI sono pronti a partire
@@ -176,38 +178,17 @@ function PrezziPage() {
             ))}
           </ul>
 
-          {/* BLOCCO EMOTIVO */}
+          {/* BLOCCO FORTE */}
           <div className="mt-10 max-w-4xl mx-auto">
             <div className="glass-card rounded-2xl p-6 sm:p-8 border-primary/40 ring-1 ring-primary/20 glow-soft text-center">
               <h3 className="font-display font-semibold text-xl sm:text-2xl">
-                Tu porti l'idea. Il <span className="gradient-text">team AI</span> ti aiuta a costruirla.
+                Tu non devi <span className="gradient-text">costruire tutto da solo</span>
               </h3>
               <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-                Non serve essere sviluppatore, designer o esperto di automazioni. Con l'accesso attivi una squadra operativa di agenti AI già pronti a lavorare sulla tua idea, aiutarti a prendere decisioni e accompagnarti nella creazione della prima versione della tua app.
+                Il tuo compito è dare le direttive, spiegare cosa vuoi ottenere e approvare le scelte importanti. Gli agenti AI ti aiutano a trasformare l'idea in struttura, schermate, funzioni, prompt e passaggi operativi per arrivare alla prima versione della tua app.
               </p>
-            </div>
-          </div>
-
-          {/* CTA INTERMEDIA */}
-          <div className="mt-8 max-w-xl mx-auto text-center">
-            <h3 className="font-display font-semibold text-xl">
-              La tua squadra AI è pronta. Vuoi attivarla?
-            </h3>
-            <p className="text-muted-foreground text-sm mt-2">
-              Parti dalla tua idea e metti al lavoro il team che ti aiuterà a trasformarla nella prima versione della tua app.
-            </p>
-            <div className="mt-5">
-              {hasAccess ? (
-                <Button variant="hero" size="lg" className="w-full" onClick={goToAgent}>
-                  Vai al mio team AI <ArrowRight className="size-4" />
-                </Button>
-              ) : (
-                <Button variant="hero" size="lg" className="w-full" onClick={handleActivate}>
-                  <Lock className="size-4" /> Attiva il mio team AI - 29€
-                </Button>
-              )}
-              <p className="text-xs text-muted-foreground mt-3 inline-flex items-center justify-center gap-1.5">
-                <ShieldCheck className="size-3.5" /> Accesso immediato dopo il pagamento.
+              <p className="text-sm gradient-text font-medium mt-4">
+                Non parti da zero. Parti con una squadra.
               </p>
             </div>
           </div>
@@ -220,10 +201,7 @@ function PrezziPage() {
               Cosa devi sapere prima di iniziare
             </h2>
             <p className="text-muted-foreground mt-3">
-              Non stai acquistando un'app completa già pronta. Stai attivando un agente AI e un metodo operativo che ti aiutano a costruire la prima versione della tua app partendo dalla tua idea.
-            </p>
-            <p className="text-muted-foreground mt-3">
-              L'obiettivo non è lasciarti da solo davanti a un corso. L'obiettivo è darti il team giusto per partire in modo semplice, guidato e concreto.
+              Non stai acquistando un'app completa già pronta e pubblicata. Stai attivando una squadra di agenti AI e un metodo operativo che ti aiutano a costruire la prima versione della tua app partendo dalla tua idea.
             </p>
             <ul className="mt-5 space-y-2 text-sm">
               {NOT_FOR.map((f) => (
@@ -241,14 +219,14 @@ function PrezziPage() {
             Perché partire da <span className="gradient-text">29€</span>
           </h2>
           <p className="text-muted-foreground mt-4">
-            Il prezzo è pensato per farti iniziare senza grandi investimenti. Prima capisci se la tua idea ha senso, poi costruisci la prima versione con l'aiuto dell'agente AI.
+            Il prezzo è pensato per farti attivare la tua squadra AI senza grandi investimenti. Dai le prime direttive, lascia che gli agenti lavorino sull'idea e capisci subito quanto può diventare reale il tuo progetto.
           </p>
         </section>
 
         {/* CONFRONTO */}
         <section className="mt-20">
           <h2 className="text-2xl sm:text-3xl font-display font-semibold text-center">
-            Da solo o con il tuo <span className="gradient-text">agente AI</span>?
+            Da solo o con il tuo <span className="gradient-text">team AI</span>?
           </h2>
           <div className="grid md:grid-cols-2 gap-5 mt-8 max-w-4xl mx-auto">
             <div className="glass-card rounded-2xl p-6 border border-border/60">
@@ -262,7 +240,7 @@ function PrezziPage() {
               </ul>
             </div>
             <div className="glass-card rounded-2xl p-6 border-primary/60 ring-1 ring-primary/30 glow-soft">
-              <h3 className="font-display font-semibold text-lg gradient-text">Con agente AI</h3>
+              <h3 className="font-display font-semibold text-lg gradient-text">Con il team AI</h3>
               <ul className="mt-4 space-y-2 text-sm">
                 {WITH_AGENT.map((f) => (
                   <li key={f} className="flex items-start gap-2">
@@ -278,15 +256,15 @@ function PrezziPage() {
         <section className="mt-20">
           <div className="glass-card rounded-3xl p-8 sm:p-12 text-center max-w-3xl mx-auto border-primary/40 ring-1 ring-primary/20">
             <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-              Vuoi iniziare a costruire la tua app?
+              La tua <span className="gradient-text">squadra AI</span> è pronta. Vuoi attivarla?
             </h2>
             <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-              Attiva il tuo agente AI personale e trasforma la tua idea in un primo piano operativo.
+              Porta la tua idea. Dai le direttive. Lascia che gli agenti AI inizino a trasformarla in una prima app.
             </p>
             <div className="mt-6 max-w-sm mx-auto">
               <PrimaryCta />
               <p className="text-xs text-muted-foreground mt-3">
-                {hasAccess ? "Il tuo agente AI è già attivo." : "Accesso immediato dopo il pagamento."}
+                {hasAccess ? "Il tuo team AI è già attivo." : "Accesso immediato dopo il pagamento."}
               </p>
             </div>
             <div className="text-center mt-6">
