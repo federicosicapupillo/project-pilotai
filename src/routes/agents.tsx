@@ -60,9 +60,9 @@ const AGENT_PROFILES: Array<{ match: RegExp; profile: AgentProfile }> = [
   {
     match: /\bux\b|design|interfac/i,
     profile: {
-      name: "UX Agent",
+      name: "Agente UX",
       role: "Disegna esperienza e schermate.",
-      collaborates: "MVP Specialist + Build Agent",
+      collaborates: "Agente MVP + Agente Costruttore",
       produces: "Flussi, schermate e struttura utente.",
     },
   },
