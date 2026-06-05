@@ -15,6 +15,9 @@ import {
   markOperationalPromptCopied,
 } from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS, syntheticProgress } from "@/components/SyntheticRoadmap";
+import { AgentAvatar } from "@/components/AgentAvatar";
+import { ToolIcon } from "@/components/ToolIcon";
+import { resolveAgentIdentity } from "@/lib/agent-identity";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
   head: () => ({ meta: [{ title: "Il tuo AI Project Manager" }] }),
@@ -769,22 +772,46 @@ function OperationalPromptCard({
       // ignore
     }
   }
+  const agent = resolveAgentIdentity(prompt.agent_name);
   return (
     <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0">
-          <h3 className="font-display font-semibold">{prompt.title}</h3>
-          <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
-            <span>Generato da: <span className="text-foreground/90">{prompt.agent_name}</span></span>
-            <span>Step: <span className="text-foreground/90">{prompt.step_title}</span></span>
-            <span>Da usare su: <span className="text-foreground/90">{prompt.recommended_tool}</span></span>
-          </div>
-        </div>
+        <h3 className="font-display font-semibold min-w-0">{prompt.title}</h3>
         {prompt.copied && (
           <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">
             Copiato
           </span>
         )}
+      </div>
+
+      {/* Header visivo: agente generatore + strumento consigliato */}
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="flex items-center gap-3 rounded-lg border border-border/50 bg-background/40 p-3">
+          <AgentAvatar agent={agent} size="sm" />
+          <div className="min-w-0">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Agente che ha generato il prompt
+            </div>
+            <div className="font-display font-semibold text-sm truncate">
+              {prompt.agent_name}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border/50 bg-background/40 p-3">
+          <ToolIcon name={prompt.recommended_tool} size={36} />
+          <div className="min-w-0">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Da usare su
+            </div>
+            <div className="font-display font-semibold text-sm truncate">
+              {prompt.recommended_tool}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-2 text-xs text-muted-foreground">
+        Step: <span className="text-foreground/90">{prompt.step_title}</span>
       </div>
       <p className="text-xs text-muted-foreground mt-3">{prompt.instructions}</p>
       <div className="mt-3 rounded-lg border border-primary/30 bg-primary/10 p-3">
