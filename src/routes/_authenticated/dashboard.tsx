@@ -6,6 +6,7 @@ import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
+import { DashboardRoadmap } from "@/components/DashboardRoadmap";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
@@ -66,6 +67,34 @@ function DashboardPage() {
         .limit(5);
       if (error) throw error;
       return data;
+    },
+  });
+
+  const primaryProject = projects?.[0];
+  const { data: signals } = useQuery({
+    queryKey: ["dashboard-roadmap-signals", primaryProject?.id],
+    enabled: !!primaryProject,
+    queryFn: async () => {
+      const pid = primaryProject!.id;
+      const [{ data: analysis }, { count: promptsCount }] = await Promise.all([
+        supabase
+          .from("project_analysis")
+          .select("mvp_version, required_screens")
+          .eq("project_id", pid)
+          .maybeSingle(),
+        supabase
+          .from("prompts")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid),
+      ]);
+      const screens = analysis?.required_screens as unknown;
+      return {
+        hasProject: true,
+        hasAnalysis: !!analysis,
+        hasMvp: !!analysis?.mvp_version,
+        hasScreens: Array.isArray(screens) && screens.length > 0,
+        hasPrompts: (promptsCount ?? 0) > 0,
+      };
     },
   });
 
