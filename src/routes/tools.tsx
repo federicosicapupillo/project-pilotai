@@ -21,7 +21,7 @@ const AGENT_OVERRIDES: Record<string, { role: string; when: string }> = {
 };
 
 export const Route = createFileRoute("/tools")({
-  head: () => ({ meta: [{ title: "Tool Stack — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "Tool Stack — IdeaPilot AI" }] }),
   component: ToolsPage,
 });
 

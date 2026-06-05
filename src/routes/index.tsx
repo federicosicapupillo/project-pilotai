@@ -12,9 +12,9 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Da Idea ad App — Trasforma la tua idea in una prima app con agenti AI" },
+      { title: "IdeaPilot AI — Dalla tua idea alla tua prima app" },
       { name: "description", content: "Il metodo per imprenditori e creator senza competenze tecniche: scheda progetto, agenti AI, prompt operativi, roadmap." },
-      { property: "og:title", content: "Da Idea ad App" },
+      { property: "og:title", content: "IdeaPilot AI" },
       { property: "og:description", content: "Diventa il regista di una squadra di agenti AI e porta la tua idea online." },
     ],
   }),
@@ -224,7 +224,7 @@ function Index() {
         </section>
 
         <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Da Idea ad App — metodo, agenti, prompt.
+          © {new Date().getFullYear()} IdeaPilot AI — metodo, agenti, prompt.
         </footer>
       </main>
     </div>

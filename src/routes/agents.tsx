@@ -11,7 +11,7 @@ import { useAcademyAccess } from "@/components/AcademyLock";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 
 export const Route = createFileRoute("/agents")({
-  head: () => ({ meta: [{ title: "Libreria Agenti — Da Idea ad App" }] }),
+  head: () => ({ meta: [{ title: "Libreria Agenti — IdeaPilot AI" }] }),
   component: AgentsPage,
 });
 

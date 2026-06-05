@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Sparkles, LogOut, ShieldCheck, Lock, MessageSquare, UserCircle2 } from "lucide-react";
+import { LogOut, ShieldCheck, Lock, MessageSquare, UserCircle2 } from "lucide-react";
+import { BrandLockup } from "@/components/BrandLogo";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,14 +70,7 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/60">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="size-9 rounded-lg gradient-bg grid place-items-center glow-soft">
-            <Sparkles className="size-5 text-primary-foreground" />
-          </div>
-          <span className="font-display font-semibold text-lg tracking-tight">
-            Da Idea ad <span className="gradient-text">App</span>
-          </span>
-        </Link>
+        <BrandLockup size="md" />
 
         <nav className="hidden md:flex items-center gap-1">
           {links
