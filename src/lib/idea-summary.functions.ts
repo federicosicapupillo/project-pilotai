@@ -65,6 +65,9 @@ FORMATO OUTPUT (JSON, tutti i campi obbligatori):
 export const generateIdeaSummary = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }): Promise<IdeaSummary> => {
+    const { enforceIpRateLimit } = await import("./rate-limit.server");
+    await enforceIpRateLimit({ endpoint: "generateIdeaSummary", maxRequests: 5, windowSeconds: 3600 });
+
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("LOVABLE_API_KEY mancante");
 
