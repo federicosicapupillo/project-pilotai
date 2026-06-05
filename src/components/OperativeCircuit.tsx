@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ToolIcon } from "./ToolIcon";
 import {
   ArrowRight, Lightbulb, Search, Brain, Code2, GitBranch,
