@@ -51,6 +51,7 @@ import { VALIDATOR_AGENT_SYSTEM_PROMPT } from "@/prompts/validatorAgentSystemPro
 import { RESEARCHER_AGENT_SYSTEM_PROMPT } from "@/prompts/researcherAgentSystemPrompt";
 import { VALIDATING_AGENT_SYSTEM_PROMPT } from "@/prompts/validatingAgentSystemPrompt";
 import { MVP_AGENT_SYSTEM_PROMPT } from "@/prompts/mvpAgentSystemPrompt";
+import { UX_AGENT_SYSTEM_PROMPT } from "@/prompts/uxAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -90,10 +91,10 @@ export const AGENT_TEMPLATE = (idea: string) => [
   },
   {
     name: "Agente UX/UI Designer",
-    role: "Disegna le schermate e i flussi utente.",
-    when_to_use: "Quando le funzioni sono definite e serve la struttura visiva.",
-    expected_output: "Lista schermate, gerarchia informativa, stile visivo.",
-    prompt_text: `Sei un designer UX/UI. Per l'idea "${idea}", definisci:\n- Lista delle schermate necessarie (max 6).\n- Per ogni schermata: scopo, elementi chiave, call to action principale.\n- Stile visivo consigliato (mood, colori, font).\n- Flusso utente principale in 5 step.`,
+    role: "Progetta l'esperienza utente: flussi, schermate, CTA, stati UX e mobile first.",
+    when_to_use: "Dopo che le funzioni dell'MVP sono definite, prima della costruzione: per ridurre attriti e rendere i percorsi semplici.",
+    expected_output: "Analisi strutturata in 18 sezioni con flusso minimo, schermate, attriti, stati UX e brief operativo per gli altri agenti.",
+    prompt_text: `${UX_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA PROGETTARE LATO UX:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta l'analisi e rispondi con il FORMATO RISPOSTA STANDARD (18 sezioni in markdown) chiudendo con il BRIEF UX PER GLI ALTRI AGENTI. Etichetta esplicitamente i problemi come "Rischio confusione", "CTA da riscrivere", "Flusso da semplificare" o "Rischio abbandono". Se l'utente chiede se la UX è pronta, dichiara UX PRONTA / DA SEMPLIFICARE / CONFUSA / TROPPO COMPLESSA / BUONA MA DA TESTARE / NON ANCORA PRONTA.`,
   },
   {
     name: "Agente Prompt Engineer",
