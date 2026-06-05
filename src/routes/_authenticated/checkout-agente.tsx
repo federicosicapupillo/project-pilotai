@@ -1,10 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { StripeAgentCheckout } from "@/components/StripeEmbeddedCheckout";
 import { loadIdeaParams } from "@/lib/idea-estimate";
-import { ArrowLeft, Shield, Zap } from "lucide-react";
+import { getAgentAccess } from "@/lib/payments.functions";
+import { ArrowLeft, Shield, Zap, CheckCircle2, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/checkout-agente")({
   head: () => ({ meta: [{ title: "Attiva il tuo agente AI" }] }),
@@ -15,6 +18,21 @@ function CheckoutAgentePage() {
   const [idea, setIdea] = useState<string>("");
   const [returnUrl, setReturnUrl] = useState<string>("");
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
+  const navigate = useNavigate();
+  const fetchAccess = useServerFn(getAgentAccess);
+  const { data: access, isLoading: accessLoading } = useQuery({
+    queryKey: ["agent-access"],
+    queryFn: async () => {
+      try { return await fetchAccess(); }
+      catch { return { hasAccess: false, status: null, idea: null, paidAt: null, projectId: null }; }
+    },
+    staleTime: 15_000,
+  });
+  const hasAccess = !!access?.hasAccess;
+
+  useEffect(() => {
+    if (hasAccess) navigate({ to: "/agents", replace: true });
+  }, [hasAccess, navigate]);
 
   useEffect(() => {
     const params = loadIdeaParams();
@@ -96,7 +114,17 @@ function CheckoutAgentePage() {
 
           {/* Embedded checkout */}
           <div>
-            {returnUrl ? (
+            {accessLoading || hasAccess ? (
+              <div className="glass-card rounded-2xl p-10 text-center">
+                <CheckCircle2 className="size-8 text-primary mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Il tuo Team AI è già attivo. Ti reindirizziamo…
+                </p>
+                <Link to="/agents" className="inline-block mt-4">
+                  <Button variant="hero" size="sm">Vai agli agenti <ArrowRight className="size-4" /></Button>
+                </Link>
+              </div>
+            ) : returnUrl ? (
               <StripeAgentCheckout idea={idea} returnUrl={returnUrl} projectId={projectId} />
             ) : (
               <div className="glass-card rounded-2xl p-10 text-center text-sm text-muted-foreground">
