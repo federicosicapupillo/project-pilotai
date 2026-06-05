@@ -36,6 +36,9 @@ function buildContext(p: {
   roadmap?: { title: string; status: string; phase?: string | null }[];
   prompts?: { title: string; category: string }[];
   agents?: { name: string; role: string }[];
+  currentStep?: string | null;
+  nextStep?: string | null;
+  progressPct?: number | null;
 }) {
   const lines: string[] = ["CONTESTO PROGETTO ATTIVO:"];
   if (p.title) lines.push(`Titolo: ${p.title}`);
@@ -45,6 +48,9 @@ function buildContext(p: {
   if (p.problem) lines.push(`Problema: ${p.problem}`);
   if (p.solution) lines.push(`Soluzione: ${p.solution}`);
   if (p.features?.length) lines.push(`Funzioni principali: ${p.features.join(", ")}`);
+  if (p.currentStep) lines.push(`Step in corso: ${p.currentStep}`);
+  if (p.nextStep) lines.push(`Prossimo step: ${p.nextStep}`);
+  if (typeof p.progressPct === "number") lines.push(`Avanzamento: ${p.progressPct}%`);
   if (p.agents?.length) lines.push(`Agenti attivi: ${p.agents.map((a) => `${a.name} (${a.role})`).join("; ")}`);
   if (p.prompts?.length) lines.push(`Prompt generati: ${p.prompts.map((x) => `${x.category} - ${x.title}`).join("; ")}`);
   if (p.roadmap?.length) {
