@@ -108,6 +108,7 @@ function ProjectManagerPage() {
       const { data, error } = await supabase
         .from("projects")
         .select("id, title, idea_description, status, product_type, updated_at")
+        .is("deleted_at", null)
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
