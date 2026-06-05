@@ -37,6 +37,34 @@ function statusBadge(status: string) {
   return map[status] ?? status;
 }
 
+const STOPWORDS = new Set([
+  "il","lo","la","i","gli","le","un","uno","una","di","del","della","dei","degli","delle",
+  "a","ad","da","dal","dalla","in","nel","nella","con","su","sul","sulla","per","tra","fra",
+  "e","ed","o","che","mi","ti","si","ci","vi","chi","cosa","come","dove","quando","perche","perché",
+  "vorrei","voglio","fare","creare","costruire","sviluppare","realizzare","aiuti","aiuta",
+  "app","webapp","web","sito","piattaforma","servizio","un'","un’","l'","l’","d'","d’","my","the","a"
+]);
+
+function shortProjectName(raw: string | null | undefined): string {
+  const title = (raw ?? "").trim();
+  if (!title) return "Progetto senza nome";
+  // If already short enough, just return it
+  if (title.length <= 32 && !/\s{2,}/.test(title)) {
+    return title;
+  }
+  const words = title
+    .replace(/[“”"'`()\[\]{}.,;:!?…]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+  const keywords = words.filter((w) => !STOPWORDS.has(w.toLowerCase()) && w.length > 2);
+  const pick = (keywords.length >= 2 ? keywords : words).slice(0, 3);
+  const name = pick
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+  if (!name) return title.slice(0, 32) + "…";
+  return name.length > 32 ? name.slice(0, 32) + "…" : name;
+}
+
 function DashboardPage() {
   const { activate, hasAccess } = useActivateTeam();
   const { activeId, setActiveId } = useActiveProject();
