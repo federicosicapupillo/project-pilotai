@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Copy, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen } from "lucide-react";
+import { ArrowLeft, Copy, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen, MessageSquare, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { ToolBadge } from "@/components/ToolBadge";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
@@ -116,6 +116,15 @@ function ProjectPage() {
             ? "segui la roadmap e inizia a lavorare con il tuo Team AI."
             : "attiva il Team AI e fai partire il lavoro sulla tua idea."}
         </p>
+        {hasAccess && (
+          <div className="mt-4">
+            <Button variant="hero" size="lg" asChild>
+              <Link to="/project-manager" search={{ projectId: id } as never}>
+                <MessageSquare className="size-4" /> Parla con il mio Project Manager <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
 
       <Tabs

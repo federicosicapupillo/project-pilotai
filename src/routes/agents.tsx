@@ -246,7 +246,7 @@ function AgentsPage() {
           {hasAccess && (
             <div className="mt-5">
               <Button variant="hero" size="lg" asChild>
-                <Link to="/agente-ai">
+                <Link to="/project-manager">
                   <MessageSquare className="size-4" /> Parla con il Project Manager <ArrowRight className="size-4" />
                 </Link>
               </Button>
