@@ -47,6 +47,7 @@ export const ROADMAP_TEMPLATE = [
 ];
 
 import { STRATEGIST_AGENT_SYSTEM_PROMPT } from "@/prompts/strategistAgentSystemPrompt";
+import { VALIDATOR_AGENT_SYSTEM_PROMPT } from "@/prompts/validatorAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -55,6 +56,13 @@ export const AGENT_TEMPLATE = (idea: string) => [
     when_to_use: "All'inizio, quando l'idea è ancora grezza e poco focalizzata.",
     expected_output: "Posizionamento, target, value proposition in una pagina sintetica.",
     prompt_text: `${STRATEGIST_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA ANALIZZARE:\n"${idea}"\n\nApplica il METODO DI ANALISI e rispondi con il FORMATO RISPOSTA STANDARD (10 sezioni) seguito da OUTPUT PER PROJECT MANAGER.`,
+  },
+  {
+    name: "Agente Validatore",
+    role: "Mette alla prova l'idea prima della costruzione: rischi, assunzioni, punti deboli.",
+    when_to_use: "Subito dopo lo Stratega, prima di definire l'MVP e iniziare a costruire.",
+    expected_output: "Validazione strutturata con verdetto operativo e indicazione se si può avanzare all'MVP.",
+    prompt_text: `${VALIDATOR_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA VALIDARE:\n"${idea}"\n\nApplica il METODO DI VALIDAZIONE e rispondi con il FORMATO RISPOSTA STANDARD (9 sezioni) seguito da OUTPUT PER PROJECT MANAGER. Se manca una direzione strategica approvata, dichiara che si tratta di una validazione preliminare.`,
   },
   {
     name: "Agente Product Manager",
