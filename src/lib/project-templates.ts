@@ -56,6 +56,7 @@ import { INSTRUCTOR_AGENT_SYSTEM_PROMPT } from "@/prompts/instructorAgentSystemP
 import { BUILDER_AGENT_SYSTEM_PROMPT } from "@/prompts/builderAgentSystemPrompt";
 import { SECURITY_AGENT_SYSTEM_PROMPT } from "@/prompts/securityAgentSystemPrompt";
 import { QA_AGENT_SYSTEM_PROMPT } from "@/prompts/qaAgentSystemPrompt";
+import { DEBUGGER_AGENT_SYSTEM_PROMPT } from "@/prompts/debuggerAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -127,6 +128,13 @@ export const AGENT_TEMPLATE = (idea: string) => [
     when_to_use: "Dopo ogni costruzione o bug fix e prima di passare allo step successivo o al lancio.",
     expected_output: "Analisi strutturata in 12 sezioni con classificazione problemi, decisione finale QA e brief operativo per Debugger, Costruttore e Agente Sicurezza.",
     prompt_text: `${QA_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA / FUNZIONE / MODIFICA DA CONTROLLARE:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta i controlli e rispondi con il FORMATO RISPOSTA STANDARD (12 sezioni in markdown) chiudendo con il BRIEF CONTROLLO QUALITÀ PER GLI ALTRI AGENTI. Classifica ogni problema come BLOCCANTE / ALTO / MEDIO / BASSO / MIGLIORIA e chiudi con una decisione esplicita: APPROVATO / APPROVATO CON RISERVE / DA CORREGGERE / DA PASSARE AL DEBUGGER / DA PASSARE ALL'AGENTE SICUREZZA / NON PRONTO / BLOCCATO.`,
+  },
+  {
+    name: "Agente Debugger",
+    role: "Trova la causa reale di bug, regressioni e malfunzionamenti e propone correzioni stabili.",
+    when_to_use: "Quando qualcosa non funziona, un fix precedente non ha tenuto, ci sono duplicati, dati appesi, errori dopo refresh/login o regressioni dopo una modifica.",
+    expected_output: "Analisi strutturata in 11 sezioni con cause probabili, correzione strutturale, prevenzione ricorrenza, test obbligatori e brief debug per gli altri agenti.",
+    prompt_text: `${DEBUGGER_AGENT_SYSTEM_PROMPT}\n\n---\nBUG / MALFUNZIONAMENTO DA ANALIZZARE:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta il debug e rispondi con il FORMATO RISPOSTA STANDARD (11 sezioni in markdown) chiudendo con il BRIEF DEBUG PER GLI ALTRI AGENTI. Usa etichette esplicite (BUG BLOCCANTE / CONTROLLO DATABASE NECESSARIO / CONTROLLO PERMESSI NECESSARIO / RISCHIO DUPLICATI / BUG VISIVO / CAUSA DA VERIFICARE) e, se l'utente chiede se il bug è risolto, dichiara BUG RISOLTO / NON RISOLTO / PARZIALMENTE RISOLTO / SERVE CONTROLLO DATABASE / PERMESSI / QUALITÀ / TEST MOBILE / RISCHIO REGRESSIONE.`,
   },
   {
     name: "Agente Marketing",
