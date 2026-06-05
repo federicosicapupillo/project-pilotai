@@ -33,22 +33,20 @@ const TEAM = [
 
 const QUICK_ACTIONS = [
   "Andiamo avanti con il prossimo step",
-  "Voglio migliorare l'idea",
-  "Controlla se manca qualcosa",
-  "Rivedi i punti deboli",
-  "Fammi semplificare l'MVP",
+  "Qual è lo step corrente?",
+  "Mostrami il riepilogo della roadmap",
   "Prepara il prossimo prompt",
-  "Aggiorna la roadmap",
+  "Salva una miglioria nel Backlog futuro",
+  "Mostrami il Backlog migliorie",
   "Dimmi cosa fare adesso",
 ];
 
 const FOLLOWUP_ACTIONS = [
   "Approvo, vai avanti",
-  "Modifica la proposta",
   "Fammi vedere un'alternativa",
   "Semplifica",
   "Approfondisci",
-  "Aggiorna roadmap",
+  "Salva nel Backlog migliorie",
 ];
 
 function ProjectManagerPage() {

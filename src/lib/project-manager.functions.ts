@@ -18,6 +18,7 @@ function buildContext(p: {
   currentStep?: string | null;
   nextStep?: string | null;
   progressPct?: number | null;
+  backlogCount?: number | null;
 }) {
   const lines: string[] = ["CONTESTO PROGETTO ATTIVO:"];
   if (p.title) lines.push(`Titolo: ${p.title}`);
@@ -30,6 +31,8 @@ function buildContext(p: {
   if (p.currentStep) lines.push(`Step in corso: ${p.currentStep}`);
   if (p.nextStep) lines.push(`Prossimo step: ${p.nextStep}`);
   if (typeof p.progressPct === "number") lines.push(`Avanzamento: ${p.progressPct}%`);
+  if (typeof p.backlogCount === "number") lines.push(`Backlog migliorie future: ${p.backlogCount} idee parcheggiate`);
+  lines.push("Vincolo: la roadmap attiva è BLOCCATA (db trigger). Non proporre modifiche, aggiunte, rimozioni o riordino di step. Migliorie → Backlog.");
   if (p.agents?.length) lines.push(`Agenti attivi: ${p.agents.map((a) => `${a.name} (${a.role})`).join("; ")}`);
   if (p.prompts?.length) lines.push(`Prompt generati: ${p.prompts.map((x) => `${x.category} - ${x.title}`).join("; ")}`);
   if (p.roadmap?.length) {
@@ -128,6 +131,24 @@ export const sendPmMessage = createServerFn({ method: "POST" })
         .eq("project_id", data.projectId)
         .limit(20);
       ctx.agents = (agents ?? []).map((a) => ({ name: a.name, role: a.role ?? "" }));
+
+      const { count: backlogCount } = await supabase
+        .from("improvement_backlog")
+        .select("id", { count: "exact", head: true })
+        .eq("project_id", data.projectId);
+      ctx.backlogCount = backlogCount ?? 0;
+
+      // Derive current/next step from roadmap (first non-done = current, next = next non-done)
+      if (roadmap && roadmap.length) {
+        const firstOpen = roadmap.find((r) => r.status !== "done");
+        if (firstOpen) {
+          ctx.currentStep = firstOpen.title;
+          const idx = roadmap.indexOf(firstOpen);
+          ctx.nextStep = roadmap.slice(idx + 1).find((r) => r.status !== "done")?.title ?? null;
+        }
+        const done = roadmap.filter((r) => r.status === "done").length;
+        ctx.progressPct = roadmap.length ? Math.round((done / roadmap.length) * 100) : 0;
+      }
     }
 
     // Synthetic roadmap fallback (kept in sync with src/components/SyntheticRoadmap.tsx)
@@ -194,4 +215,54 @@ export const sendPmMessage = createServerFn({ method: "POST" })
     if (insErr) console.error("pm_messages insert error", insErr);
 
     return { reply: assistantText };
+  });
+
+export const listBacklog = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { projectId?: string | null }) => ({
+    projectId:
+      typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
+        ? d.projectId
+        : null,
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    let q = supabase
+      .from("improvement_backlog")
+      .select("id, title, description, source, status, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    q = data.projectId ? q.eq("project_id", data.projectId) : q.is("project_id", null);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { items: rows ?? [] };
+  });
+
+export const addBacklogItem = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { projectId?: string | null; title: string; description?: string }) => {
+    const title = String(d.title ?? "").trim();
+    if (!title) throw new Error("Titolo richiesto");
+    if (title.length > 200) throw new Error("Titolo troppo lungo");
+    const description = d.description ? String(d.description).slice(0, 2000) : null;
+    return {
+      projectId:
+        typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
+          ? d.projectId
+          : null,
+      title,
+      description,
+    };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { error } = await supabase.from("improvement_backlog").insert({
+      user_id: userId,
+      project_id: data.projectId,
+      title: data.title,
+      description: data.description,
+      source: "pm_chat",
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
