@@ -117,19 +117,23 @@ export const getPmHistory = createServerFn({ method: "POST" })
 
 export const sendPmMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { projectId?: string | null; message: string }) => {
+  .inputValidator((d: { projectId?: string | null; message: string; displayMessage?: string | null }) => {
     const message = String(d.message ?? "").trim();
     if (!message) throw new Error("Empty message");
     if (message.length > 100000)
       throw new Error(
         "Il testo incollato è molto lungo. Puoi inviarlo in più parti, oppure incollare solo la parte più importante della risposta generata dall'AI.",
       );
+    const displayMessageRaw =
+      typeof d.displayMessage === "string" ? d.displayMessage.trim() : "";
+    const displayMessage = displayMessageRaw ? displayMessageRaw.slice(0, 2000) : null;
     return {
       projectId:
         typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
           ? d.projectId
           : null,
       message,
+      displayMessage,
     };
   })
   .handler(async ({ data, context }) => {
@@ -264,7 +268,12 @@ export const sendPmMessage = createServerFn({ method: "POST" })
     if (!assistantText) assistantText = "Non sono riuscito a rispondere. Riprova.";
 
     const rows = [
-      { user_id: userId, project_id: data.projectId, role: "user", content: data.message },
+      {
+        user_id: userId,
+        project_id: data.projectId,
+        role: "user",
+        content: data.displayMessage ?? data.message,
+      },
       { user_id: userId, project_id: data.projectId, role: "assistant", content: assistantText },
     ];
     const { error: insErr } = await supabase.from("pm_messages").insert(rows);
