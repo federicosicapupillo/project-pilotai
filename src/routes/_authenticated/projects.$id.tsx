@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ToolBadge } from "@/components/ToolBadge";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { AppRoadmap, useAppRoadmap } from "@/components/AppRoadmap";
+import { SyntheticRoadmap } from "@/components/SyntheticRoadmap";
 import { computeProgress, currentPhase, nextActionableStep } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { Lock } from "lucide-react";
@@ -272,7 +273,26 @@ function ProjectPage() {
         </TabsContent>
 
         <TabsContent value="roadmap" className="mt-6">
-          <AppRoadmap projectId={id} />
+          {hasAccess ? (
+            <div className="space-y-8">
+              <SyntheticRoadmap projectId={id} />
+              <AppRoadmap projectId={id} />
+            </div>
+          ) : (
+            <div className="rounded-2xl p-6 sm:p-8 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft text-center">
+              <h3 className="text-xl sm:text-2xl font-display font-semibold">
+                La roadmap operativa si sblocca con il Team AI
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto">
+                Attiva il Team AI per vedere la roadmap del progetto e iniziare ad avanzare step per step.
+              </p>
+              <div className="mt-5 flex justify-center">
+                <Button size="lg" variant="hero" onClick={() => activate("project_roadmap_cta", id)}>
+                  <Lock className="size-4" /> Attiva il mio Team AI - 29€
+                </Button>
+              </div>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
