@@ -583,6 +583,54 @@ ${text}`;
                         </button>
                       </div>
                     </>
+                  ) : reviewMode === "validation-corrections" ? (
+                    <>
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                        Cosa va corretto nel risultato dell'AI esterna?
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {VALIDATION_CORRECTION_LABELS.map((l) => (
+                          <button
+                            key={l}
+                            type="button"
+                            onClick={() => applyValidationCorrection(l)}
+                            className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
+                          >
+                            {l}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => setReviewMode("validation-review")}
+                          className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
+                        >
+                          Annulla
+                        </button>
+                      </div>
+                    </>
+                  ) : reviewMode === "validation-review" ? (
+                    <>
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                        Il Project Manager ha validato la risposta dell'AI esterna
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={approveExternalResult}
+                          disabled={mutation.isPending}
+                          className="text-xs px-3 py-2 rounded-lg border border-primary/50 bg-primary/10 hover:bg-primary/20 text-foreground inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                        >
+                          <ThumbsUp className="size-3.5" /> Approvo il risultato e passa allo step successivo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={rejectExternalResult}
+                          className="text-xs px-3 py-2 rounded-lg border border-border/60 hover:border-destructive/60 hover:text-foreground text-muted-foreground inline-flex items-center justify-center gap-1.5"
+                        >
+                          <ThumbsDown className="size-3.5" /> Non approvo / correggiamo questo risultato
+                        </button>
+                      </div>
+                    </>
                   ) : (
                     <>
                       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
