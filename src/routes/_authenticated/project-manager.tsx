@@ -15,6 +15,7 @@ import {
   markOperationalPromptCopied,
 } from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS } from "@/components/SyntheticRoadmap";
+import { writeCompletedSteps } from "@/lib/roadmap-progress";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { ToolIcon } from "@/components/ToolIcon";
 import { resolveAgentIdentity } from "@/lib/agent-identity";
