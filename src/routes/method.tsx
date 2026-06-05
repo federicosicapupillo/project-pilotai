@@ -98,8 +98,8 @@ function MethodPage() {
               <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
                 Non devi saper programmare. Devi solo imparare a guidare. Crea il tuo primo progetto in meno di 5 minuti.
               </p>
-              <Link to="/prezzi" className="inline-block mt-6">
-                <Button variant="hero" size="xl">Inizia ora <ArrowRight className="size-4" /></Button>
+              <Link to="/dashboard" className="inline-block mt-6">
+                <Button variant="hero" size="xl">Inizia a creare la tua app <ArrowRight className="size-4" /></Button>
               </Link>
             </div>
           </div>
