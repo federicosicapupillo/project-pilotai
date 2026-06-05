@@ -417,7 +417,7 @@ Non rigenerare un nuovo prompt operativo per lo stesso step. Non modificare la r
 
 RISPOSTA AI ESTERNA DA VALIDARE:
 ${text}`;
-      mutation.mutate(wrapped);
+      mutation.mutate({ message: wrapped, displayMessage: text.slice(0, 2000) });
       return;
     }
     mutation.mutate(text);
