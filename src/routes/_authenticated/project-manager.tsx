@@ -222,14 +222,14 @@ REGOLE:
   }
 
   function approveSchema() {
-    if (mutation.isPending) return;
+    if (mutation.isPending || opGenMutation.isPending) return;
+    if (!activeProject) return;
     setReviewMode("idle");
-    if (activeProject && typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       localStorage.setItem(`pm_step_approved:${activeProject.id}:${currentStep.title}`, "1");
     }
-    mutation.mutate(
-      `Approvo lo schema dello step "${currentStep.title}". Confermami che lo step è approvato internamente (senza modificare la roadmap) e ricordami che ora posso cliccare "Genera il prompt operativo da copiare". Non proporre ancora il passaggio allo step successivo finché non avrò generato il prompt operativo.`,
-    );
+    // Flusso unificato: approva lo schema E genera subito il prompt operativo.
+    opGenMutation.mutate(currentStep.title);
   }
 
   function rejectSchema() {
