@@ -1,6 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight, Sparkles, Lock, ShieldCheck } from "lucide-react";
+import {
+  Check, ArrowRight, Sparkles, Lock, ShieldCheck,
+  Compass, ClipboardList, LayoutGrid, GitBranch, Wand2,
+  Hammer, ShieldAlert, Rocket, LineChart, GraduationCap,
+  type LucideIcon,
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
@@ -11,35 +16,35 @@ import { trackEvent } from "@/lib/tracking";
 export const Route = createFileRoute("/prezzi")({
   head: () => ({
     meta: [
-      { title: "Prezzi — Attiva la tua squadra AI personale" },
-      { name: "description", content: "Attiva il tuo team AI operativo a 29€. Tu dai le direttive, gli agenti AI trasformano la tua idea nella prima versione della tua app." },
-      { property: "og:title", content: "Prezzi — Attiva la tua squadra AI personale" },
-      { property: "og:description", content: "29€ per attivare la tua squadra di agenti AI: struttura, schermate, funzioni, prompt e passaggi operativi per la tua app." },
+      { title: "Prezzi — Attiva il tuo Team AI operativo" },
+      { name: "description", content: "Pacchetto Team AI Operativo a 29€. Tu dai le direttive, gli agenti AI preparano struttura, schermate, funzioni e prompt per la prima versione della tua app." },
+      { property: "og:title", content: "Prezzi — Attiva il tuo Team AI operativo" },
+      { property: "og:description", content: "29€ per attivare il pacchetto Team AI: 8 agenti, percorso personale e academy pratica al lavoro sulla tua idea." },
     ],
   }),
   component: PrezziPage,
 });
 
-const TEAM: { role: string; line: string }[] = [
-  { role: "Stratega AI", line: "Analizza la tua idea e decide da dove partire" },
-  { role: "Product Agent", line: "Trasforma l'idea in un piano operativo" },
-  { role: "UX Agent", line: "Ti suggerisce le schermate da creare" },
-  { role: "Logic Agent", line: "Definisce funzioni e flussi principali" },
-  { role: "Prompt Agent", line: "Prepara istruzioni pronte da usare" },
-  { role: "Build Agent", line: "Ti aiuta a generare le prime parti dell'app" },
-  { role: "Test Agent", line: "Controlla errori, blocchi e passaggi deboli" },
-  { role: "Launch Agent", line: "Ti prepara alla pubblicazione e alla vendita" },
-  { role: "Percorso & avanzamento", line: "Tiene traccia di ogni fase del progetto" },
-  { role: "Academy operativa", line: "Solo ciò che serve, senza video inutili" },
+const TEAM: { role: string; line: string; Icon: LucideIcon }[] = [
+  { role: "Stratega AI", line: "Analizza la tua idea e decide da dove conviene partire.", Icon: Compass },
+  { role: "Product Agent", line: "Trasforma la tua idea in un piano operativo chiaro.", Icon: ClipboardList },
+  { role: "UX Agent", line: "Ti prepara le schermate principali della tua app.", Icon: LayoutGrid },
+  { role: "Logic Agent", line: "Organizza funzioni, flussi e passaggi fondamentali.", Icon: GitBranch },
+  { role: "Prompt Agent", line: "Crea istruzioni pronte da usare per costruire meglio e più velocemente.", Icon: Wand2 },
+  { role: "Build Agent", line: "Ti aiuta a generare le prime parti operative del progetto.", Icon: Hammer },
+  { role: "Test Agent", line: "Controlla errori, punti deboli e passaggi da migliorare.", Icon: ShieldAlert },
+  { role: "Launch Agent", line: "Ti aiuta a preparare la tua app per presentarla, venderla o lanciarla.", Icon: Rocket },
+  { role: "Percorso personale", line: "Tieni sotto controllo l'avanzamento del tuo progetto.", Icon: LineChart },
+  { role: "Academy pratica", line: "Solo step operativi, prompt e checklist. Nessun video inutile.", Icon: GraduationCap },
 ];
 
 const NOT_FOR: string[] = [
-  "Non serve saper programmare da zero",
-  "Non devi conoscere tutti gli strumenti",
-  "Non devi progettare tutto da solo",
-  "Tu dai le direttive e approvi i passaggi",
-  "Gli agenti AI preparano struttura, logica, schermate e prompt",
-  "L'obiettivo è arrivare a una prima versione semplice, chiara e funzionante",
+  "Non serve saper programmare",
+  "Non serve conoscere tutti gli strumenti",
+  "Non devi partire da un progetto perfetto",
+  "Tu dai le direttive",
+  "Il team AI organizza e prepara il lavoro",
+  "Tu controlli, approvi e fai avanzare il progetto",
 ];
 
 const ALONE: string[] = [
@@ -88,10 +93,10 @@ function PrezziPage() {
 
   const goToAgent = () => navigate({ to: "/agente-ai" });
 
-  const PrimaryCta = ({ label = "Attiva il mio team AI - 29€" }: { label?: string }) =>
+  const PrimaryCta = ({ label = "Attiva il mio Team AI - 29€" }: { label?: string }) =>
     hasAccess ? (
       <Button variant="hero" size="lg" className="w-full" onClick={goToAgent}>
-        Vai al mio team AI <ArrowRight className="size-4" />
+        Vai al mio Team AI <ArrowRight className="size-4" />
       </Button>
     ) : (
       <Button variant="hero" size="lg" className="w-full" onClick={handleActivate}>
@@ -105,103 +110,101 @@ function PrezziPage() {
         {/* HERO */}
         <section className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
-            <Sparkles className="size-3 text-primary" /> Piano di accesso
+            <Sparkles className="size-3 text-primary" /> Pacchetto Team AI Operativo
           </div>
           <h1 className="text-4xl sm:text-5xl font-display font-semibold mt-4">
-            Attiva la tua <span className="gradient-text">squadra AI personale</span>
+            Attiva il tuo <span className="gradient-text">Team AI operativo</span>
           </h1>
           <p className="text-muted-foreground mt-4 max-w-3xl mx-auto">
-            Non devi sapere programmare, progettare schermate o capire tutti gli strumenti. Tu racconti cosa vuoi creare, dai le direttive e il tuo team di agenti AI prepara struttura, logica, schermate, prompt e passaggi operativi per trasformare la tua idea in una prima app.
+            Tu porti l'idea. Il tuo team di agenti AI la organizza, la struttura e prepara il lavoro per trasformarla nella prima versione della tua app.
           </p>
           <p className="text-sm gradient-text font-medium mt-4 max-w-2xl mx-auto">
-            Tu decidi la direzione. Gli agenti AI lavorano sul progetto.
+            Niente corso tradizionale. Niente video lunghi. Attivi una squadra AI pronta a lavorare sul tuo progetto.
           </p>
         </section>
 
-        {/* PRICE CARD */}
-        <section className="mt-12 flex justify-center">
-          <div className="glass-card rounded-3xl p-8 sm:p-10 w-full max-w-xl relative border-primary/60 glow-soft ring-1 ring-primary/30">
-            {hasAccess && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-semibold gradient-bg text-primary-foreground glow-soft inline-flex items-center gap-1.5">
-                <Check className="size-3" /> Team AI attivo
+        {/* PACCHETTO TEAM AI — card principale */}
+        <section className="mt-14 flex justify-center">
+          <div className="relative w-full max-w-3xl">
+            {/* glow alone */}
+            <div aria-hidden className="absolute -inset-px rounded-[2rem] gradient-bg opacity-30 blur-2xl" />
+            <div className="relative glass-card rounded-[2rem] p-8 sm:p-12 border-primary/70 ring-2 ring-primary/40 glow-soft">
+              {hasAccess && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-semibold gradient-bg text-primary-foreground glow-soft inline-flex items-center gap-1.5">
+                  <Check className="size-3" /> Team AI attivo
+                </div>
+              )}
+
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full gradient-bg text-primary-foreground text-[11px] font-semibold uppercase tracking-wider glow-soft">
+                  <Sparkles className="size-3" /> Pacchetto operativo
+                </div>
+                <h2 className="font-display font-semibold text-3xl sm:text-4xl mt-4">
+                  Pacchetto <span className="gradient-text">Team AI Operativo</span>
+                </h2>
+                <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
+                  Attiva la squadra di agenti AI che lavora sulla tua idea e ti aiuta a trasformarla nella prima versione della tua app.
+                </p>
+
+                <div className="mt-6 flex items-baseline justify-center gap-2">
+                  <div className="font-display font-semibold text-7xl gradient-text leading-none">29€</div>
+                </div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  Accesso iniziale · Pagamento sicuro · Attivazione immediata
+                </div>
               </div>
-            )}
-            <h2 className="font-display font-semibold text-2xl text-center">Team AI operativo</h2>
-            <div className="mt-4 flex items-baseline justify-center gap-2">
-              <div className="font-display font-semibold text-6xl gradient-text">29€</div>
-            </div>
-            <div className="text-center text-sm text-muted-foreground mt-1">Accesso iniziale</div>
-            <p className="text-center text-muted-foreground mt-4 max-w-md mx-auto">
-              Attiva la squadra di agenti AI che prende la tua idea, la organizza e inizia a trasformarla in un progetto operativo: struttura, funzioni, schermate, prompt e primi passaggi per costruire la tua app.
-            </p>
 
-            <div className="mt-7">
-              <PrimaryCta />
-              <p className="text-xs text-muted-foreground text-center mt-3 inline-flex items-center justify-center gap-1.5 w-full">
-                <ShieldCheck className="size-3.5" /> Pagamento sicuro. Accesso immediato alla tua squadra AI.
+              <p className="text-sm text-muted-foreground mt-7 max-w-2xl mx-auto text-center">
+                Non devi sapere programmare, progettare schermate o capire tutti gli strumenti. Tu racconti cosa vuoi creare e dai le direttive. Il tuo team AI organizza il progetto, definisce le funzioni, prepara i prompt e ti accompagna fino alla prima versione della tua app.
               </p>
+
+              {/* AGENT GRID */}
+              <ul className="mt-8 grid sm:grid-cols-2 gap-3">
+                {TEAM.map(({ role, line, Icon }) => (
+                  <li
+                    key={role}
+                    className="glass-card rounded-xl px-4 py-4 flex items-start gap-3 text-sm border border-border/60 hover:border-primary/50 transition-colors"
+                  >
+                    <div className="size-9 rounded-lg gradient-bg grid place-items-center shrink-0 glow-soft">
+                      <Icon className="size-4 text-primary-foreground" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-foreground">{role}</div>
+                      <div className="text-muted-foreground text-xs mt-0.5">{line}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {/* FRASE FORTE */}
+              <div className="mt-8 rounded-2xl border border-primary/40 ring-1 ring-primary/20 p-5 text-center">
+                <p className="font-display font-semibold text-lg sm:text-xl">
+                  Non parti da zero. <span className="gradient-text">Parti con una squadra.</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Tu dai l'idea. Il team AI prepara il lavoro.
+                </p>
+              </div>
+
+              {/* CTA */}
+              <div className="mt-7 max-w-sm mx-auto">
+                <PrimaryCta />
+                <p className="text-xs text-muted-foreground text-center mt-3 inline-flex items-center justify-center gap-1.5 w-full">
+                  <ShieldCheck className="size-3.5" /> Pagamento sicuro · Accesso immediato al tuo Team AI
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* SQUADRA AI */}
-        <section className="mt-20">
-          <div className="text-center max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
-              <Sparkles className="size-3 text-primary" /> La tua squadra operativa
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-semibold mt-4">
-              Cosa <span className="gradient-text">si attiva per te</span>
-            </h2>
-            <p className="text-muted-foreground mt-4">
-              Con l'accesso non sblocchi solo contenuti. Attivi una squadra di agenti AI configurati per lavorare sulla tua idea e aiutarti a trasformarla in una prima app.
-            </p>
-            <p className="text-sm gradient-text font-medium mt-3">
-              I tuoi agenti AI sono pronti a partire
-            </p>
-          </div>
-
-          <ul className="mt-10 grid sm:grid-cols-2 gap-3 max-w-4xl mx-auto">
-            {TEAM.map((t) => (
-              <li
-                key={t.role}
-                className="glass-card rounded-xl px-4 py-4 flex items-start gap-3 text-sm border border-border/60 hover:border-primary/40 transition-colors"
-              >
-                <div className="size-8 rounded-lg gradient-bg grid place-items-center shrink-0 glow-soft">
-                  <Check className="size-4 text-primary-foreground" />
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground">{t.role}</div>
-                  <div className="text-muted-foreground text-xs mt-0.5">{t.line}</div>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          {/* BLOCCO FORTE */}
-          <div className="mt-10 max-w-4xl mx-auto">
-            <div className="glass-card rounded-2xl p-6 sm:p-8 border-primary/40 ring-1 ring-primary/20 glow-soft text-center">
-              <h3 className="font-display font-semibold text-xl sm:text-2xl">
-                Tu non devi <span className="gradient-text">costruire tutto da solo</span>
-              </h3>
-              <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-                Il tuo compito è dare le direttive, spiegare cosa vuoi ottenere e approvare le scelte importanti. Gli agenti AI ti aiutano a trasformare l'idea in struttura, schermate, funzioni, prompt e passaggi operativi per arrivare alla prima versione della tua app.
-              </p>
-              <p className="text-sm gradient-text font-medium mt-4">
-                Non parti da zero. Parti con una squadra.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* COSA DEVI SAPERE */}
+        {/* COSA SIGNIFICA DAVVERO */}
         <section className="mt-20 max-w-3xl mx-auto">
           <div className="glass-card rounded-2xl p-6 sm:p-8 border border-border/60">
             <h2 className="text-xl sm:text-2xl font-display font-semibold">
-              Cosa devi sapere prima di iniziare
+              Cosa significa davvero
             </h2>
             <p className="text-muted-foreground mt-3">
-              Non stai acquistando un'app completa già pronta e pubblicata. Stai attivando una squadra di agenti AI e un metodo operativo che ti aiutano a costruire la prima versione della tua app partendo dalla tua idea.
+              Non stai acquistando un'app completa già pronta. Stai attivando un sistema operativo di agenti AI che prende la tua idea e la trasforma in un progetto concreto: analisi, struttura, schermate, funzioni, prompt e primi passaggi di costruzione.
             </p>
             <ul className="mt-5 space-y-2 text-sm">
               {NOT_FOR.map((f) => (
@@ -219,7 +222,7 @@ function PrezziPage() {
             Perché partire da <span className="gradient-text">29€</span>
           </h2>
           <p className="text-muted-foreground mt-4">
-            Il prezzo è pensato per farti attivare la tua squadra AI senza grandi investimenti. Dai le prime direttive, lascia che gli agenti lavorino sull'idea e capisci subito quanto può diventare reale il tuo progetto.
+            Il prezzo è pensato per farti attivare il tuo Team AI senza grandi investimenti. Dai le prime direttive, lascia che gli agenti lavorino sull'idea e capisci subito quanto può diventare reale il tuo progetto.
           </p>
         </section>
 
@@ -256,7 +259,7 @@ function PrezziPage() {
         <section className="mt-20">
           <div className="glass-card rounded-3xl p-8 sm:p-12 text-center max-w-3xl mx-auto border-primary/40 ring-1 ring-primary/20">
             <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-              La tua <span className="gradient-text">squadra AI</span> è pronta. Vuoi attivarla?
+              Il tuo <span className="gradient-text">Team AI</span> è pronto. Vuoi attivarlo?
             </h2>
             <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
               Porta la tua idea. Dai le direttive. Lascia che gli agenti AI inizino a trasformarla in una prima app.
@@ -264,7 +267,7 @@ function PrezziPage() {
             <div className="mt-6 max-w-sm mx-auto">
               <PrimaryCta />
               <p className="text-xs text-muted-foreground mt-3">
-                {hasAccess ? "Il tuo team AI è già attivo." : "Accesso immediato dopo il pagamento."}
+                {hasAccess ? "Il tuo Team AI è già attivo." : "Accesso immediato dopo il pagamento."}
               </p>
             </div>
             <div className="text-center mt-6">
