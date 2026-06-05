@@ -31,6 +31,7 @@ function AgenteAIPage() {
       const { data: projects } = await supabase
         .from("projects")
         .select("id, idea_description, title, updated_at")
+        .is("deleted_at", null)
         .order("updated_at", { ascending: false });
       if (projects && projects.length > 0) {
         const idea = (data?.idea ?? "").trim().toLowerCase();
