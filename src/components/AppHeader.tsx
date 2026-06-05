@@ -12,7 +12,6 @@ const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/agents", label: "Agenti" },
   { to: "/prezzi", label: "Prezzi" },
   { to: "/dashboard", label: "Dashboard", auth: true },
-  { to: "/my-path", label: "I miei progetti", auth: true },
 ];
 
 export function AppHeader() {
