@@ -25,6 +25,7 @@ export type Database = {
           idea: string | null
           paid_at: string | null
           payment_status: string | null
+          project_id: string | null
           stripe_session_id: string | null
           updated_at: string
           user_id: string
@@ -39,6 +40,7 @@ export type Database = {
           idea?: string | null
           paid_at?: string | null
           payment_status?: string | null
+          project_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
           user_id: string
@@ -53,11 +55,20 @@ export type Database = {
           idea?: string | null
           paid_at?: string | null
           payment_status?: string | null
+          project_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "agent_access_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       agent_library: {
         Row: {

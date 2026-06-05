@@ -1,0 +1,2 @@
+ALTER TABLE public.agent_access ADD COLUMN IF NOT EXISTS project_id uuid REFERENCES public.projects(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_agent_access_project_id ON public.agent_access(project_id);
