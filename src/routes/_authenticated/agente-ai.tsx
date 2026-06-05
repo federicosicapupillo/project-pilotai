@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getAgentAccess } from "@/lib/payments.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Bot, Lock, ArrowRight, Loader2 } from "lucide-react";
 
@@ -18,6 +19,30 @@ function AgenteAIPage() {
     queryFn: () => fetchAccess(),
     staleTime: 30_000,
   });
+
+  async function goToDashboard() {
+    try {
+      const { data: projects } = await supabase
+        .from("projects")
+        .select("id, idea_description, title, updated_at")
+        .order("updated_at", { ascending: false });
+      if (projects && projects.length > 0) {
+        const idea = (data?.idea ?? "").trim().toLowerCase();
+        const match =
+          (idea &&
+            projects.find(
+              (p) =>
+                (p.idea_description ?? "").trim().toLowerCase() === idea ||
+                (p.title ?? "").trim().toLowerCase() === idea,
+            )) ||
+          projects[0];
+        localStorage.setItem("active_project_id", match.id);
+      }
+    } catch {
+      // non-blocking
+    }
+    navigate({ to: "/dashboard" });
+  }
 
   if (isLoading) {
     return (
@@ -70,11 +95,9 @@ function AgenteAIPage() {
       )}
 
       <div className="mt-8 flex flex-col sm:flex-row gap-3">
-        <Link to="/dashboard">
-          <Button variant="hero" size="xl">
-            Vai alla dashboard <ArrowRight className="size-4" />
-          </Button>
-        </Link>
+        <Button variant="hero" size="xl" onClick={goToDashboard}>
+          Vai alla dashboard <ArrowRight className="size-4" />
+        </Button>
         <Link to="/new-project">
           <Button variant="glass" size="xl">
             Crea un nuovo progetto
