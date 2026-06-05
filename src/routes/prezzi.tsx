@@ -61,12 +61,12 @@ function PrezziPage() {
   const { activate, hasAccess } = useActivateTeam();
   const handleActivate = () => void activate("prezzi");
 
-  const goToAgent = () => navigate({ to: "/agente-ai" });
+  const goToDashboard = () => navigate({ to: "/dashboard" });
 
   const PrimaryCta = ({ label = "Attiva il mio Team AI - 29€" }: { label?: string }) =>
     hasAccess ? (
-      <Button variant="hero" size="lg" className="w-full" onClick={goToAgent}>
-        Vai al mio Team AI <ArrowRight className="size-4" />
+      <Button variant="hero" size="lg" className="w-full" onClick={goToDashboard}>
+        Vai alla dashboard <ArrowRight className="size-4" />
       </Button>
     ) : (
       <Button variant="hero" size="lg" className="w-full" onClick={handleActivate}>
