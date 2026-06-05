@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Sparkles, LogOut, Check, Lock } from "lucide-react";
+import { Sparkles, LogOut, Check, Lock, MessageSquare } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -65,11 +65,22 @@ export function AppHeader() {
           {user ? (
             <>
               {hasAccess ? (
-                <Link to="/agente-ai" title="Accesso sbloccato">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-primary/50 bg-primary/10 text-primary glow-soft">
-                    <Check className="size-3.5" /> Team AI attivo
-                  </span>
-                </Link>
+                <>
+                  <Link
+                    to="/project-manager"
+                    title="Parla con il Project Manager"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border border-primary/50 bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <MessageSquare className="size-3.5" />
+                    <span className="hidden md:inline">Parla con il Project Manager</span>
+                    <span className="md:hidden">Project Manager</span>
+                  </Link>
+                  <Link to="/project-manager" title="Team AI attivo">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-primary/50 bg-primary/10 text-primary glow-soft">
+                      <Check className="size-3.5" /> Team AI attivo
+                    </span>
+                  </Link>
+                </>
               ) : (
                 <Button
                   variant="hero"
