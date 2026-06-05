@@ -20,17 +20,17 @@ export const Route = createFileRoute("/prezzi")({
   component: PrezziPage,
 });
 
-const INCLUDED: string[] = [
-  "Analisi della tua idea",
-  "Piano operativo personalizzato",
-  "Stima delle ore per creare la prima versione",
-  "Funzioni essenziali da sviluppare",
-  "Schermate consigliate",
-  "Prompt pronti da usare",
-  "Accesso all'agente AI personale",
-  "Academy pratica senza video",
-  "Supporto nella costruzione passo dopo passo",
-  "Accesso al tuo percorso di avanzamento",
+const TEAM: { role: string; line: string }[] = [
+  { role: "Stratega AI", line: "Analizza la tua idea e ne chiarisce il potenziale" },
+  { role: "Project manager AI", line: "Costruisce il tuo piano operativo personalizzato" },
+  { role: "Stimatore AI", line: "Sai subito in quante ore creare la prima versione" },
+  { role: "Architetto AI", line: "Ti aiuta a scegliere solo le funzioni che servono davvero" },
+  { role: "Designer AI", line: "Hai già le schermate giuste da costruire" },
+  { role: "Copy / Prompt AI", line: "Ricevi prompt operativi già pronti da usare" },
+  { role: "Agente AI personale", line: "Attivi il tuo agente AI dedicato al tuo progetto" },
+  { role: "Academy operativa", line: "Segui un percorso pratico, senza video inutili" },
+  { role: "Coach di costruzione", line: "La squadra ti accompagna step by step" },
+  { role: "Tracker di avanzamento", line: "Controlli il tuo avanzamento in ogni fase" },
 ];
 
 const NOT_FOR: string[] = [
@@ -142,19 +142,75 @@ function PrezziPage() {
           </div>
         </section>
 
-        {/* COSA INCLUDE */}
+        {/* SQUADRA AI */}
         <section className="mt-20">
-          <h2 className="text-2xl sm:text-3xl font-display font-semibold text-center">
-            Cosa ottieni con l'accesso
-          </h2>
-          <ul className="mt-8 grid sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
-            {INCLUDED.map((f) => (
-              <li key={f} className="glass-card rounded-xl px-4 py-3 flex items-start gap-3 text-sm">
-                <Check className="size-4 text-primary mt-0.5 shrink-0" />
-                <span>{f}</span>
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
+              <Sparkles className="size-3 text-primary" /> La tua squadra operativa
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-semibold mt-4">
+              Con l'accesso attivi la tua <span className="gradient-text">squadra operativa AI</span>
+            </h2>
+            <p className="text-muted-foreground mt-4">
+              Non stai acquistando solo un accesso. Stai attivando il tuo team di agenti AI, configurati per aiutarti a trasformare la tua idea in una prima app, anche se parti da zero.
+            </p>
+            <p className="text-sm gradient-text font-medium mt-3">
+              I tuoi agenti AI sono pronti a partire
+            </p>
+          </div>
+
+          <ul className="mt-10 grid sm:grid-cols-2 gap-3 max-w-4xl mx-auto">
+            {TEAM.map((t) => (
+              <li
+                key={t.role}
+                className="glass-card rounded-xl px-4 py-4 flex items-start gap-3 text-sm border border-border/60 hover:border-primary/40 transition-colors"
+              >
+                <div className="size-8 rounded-lg gradient-bg grid place-items-center shrink-0 glow-soft">
+                  <Check className="size-4 text-primary-foreground" />
+                </div>
+                <div>
+                  <div className="font-semibold text-foreground">{t.role}</div>
+                  <div className="text-muted-foreground text-xs mt-0.5">{t.line}</div>
+                </div>
               </li>
             ))}
           </ul>
+
+          {/* BLOCCO EMOTIVO */}
+          <div className="mt-10 max-w-4xl mx-auto">
+            <div className="glass-card rounded-2xl p-6 sm:p-8 border-primary/40 ring-1 ring-primary/20 glow-soft text-center">
+              <h3 className="font-display font-semibold text-xl sm:text-2xl">
+                Tu porti l'idea. Il <span className="gradient-text">team AI</span> ti aiuta a costruirla.
+              </h3>
+              <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+                Non serve essere sviluppatore, designer o esperto di automazioni. Con l'accesso attivi una squadra operativa di agenti AI già pronti a lavorare sulla tua idea, aiutarti a prendere decisioni e accompagnarti nella creazione della prima versione della tua app.
+              </p>
+            </div>
+          </div>
+
+          {/* CTA INTERMEDIA */}
+          <div className="mt-8 max-w-xl mx-auto text-center">
+            <h3 className="font-display font-semibold text-xl">
+              La tua squadra AI è pronta. Vuoi attivarla?
+            </h3>
+            <p className="text-muted-foreground text-sm mt-2">
+              Parti dalla tua idea e metti al lavoro il team che ti aiuterà a trasformarla nella prima versione della tua app.
+            </p>
+            <div className="mt-5">
+              {hasAccess ? (
+                <Button variant="hero" size="lg" className="w-full" onClick={goToAgent}>
+                  Vai al mio team AI <ArrowRight className="size-4" />
+                </Button>
+              ) : (
+                <Button variant="hero" size="lg" className="w-full" onClick={handleActivate}>
+                  <Lock className="size-4" /> Attiva il mio team AI - 29€
+                </Button>
+              )}
+              <p className="text-xs text-muted-foreground mt-3 inline-flex items-center justify-center gap-1.5">
+                <ShieldCheck className="size-3.5" /> Accesso immediato dopo il pagamento.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* COSA DEVI SAPERE */}
@@ -165,6 +221,9 @@ function PrezziPage() {
             </h2>
             <p className="text-muted-foreground mt-3">
               Non stai acquistando un'app completa già pronta. Stai attivando un agente AI e un metodo operativo che ti aiutano a costruire la prima versione della tua app partendo dalla tua idea.
+            </p>
+            <p className="text-muted-foreground mt-3">
+              L'obiettivo non è lasciarti da solo davanti a un corso. L'obiettivo è darti il team giusto per partire in modo semplice, guidato e concreto.
             </p>
             <ul className="mt-5 space-y-2 text-sm">
               {NOT_FOR.map((f) => (
