@@ -122,7 +122,6 @@ export const AGENT_TEMPLATE = (idea: string) => [
     prompt_text: `${SECURITY_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA / PROGETTO / FUNZIONE DA ANALIZZARE LATO SICUREZZA:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta l'analisi e rispondi con il FORMATO RISPOSTA STANDARD (16 sezioni in markdown) chiudendo con il BRIEF SICUREZZA PER GLI ALTRI AGENTI. Usa etichette esplicite (DATO PRIVATO, DATO SENSIBILE, TABELLA DA PROTEGGERE, RISCHIO PERMESSI, PROTEZIONE INSUFFICIENTE, CONTROLLO LATO DATABASE NECESSARIO) e, se l'utente chiede se è sicuro pubblicare, dichiara SICUREZZA OK / DA TESTARE / RISCHIO MEDIO / RISCHIO ALTO / NON PUBBLICARE ANCORA / PERMESSI DA CORREGGERE / DATI SENSIBILI ESPOSTI / CONTROLLO DATABASE NECESSARIO.`,
   },
   {
-    name: "Agente Tester",
     name: "Agente Controllo Qualità",
     role: "Controlla che funzioni, modifiche e bug fix siano davvero pronti: funzionali, responsive, sicuri, senza regressioni.",
     when_to_use: "Dopo ogni costruzione o bug fix e prima di passare allo step successivo o al lancio.",
