@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Loader2, MessageSquare, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { CheckCircle2, Loader2, MessageSquare, ArrowRight, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getAgentAccess } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/pagamento-successo")({
   head: () => ({ meta: [{ title: "Pagamento completato" }] }),
@@ -16,17 +18,44 @@ export const Route = createFileRoute("/pagamento-successo")({
 function SuccessPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const fetchAccess = useServerFn(getAgentAccess);
+  const [elapsed, setElapsed] = useState(0);
+
+  const { data, refetch, isRefetching } = useQuery({
+    queryKey: ["agent-access"],
+    queryFn: async () => {
+      try { return await fetchAccess(); }
+      catch { return { hasAccess: false, status: null, idea: null, paidAt: null, projectId: null }; }
+    },
+    refetchInterval: (q) => (q.state.data?.hasAccess ? false : 2000),
+    refetchIntervalInBackground: true,
+    staleTime: 0,
+  });
+
+  const hasAccess = !!data?.hasAccess;
+  const timedOut = elapsed >= 15 && !hasAccess;
 
   useEffect(() => {
-    // Refresh the Team AI access cache so the navbar/dashboard flip immediately
-    queryClient.invalidateQueries({ queryKey: ["agent-access"] });
-    // Clean up the pending project pointer — the project is now linked server-side
     try { localStorage.removeItem("pending_project_id"); } catch { /* noop */ }
-    const t = setTimeout(() => {
-      navigate({ to: "/dashboard", replace: true });
-    }, 1500);
+    queryClient.invalidateQueries({ queryKey: ["agent-access"] });
+  }, [queryClient]);
+
+  useEffect(() => {
+    if (hasAccess) return;
+    const t = setInterval(() => setElapsed((e) => e + 1), 1000);
+    return () => clearInterval(t);
+  }, [hasAccess]);
+
+  useEffect(() => {
+    if (!hasAccess) return;
+    const t = setTimeout(() => navigate({ to: "/project-manager", replace: true }), 1800);
     return () => clearTimeout(t);
-  }, [navigate, queryClient]);
+  }, [hasAccess, navigate]);
+
+  const handleRecheck = () => {
+    queryClient.invalidateQueries({ queryKey: ["agent-access"] });
+    void refetch();
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -38,24 +67,55 @@ function SuccessPage() {
               "linear-gradient(135deg, color-mix(in oklab, var(--primary) 25%, transparent), color-mix(in oklab, var(--accent) 18%, transparent))",
           }}
         >
-          <CheckCircle2 className="size-8 text-primary" />
+          {hasAccess ? (
+            <CheckCircle2 className="size-8 text-primary" />
+          ) : timedOut ? (
+            <AlertCircle className="size-8 text-primary" />
+          ) : (
+            <Loader2 className="size-8 text-primary animate-spin" />
+          )}
         </div>
         <h1 className="text-4xl sm:text-5xl font-display font-semibold leading-tight">
-          Pagamento <span className="gradient-text">completato</span>
+          {hasAccess ? (
+            <>Il tuo <span className="gradient-text">Team AI è attivo</span></>
+          ) : (
+            <>Pagamento <span className="gradient-text">completato</span></>
+          )}
         </h1>
         <p className="text-muted-foreground mt-4 text-base sm:text-lg">
-          Stiamo attivando il tuo Team AI e ti riportiamo al tuo progetto…
+          {hasAccess
+            ? "Tutto pronto. Ti portiamo dal tuo Project Manager…"
+            : timedOut
+              ? "Il pagamento risulta completato, ma l'attivazione sta richiedendo qualche secondo. Puoi controllare di nuovo o tornare alla dashboard."
+              : "Pagamento ricevuto. Stiamo attivando il tuo Team AI…"}
         </p>
-        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-          <Link to="/project-manager">
-            <Button variant="hero" size="lg">
-              <MessageSquare className="size-4" /> Parla con il mio Project Manager <ArrowRight className="size-4" />
+
+        {hasAccess ? (
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/project-manager">
+              <Button variant="hero" size="lg">
+                <MessageSquare className="size-4" /> Vai al Project Manager <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+            <Link to="/dashboard">
+              <Button variant="glass" size="lg">Vai alla Dashboard</Button>
+            </Link>
+          </div>
+        ) : timedOut ? (
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <Button variant="hero" size="lg" onClick={handleRecheck} disabled={isRefetching}>
+              <RefreshCw className={"size-4 " + (isRefetching ? "animate-spin" : "")} /> Controlla di nuovo
             </Button>
-          </Link>
-        </div>
-        <div className="mt-8 inline-flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin text-primary" /> Reindirizzamento alla dashboard…
-        </div>
+            <Link to="/dashboard">
+              <Button variant="glass" size="lg">Vai alla Dashboard</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-8 inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin text-primary" /> Attivazione in corso… ({elapsed}s)
+          </div>
+        )}
+
         <p className="text-xs text-muted-foreground mt-6">
           Riceverai a breve la ricevuta via email.
         </p>
