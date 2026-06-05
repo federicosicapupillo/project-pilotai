@@ -45,12 +45,22 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
           ? process.env.STRIPE_LIVE_TEAM_AI_PRICE_ID
           : process.env.STRIPE_SANDBOX_TEAM_AI_PRICE_ID;
       let stripePrice;
+      let priceSource: "env" | "lookup_key";
       if (configuredPriceId) {
         stripePrice = await stripe.prices.retrieve(configuredPriceId);
+        priceSource = "env";
       } else {
         const prices = await stripe.prices.list({ lookup_keys: ["agente_ai_29"] });
         if (!prices.data.length) return { error: "Price 'agente_ai_29' not found" };
         stripePrice = prices.data[0];
+        priceSource = "lookup_key";
+      }
+
+      // Safety: in live mode, refuse a test-mode price (and vice versa).
+      const priceLivemode = (stripePrice as { livemode?: boolean }).livemode;
+      if (data.environment === "live" && priceLivemode === false) {
+        console.error("[checkout] price livemode mismatch", { priceId: stripePrice.id, priceSource });
+        return { error: "Configurazione errata: il price configurato non è in modalità live. Contatta supporto." };
       }
 
       // Resolve or create Customer with userId metadata
@@ -101,6 +111,21 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
         },
       });
 
+      // Safe technical log (no keys, no PII besides the email-on-customer that
+      // Stripe already stores). Helps confirm live/sandbox parity on production.
+      console.log("[checkout] session created", {
+        environment: data.environment,
+        priceSource,
+        priceId: stripePrice.id,
+        priceLivemode,
+        sessionId: session.id,
+        sessionLivemode: (session as { livemode?: boolean }).livemode,
+        mode: session.mode,
+        amount_total: session.amount_total,
+        currency: session.currency,
+        hasProjectId: !!data.projectId,
+      });
+
       // Pre-record pending row so we have idea+session linked even before webhook
       await supabaseAdmin
         .from("agent_access")
@@ -142,4 +167,49 @@ export const getAgentAccess = createServerFn({ method: "GET" })
       paidAt: data?.paid_at ?? null,
       projectId: data?.project_id ?? null,
     };
+  });
+
+/**
+ * Server-side verification of a Stripe Checkout Session.
+ * Called from the success page so we don't show "pagamento riuscito" based on
+ * URL params alone. Tries both live and sandbox so it works regardless of which
+ * env the user paid in.
+ */
+export const verifyCheckoutSession = createServerFn({ method: "POST" })
+  .inputValidator((data: { sessionId: string }) => {
+    if (!data.sessionId || !/^cs_(test|live)_[A-Za-z0-9]+$/.test(data.sessionId)) {
+      throw new Error("Invalid sessionId");
+    }
+    return { sessionId: data.sessionId };
+  })
+  .handler(async ({ data }) => {
+    const { createStripeClient, getStripeErrorMessage } = await import("@/lib/stripe.server");
+    const envGuess: StripeEnv = data.sessionId.startsWith("cs_live_") ? "live" : "sandbox";
+    try {
+      const stripe = createStripeClient(envGuess);
+      const session = await stripe.checkout.sessions.retrieve(data.sessionId);
+      console.log("[verify] session", {
+        environment: envGuess,
+        sessionId: session.id,
+        livemode: session.livemode,
+        payment_status: session.payment_status,
+        status: session.status,
+        mode: session.mode,
+        amount_total: session.amount_total,
+        currency: session.currency,
+      });
+      return {
+        ok: true as const,
+        environment: envGuess,
+        livemode: session.livemode,
+        payment_status: session.payment_status,
+        status: session.status,
+        mode: session.mode,
+        amount_total: session.amount_total,
+        currency: session.currency,
+      };
+    } catch (error) {
+      console.error("verifyCheckoutSession error:", error);
+      return { ok: false as const, error: getStripeErrorMessage(error) };
+    }
   });
