@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle, Copy, Wrench } from "lucide-react";
+import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle, Copy, Wrench, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivateTeam } from "@/hooks/use-activate-team";
@@ -55,6 +55,18 @@ const FOLLOWUP_ACTIONS = [
   "Semplifica",
   "Approfondisci",
   "Salva nel Backlog migliorie",
+];
+
+const CORRECTION_LABELS = [
+  "Voglio semplificare",
+  "Voglio più dettaglio",
+  "Voglio una versione più grafica",
+  "Voglio ridurre le funzioni",
+  "Voglio aggiungere un rischio",
+  "Voglio cambiare priorità",
+  "Voglio una versione più tecnica",
+  "Voglio una versione più commerciale",
+  "Voglio salvare questa idea nel backlog",
 ];
 
 function ProjectManagerPage() {
@@ -144,6 +156,8 @@ function ProjectManagerPage() {
   });
 
   const [input, setInput] = useState("");
+  // Flusso schema-step: 'idle' (chat normale) | 'schema-review' (mostra 3 tasti) | 'corrections' (mostra label di correzione)
+  const [reviewMode, setReviewMode] = useState<"idle" | "schema-review" | "corrections">("idle");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -164,6 +178,7 @@ function ProjectManagerPage() {
       opGenMutation.mutate(currentStep.title);
       return;
     }
+    setReviewMode("idle");
     mutation.mutate(text);
   }
 
@@ -173,9 +188,56 @@ function ProjectManagerPage() {
       alert("Prima di continuare devi definire il progetto.");
       return;
     }
-    const step = nextStep?.title ?? currentStep.title;
-    const command = `Proseguiamo con la creazione dell'app. Il progetto è già stato definito. Avvia ora lo step previsto dalla roadmap: ${step}. Lavora solo su questo step, secondo la roadmap attiva (bloccata). Analizza punti di forza, criticità, rischi principali, aspetti da semplificare, cosa tenere nella prima versione e cosa rimandare al Backlog migliorie future. Proponi l'avanzamento allo step successivo solo dopo aver completato questo.`;
+    const step = currentStep.title;
+    const command = `Proseguiamo con la creazione dell'app. Lavora SOLO sullo step corrente della roadmap attiva (bloccata): "${step}".
+
+Genera ORA uno SCHEMA/ANALISI di questo step, NON un prompt operativo.
+
+Struttura la risposta esattamente così:
+
+Step corrente: ${step}
+
+Questo è lo schema che ti propongo per questo passaggio della roadmap.
+
+Poi elenca in modo chiaro:
+- analisi dello step (punti chiave specifici per "${step}")
+- decisioni consigliate
+- elementi da tenere nella prima versione
+- elementi da rimandare al Backlog migliorie future
+- consiglio operativo per proseguire
+
+Concludi con: "Ti consiglio di approvare questo step e proseguire con la generazione del prompt operativo."
+
+REGOLE:
+- Non modificare la roadmap.
+- Non saltare step.
+- Non generare ancora il prompt operativo completo: solo lo schema.
+- Le migliorie extra vanno nel Backlog migliorie future.`;
+    setReviewMode("schema-review");
     mutation.mutate(command);
+  }
+
+  function approveSchema() {
+    if (mutation.isPending) return;
+    setReviewMode("idle");
+    if (activeProject && typeof window !== "undefined") {
+      localStorage.setItem(`pm_step_approved:${activeProject.id}:${currentStep.title}`, "1");
+    }
+    mutation.mutate(
+      `Approvo lo schema dello step "${currentStep.title}". Confermami che lo step è approvato internamente (senza modificare la roadmap) e ricordami che ora posso cliccare "Genera il prompt operativo da copiare". Non proporre ancora il passaggio allo step successivo finché non avrò generato il prompt operativo.`,
+    );
+  }
+
+  function rejectSchema() {
+    setReviewMode("corrections");
+  }
+
+  function applyCorrection(label: string) {
+    if (mutation.isPending) return;
+    setReviewMode("schema-review");
+    mutation.mutate(
+      `Non approvo ancora lo schema dello step "${currentStep.title}". Rigeneralo applicando questa correzione: "${label}". Mantieni la stessa struttura (analisi, decisioni, da tenere, da rimandare, consiglio operativo). Non modificare la roadmap, non saltare step. Non generare ancora il prompt operativo.`,
+    );
   }
 
   const messages = [INTRO, ...(history?.messages ?? [])];
@@ -317,17 +379,79 @@ function ProjectManagerPage() {
             {messages.length > 1 &&
               messages[messages.length - 1].role === "assistant" &&
               !mutation.isPending && (
-                <div className="flex flex-wrap gap-2 pl-11">
-                  {FOLLOWUP_ACTIONS.map((a) => (
-                    <button
-                      key={a}
-                      type="button"
-                      onClick={() => sendQuick(a)}
-                      className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
-                    >
-                      {a}
-                    </button>
-                  ))}
+                <div className="space-y-2 pl-11">
+                  {reviewMode === "schema-review" && (
+                    <>
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                        Cosa vuoi fare con questo schema?
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={approveSchema}
+                          className="text-xs px-3 py-1.5 rounded-full border border-primary/50 bg-primary/10 hover:bg-primary/20 text-foreground inline-flex items-center gap-1.5"
+                        >
+                          <ThumbsUp className="size-3.5" /> Approvo le modifiche
+                        </button>
+                        <button
+                          type="button"
+                          onClick={rejectSchema}
+                          className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-destructive/60 hover:text-foreground text-muted-foreground inline-flex items-center gap-1.5"
+                        >
+                          <ThumbsDown className="size-3.5" /> Non approvo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => sendQuick("Genera prompt operativo")}
+                          disabled={opGenMutation.isPending}
+                          className="text-xs px-3 py-1.5 rounded-full border border-primary/40 bg-primary/5 hover:bg-primary/10 text-foreground inline-flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          <Sparkles className="size-3.5" /> Genera il prompt operativo da copiare
+                        </button>
+                      </div>
+                    </>
+                  )}
+                  {reviewMode === "corrections" && (
+                    <>
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                        Scegli una correzione per rigenerare lo schema
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {CORRECTION_LABELS.map((l) => (
+                          <button
+                            key={l}
+                            type="button"
+                            onClick={() => applyCorrection(l)}
+                            className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
+                          >
+                            {l}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => sendQuick("Genera prompt operativo")}
+                          disabled={opGenMutation.isPending}
+                          className="text-xs px-3 py-1.5 rounded-full border border-primary/40 bg-primary/5 hover:bg-primary/10 text-foreground inline-flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          <Sparkles className="size-3.5" /> Genera il prompt operativo da copiare
+                        </button>
+                      </div>
+                    </>
+                  )}
+                  {reviewMode === "idle" && (
+                    <div className="flex flex-wrap gap-2">
+                      {FOLLOWUP_ACTIONS.map((a) => (
+                        <button
+                          key={a}
+                          type="button"
+                          onClick={() => sendQuick(a)}
+                          className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
+                        >
+                          {a}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             {mutation.isPending && (
