@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { GraduationCap, ArrowRight, CheckCircle2, Circle, Rocket } from "lucide-react";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
+import { AcademyLock, useAcademyAccess } from "@/components/AcademyLock";
 
 export const Route = createFileRoute("/academy")({
   head: () => ({ meta: [{ title: "Academy — Da Idea ad App" }] }),
@@ -13,6 +14,12 @@ export const Route = createFileRoute("/academy")({
 });
 
 function AcademyPage() {
+  const { hasAccess, isLoading: accessLoading } = useAcademyAccess();
+  if (accessLoading) {
+    return <div className="max-w-7xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
+  }
+  if (!hasAccess) return <AcademyLock />;
+
   const { data, isLoading } = useQuery({
     queryKey: ["academy-overview"],
     queryFn: async () => {
