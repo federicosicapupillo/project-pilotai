@@ -48,13 +48,22 @@ export function AppHeader() {
   }, [user]);
 
   const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
+  const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+  const isEmailLike = (s: string) => !s || s.includes("@");
+  const firstLast = [
+    str(meta.first_name) || str(meta.nome),
+    str(meta.last_name) || str(meta.cognome) || str(meta.surname),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
   const metaName =
-    (typeof meta.full_name === "string" && meta.full_name) ||
-    (typeof meta.name === "string" && meta.name) ||
-    [meta.first_name, meta.last_name].filter((s) => typeof s === "string" && s).join(" ").trim() ||
-    null;
-  const emailLocal = user?.email ? user.email.split("@")[0].replace(/[._-]+/g, " ") : null;
-  const displayName = (profileName?.trim() || metaName || emailLocal || "Utente").trim();
+    firstLast ||
+    (!isEmailLike(str(meta.full_name)) && str(meta.full_name)) ||
+    (!isEmailLike(str(meta.name)) && str(meta.name)) ||
+    "";
+  const cleanProfileName = profileName && !isEmailLike(profileName.trim()) ? profileName.trim() : "";
+  const displayName = (metaName || cleanProfileName || "Utente").trim();
   const firstName = displayName.split(/\s+/)[0];
 
   return (
@@ -125,9 +134,9 @@ export function AppHeader() {
                    <Lock className="size-3.5" /> Attiva Team AI - 29€
                 </Button>
               )}
-              <div className="flex items-center gap-2 px-2 py-1 rounded-full border border-border/50 bg-secondary/40 max-w-[200px]">
+              <div className="flex items-center gap-2 px-2 py-1 rounded-full border border-border/50 bg-secondary/40 max-w-[220px]">
                 <UserCircle2 className="size-4 text-primary shrink-0" aria-label="Account" />
-                <span className="text-xs text-foreground/90 truncate">
+                <span className="text-xs text-foreground/90 truncate" title={displayName}>
                   <span className="hidden sm:inline">{displayName}</span>
                   <span className="sm:hidden">{firstName}</span>
                 </span>
