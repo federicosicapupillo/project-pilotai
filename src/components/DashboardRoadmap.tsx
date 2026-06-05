@@ -39,22 +39,18 @@ const STEPS: Step[] = [
 ];
 
 export function DashboardRoadmap({
-  signals,
   hasAccess,
   projectId,
   onActivate,
 }: {
-  signals: RoadmapSignals;
   hasAccess: boolean;
   projectId?: string;
   onActivate?: () => void;
 }) {
-  const statuses = computeStatuses(signals);
-  const doneCount = statuses.filter((s) => s === "done").length;
+  const doneCount = STEPS.filter((s) => s.status === "done").length;
   const total = STEPS.length;
   const pct = Math.round((doneCount / total) * 100);
-  const currentIdx = statuses.findIndex((s) => s === "current");
-  const current = currentIdx >= 0 ? STEPS[currentIdx] : null;
+  const current = STEPS.find((s) => s.status === "current") ?? null;
 
   return (
     <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.07] via-background to-accent/[0.07] p-6 sm:p-8 glow-soft">
@@ -92,8 +88,8 @@ export function DashboardRoadmap({
       {/* Timeline */}
       <div className="mt-8 -mx-2 sm:mx-0 overflow-x-auto sm:overflow-visible">
         <ol className="flex sm:grid sm:grid-cols-4 lg:grid-cols-8 gap-3 px-2 sm:px-0 snap-x snap-mandatory">
-          {STEPS.map((step, i) => {
-            const status = statuses[i];
+          {STEPS.map((step) => {
+            const status = step.status;
             const Icon = step.icon;
             const isDone = status === "done";
             const isCurrent = status === "current";
