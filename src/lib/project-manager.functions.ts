@@ -216,3 +216,53 @@ export const sendPmMessage = createServerFn({ method: "POST" })
 
     return { reply: assistantText };
   });
+
+export const listBacklog = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { projectId?: string | null }) => ({
+    projectId:
+      typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
+        ? d.projectId
+        : null,
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    let q = supabase
+      .from("improvement_backlog")
+      .select("id, title, description, source, status, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    q = data.projectId ? q.eq("project_id", data.projectId) : q.is("project_id", null);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { items: rows ?? [] };
+  });
+
+export const addBacklogItem = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { projectId?: string | null; title: string; description?: string }) => {
+    const title = String(d.title ?? "").trim();
+    if (!title) throw new Error("Titolo richiesto");
+    if (title.length > 200) throw new Error("Titolo troppo lungo");
+    const description = d.description ? String(d.description).slice(0, 2000) : null;
+    return {
+      projectId:
+        typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
+          ? d.projectId
+          : null,
+      title,
+      description,
+    };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { error } = await supabase.from("improvement_backlog").insert({
+      user_id: userId,
+      project_id: data.projectId,
+      title: data.title,
+      description: data.description,
+      source: "pm_chat",
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
