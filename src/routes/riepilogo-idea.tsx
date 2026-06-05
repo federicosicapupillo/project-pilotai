@@ -531,23 +531,59 @@ function ValueEstimateSection({
       </div>
 
       <div
-        className="rounded-2xl p-5 sm:p-6 border border-primary/40"
+        className="relative overflow-hidden rounded-2xl p-6 sm:p-8 border border-primary/50"
         style={{
           background:
-            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 14%, transparent))",
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--accent) 16%, transparent))",
+          boxShadow:
+            "0 0 0 1px color-mix(in oklab, var(--primary) 35%, transparent), 0 20px 60px -20px color-mix(in oklab, var(--primary) 50%, transparent)",
         }}
       >
-        <p className="font-display font-semibold text-base sm:text-lg">
-          Prima di investire migliaia di euro nella realizzazione, puoi partire da <span className="gradient-text">29€</span> e far lavorare il tuo Team AI sulla tua idea.
-        </p>
-        <div className="mt-4">
-          <Button variant="hero" size="lg" onClick={onActivate}>
-            Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-          </Button>
+        <div className="absolute -top-20 -right-16 size-56 rounded-full bg-primary/25 blur-3xl pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-20 -left-16 size-56 rounded-full bg-accent/20 blur-3xl pointer-events-none" aria-hidden />
+
+        <div className="relative">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background/40 border border-primary/40 text-[11px] uppercase tracking-wider text-primary/90 mb-4">
+            <Euro className="size-3" /> Confronto reale
+          </div>
+
+          <h3 className="font-display font-semibold text-2xl sm:text-3xl leading-tight">
+            Far realizzare questa app da professionisti ti sarebbe potuto costare fino a{" "}
+            <span className="gradient-text">{cost.amount}</span>.
+          </h3>
+
+          <p className="mt-4 text-base sm:text-lg text-muted-foreground">
+            Oggi, con <span className="gradient-text font-semibold">29€</span>, puoi attivare il tuo{" "}
+            <span className="text-foreground font-semibold">Team AI</span> e iniziare a trasformare la tua idea nella{" "}
+            <span className="text-foreground font-semibold">prima versione della tua app</span>.
+          </p>
+
+          <div className="mt-6 grid sm:grid-cols-2 gap-3">
+            <div className="rounded-xl p-4 bg-background/40 border border-border/60">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Solo realizzazione da professionisti</div>
+              <div className="font-display font-semibold text-2xl mt-1 text-muted-foreground line-through decoration-primary/50">
+                Fino a {cost.amount}
+              </div>
+            </div>
+            <div className="rounded-xl p-4 bg-background/40 border border-primary/50">
+              <div className="text-[11px] uppercase tracking-wider text-primary/90">Parti da 29€ con il Team AI</div>
+              <div className="font-display font-semibold text-2xl gradient-text mt-1">29€ una tantum</div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
+            <Button variant="hero" size="lg" onClick={onActivate}>
+              Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Accesso immediato. Non ottieni l'app completa finita: attivi il tuo Team AI per partire dall'idea e costruire la prima versione.
+            </p>
+          </div>
+
+          <p className="text-[11px] text-muted-foreground mt-4 italic">
+            Stime indicative. Non includono marketing, server, manutenzione o evoluzioni future.
+          </p>
         </div>
-        <p className="text-[11px] text-muted-foreground mt-3 italic">
-          Le stime non includono marketing, server, manutenzione o evoluzioni future.
-        </p>
       </div>
     </section>
   );
