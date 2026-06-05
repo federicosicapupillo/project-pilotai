@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppHeader } from "@/components/AppHeader";
 import { IdeaEstimator } from "@/components/IdeaEstimator";
 import { Gauge, Wrench, Bot, Layers } from "lucide-react";
 
@@ -17,7 +16,6 @@ export const Route = createFileRoute("/analizza-idea")({
 function AnalizzaIdeaPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main className="max-w-4xl mx-auto px-6 py-12 sm:py-16 w-full">
         <div className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">

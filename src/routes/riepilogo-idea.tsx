@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { ToolIcon } from "@/components/ToolIcon";
 import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
@@ -46,7 +45,6 @@ function RiepilogoIdeaPage() {
   if (!hydrated) {
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader />
         <main className="max-w-4xl mx-auto px-6 py-16 w-full" />
       </div>
     );
@@ -55,7 +53,6 @@ function RiepilogoIdeaPage() {
   if (!params || !result) {
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader />
         <main className="max-w-2xl mx-auto px-6 py-20 w-full text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
             <Sparkles className="size-3 text-primary" /> Analisi gratuita
@@ -107,7 +104,6 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 w-full">
         {/* HERO */}
         <div className="text-center">

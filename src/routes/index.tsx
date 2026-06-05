@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { IdeaEstimator } from "@/components/IdeaEstimator";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
@@ -25,7 +24,6 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main>
         {/* HERO */}
         <section className="relative hero-bg overflow-hidden">
