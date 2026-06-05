@@ -2,12 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock } from "lucide-react";
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
 import { useRoadmapProgress } from "@/lib/roadmap-progress";
 import { DashboardRoadmap } from "@/components/DashboardRoadmap";
+import { AgentPromptsSection } from "@/components/AgentPromptsSection";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
@@ -53,21 +54,6 @@ function DashboardPage() {
         byProject.get(r.project_id)!.push(r);
       }
       return byProject;
-    },
-  });
-
-  const { data: recentPrompts } = useQuery({
-    queryKey: ["recent-prompts"],
-    enabled: hasAccess,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("prompts")
-        .select("id, title, category, project_id, created_at")
-        .not("project_id", "is", null)
-        .order("created_at", { ascending: false })
-        .limit(5);
-      if (error) throw error;
-      return data;
     },
   });
 
@@ -177,32 +163,7 @@ function DashboardPage() {
 
         <aside className="space-y-4">
           {hasAccess ? (
-            <>
-              <h2 className="text-sm uppercase tracking-wider text-muted-foreground font-semibold">
-                Ultimi prompt generati
-              </h2>
-              <div className="glass-card rounded-xl p-4">
-                {!recentPrompts || recentPrompts.length === 0 ? (
-                  <p className="text-sm text-muted-foreground p-4 text-center">
-                    Nessun prompt ancora. Crea un progetto per generare la prima squadra di prompt.
-                  </p>
-                ) : (
-                  <ul className="divide-y divide-border/50">
-                    {recentPrompts.map((pr) => (
-                      <li key={pr.id} className="py-3 flex items-start gap-3">
-                        <div className="size-8 rounded-md bg-secondary grid place-items-center shrink-0">
-                          <Activity className="size-4 text-primary" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium line-clamp-1">{pr.title}</p>
-                          <p className="text-xs text-muted-foreground">{pr.category}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </>
+            <AgentPromptsSection />
           ) : (
             <div className="rounded-2xl p-6 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft">
               <h3 className="font-display font-semibold text-lg">
