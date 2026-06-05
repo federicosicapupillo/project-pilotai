@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { captureUtmFromUrl } from "@/lib/tracking";
 import { AppHeader } from "@/components/AppHeader";
+import { HelpAiWidget } from "@/components/HelpAiWidget";
 
 function NotFoundComponent() {
   return (
@@ -148,6 +149,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster />
+      <HelpAiWidget />
     </QueryClientProvider>
   );
 }
