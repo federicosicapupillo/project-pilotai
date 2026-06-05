@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight, Lightbulb, Search, LayoutDashboard, MessageSquareCode,
@@ -30,7 +29,6 @@ const STEPS = [
 function MethodPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main className="relative overflow-hidden">
         {/* Ambient background */}
         <div className="absolute inset-0 hero-bg opacity-80 pointer-events-none" />

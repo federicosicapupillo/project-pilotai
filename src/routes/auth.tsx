@@ -3,7 +3,6 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -92,7 +91,6 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <div className="flex-1 grid place-items-center px-6 py-16 hero-bg">
         <div className="w-full max-w-md glass-card rounded-2xl p-8">
           <div className="flex items-center gap-2 mb-6">

@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -155,7 +154,6 @@ function PrezziPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main className="max-w-7xl mx-auto px-6 py-16">
         <div className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">

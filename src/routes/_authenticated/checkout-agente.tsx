@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { StripeAgentCheckout } from "@/components/StripeEmbeddedCheckout";
@@ -25,7 +24,6 @@ function CheckoutAgentePage() {
   return (
     <div className="min-h-screen flex flex-col">
       <PaymentTestModeBanner />
-      <AppHeader />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 w-full">
         <Link
           to="/riepilogo-idea"

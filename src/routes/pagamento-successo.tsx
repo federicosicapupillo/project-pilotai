@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 
@@ -14,7 +13,6 @@ export const Route = createFileRoute("/pagamento-successo")({
 function SuccessPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
       <main className="max-w-2xl mx-auto px-6 py-20 w-full text-center">
         <div
           className="mx-auto inline-flex items-center justify-center size-16 rounded-full border border-primary/40 mb-6"
