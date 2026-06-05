@@ -8,8 +8,35 @@ import {
 export const Route = createFileRoute("/method")({
   head: () => ({
     meta: [
-      { title: "Il metodo IDEA → AGENTI → APP" },
-      { name: "description", content: "8 step per trasformare un'idea grezza in un progetto digitale costruibile." },
+      { title: "Metodo IDEA → AGENTI → APP — IdeaPilot AI" },
+      { name: "description", content: "Gli 8 step del metodo IdeaPilot: dall'idea grezza alla prima versione dell'app. Idea, diagnosi, architettura, prompt, costruzione, database, test e lancio — uno per uno, con cosa fare in ogni fase." },
+      { property: "og:title", content: "Metodo IDEA → AGENTI → APP — IdeaPilot AI" },
+      { property: "og:description", content: "Gli 8 step per trasformare un'idea in un'app costruibile: idea, diagnosi, architettura, prompt, costruzione, database, test, lancio." },
+      { property: "og:url", content: "https://ideapilots.app/method" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://ideapilots.app/method" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: "Metodo IDEA → AGENTI → APP",
+          description: "Gli 8 step di IdeaPilot AI per trasformare un'idea in un'app costruibile.",
+          step: [
+            { "@type": "HowToStep", position: 1, name: "Idea", text: "Parti da una frase chiara: cosa vuoi creare, per chi e perché ha senso adesso." },
+            { "@type": "HowToStep", position: 2, name: "Diagnosi", text: "Verifica il problema reale, il target e quanto è urgente." },
+            { "@type": "HowToStep", position: 3, name: "Architettura", text: "Definisci schermate, funzioni essenziali della prima versione e dati da salvare." },
+            { "@type": "HowToStep", position: 4, name: "Prompt", text: "Trasforma la strategia in prompt operativi: chiarire, costruire, correggere." },
+            { "@type": "HowToStep", position: 5, name: "Costruzione", text: "Usa Lovable e gli strumenti no-code per creare la prima versione funzionante." },
+            { "@type": "HowToStep", position: 6, name: "Database", text: "Collega dati, utenti e login con una struttura semplice e controllabile." },
+            { "@type": "HowToStep", position: 7, name: "Test", text: "Controlla flussi, bug, errori e punti deboli prima di pensare al lancio." },
+            { "@type": "HowToStep", position: 8, name: "Lancio", text: "Prepara demo, presentazione e prime azioni per validare il progetto." },
+          ],
+        }),
+      },
     ],
   }),
   component: MethodPage,
