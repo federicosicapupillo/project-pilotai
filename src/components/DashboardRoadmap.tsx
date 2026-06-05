@@ -68,7 +68,10 @@ export function DashboardRoadmap({
             Roadmap del tuo progetto
           </h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-            Qui vedi in modo semplice a che punto sei e quali sono i prossimi step per arrivare alla prima versione della tua app.
+            Il progetto è stato impostato. Ora il Team AI ti aiuterà a costruirlo passo dopo passo.
+          </p>
+          <p className="text-xs text-muted-foreground/80 mt-2 italic">
+            Non stai partendo da zero, ma la costruzione dell'app deve ancora iniziare.
           </p>
         </div>
         <div className="text-right shrink-0 hidden sm:block">
