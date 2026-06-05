@@ -44,6 +44,8 @@ import {
   loadCachedSummary,
   saveCachedSummary,
   type IdeaTier,
+  tierSavings,
+  TEAM_AI_LAUNCH_PRICE_EUR,
 } from "@/lib/idea-deterministic";
 
 export function IdeaAnalysisDialog({
@@ -103,6 +105,7 @@ export function IdeaAnalysisDialog({
 
   const stablePotential = useMemo(() => tierPotential(tier), [tier]);
   const stableCost = useMemo(() => tierCost(tier), [tier]);
+  const stableSavings = useMemo(() => tierSavings(tier), [tier]);
   const stableHours = useMemo(() => tierHours(tier), [tier]);
   const stableDifficulty = useMemo(() => tierDifficultyLabel(tier), [tier]);
   const stableDifficultyReason = useMemo(() => tierDifficultyReason(tier), [tier]);
@@ -227,17 +230,43 @@ export function IdeaAnalysisDialog({
                   </div>
                 </Section>
 
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <MiniStat
+                <div className="grid md:grid-cols-3 gap-3">
+                  <ImpactStat
                     icon={TrendingUp}
-                    label="Potenziale economico stimato"
+                    label="Quanto potrebbe fruttare"
                     value={stablePotential.amount}
+                    description="Se trasformata in una prima versione funzionante e proposta al pubblico giusto, questa app potrebbe generare entrate ricorrenti."
+                    microcopy="Stima indicativa, non garantita, basata su una prima ipotesi di mercato."
+                    tone="potential"
                   />
-                  <MiniStat
+                  <ImpactStat
                     icon={Euro}
-                    label="Costo stimato senza Agenti AI"
+                    label="Quanto avresti potuto spendere"
                     value={stableCost.amount}
+                    description="Per far progettare e sviluppare questa prima versione da freelance, agenzia o sviluppatori esterni, il costo avrebbe potuto arrivare a questa cifra."
+                    tone="cost"
                   />
+                  <ImpactStat
+                    icon={Sparkles}
+                    label="Risparmio stimato con il Team AI"
+                    value={stableSavings.amount}
+                    description={`Con IdeaPilot AI non parti da preventivi costosi: inizi subito con una guida operativa, agenti specializzati, roadmap e prompt pronti da usare. Calcolo: ${stableCost.amount.replace("Fino a ", "")} − ${TEAM_AI_LAUNCH_PRICE_EUR}€ prezzo lancio.`}
+                    tone="savings"
+                    highlight
+                  />
+                </div>
+
+                <div
+                  className="rounded-2xl border border-primary/40 px-4 sm:px-5 py-4 text-sm leading-relaxed text-foreground/90"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+                  }}
+                >
+                  Prima di spendere migliaia di euro per sviluppare tutto da zero, puoi
+                  validare e costruire la prima versione guidata con il tuo Team AI.
+                  Questa non è solo una stima: è il confronto tra lasciare l'idea ferma
+                  e iniziare oggi a trasformarla in un progetto reale.
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-3">
@@ -363,13 +392,23 @@ export function IdeaAnalysisDialog({
                   : "Attiva il tuo Team AI per costruire la prima versione guidata."}
               </div>
               {isAuthed ? (
-                <Button variant="hero" size="lg" onClick={generateProjectFromIdea}>
-                  Genera questo progetto <ArrowRight className="size-4" />
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                  <Button variant="hero" size="lg" onClick={generateProjectFromIdea}>
+                    Genera questo progetto <ArrowRight className="size-4" />
+                  </Button>
+                  <span className="text-[11px] text-muted-foreground">
+                    Trasforma questa analisi in un progetto operativo nella tua dashboard.
+                  </span>
+                </div>
               ) : (
-                <Button variant="hero" size="lg" onClick={goToRoadmap}>
-                  Attiva il Team AI - 29€ <ArrowRight className="size-4" />
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                  <Button variant="hero" size="lg" onClick={goToRoadmap}>
+                    Attiva il Team AI a 29€ <ArrowRight className="size-4" />
+                  </Button>
+                  <span className="text-[11px] text-muted-foreground">
+                    Prezzo lancio una tantum. Nessun abbonamento automatico.
+                  </span>
+                </div>
               )}
             </div>
           )}
