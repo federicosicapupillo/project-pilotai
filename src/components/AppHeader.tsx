@@ -141,10 +141,9 @@ export function AppHeader() {
               )}
               <div className="flex items-center gap-2 px-2 py-1 rounded-full border border-border/50 bg-secondary/40 max-w-[220px]">
                 <UserCircle2 className="size-4 text-primary shrink-0" aria-label="Account" />
-                <span className="text-xs text-foreground/90 truncate">
+                <span className="text-xs text-foreground/90 truncate" title={displayName}>
                   <span className="hidden sm:inline">{displayName}</span>
-                  <span className="hidden xs:inline sm:hidden">{firstName}</span>
-                  <span className="xs:hidden">{initials}</span>
+                  <span className="sm:hidden">{firstName}</span>
                 </span>
               </div>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
