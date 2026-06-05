@@ -1,0 +1,18 @@
+# IdeaPilot AI
+
+> IdeaPilot AI è il metodo guidato per imprenditori e creator senza competenze tecniche: trasforma un'idea in un progetto digitale con scheda strutturata, squadra di agenti AI consigliati, prompt operativi pronti all'uso e una roadmap passo passo.
+
+IdeaPilot AI accompagna l'utente dalla descrizione dell'idea fino alla prima versione (MVP) della propria app, usando un team di agenti AI coordinati da un Project Manager AI. Il sito presenta il metodo, la libreria di agenti, lo stack di strumenti consigliati e il pacchetto operativo per attivare il Team AI.
+
+## Pages
+
+- [Home](/): panoramica del prodotto, come funziona, per chi è.
+- [Metodo](/method): gli 8 step del metodo IDEA → AGENTI → APP.
+- [Agenti](/agents): libreria degli agenti AI consigliati con ruolo e compiti.
+- [Strumenti](/tools): tool stack no-code e AI consigliato per costruire la prima versione.
+- [Prezzi](/prezzi): pacchetto Team AI Operativo a 29€ con cosa è incluso.
+
+## Optional
+
+- [Analizza la tua idea](/analizza-idea): form pubblico per ricevere una prima analisi della tua idea.
+- [Riepilogo idea](/riepilogo-idea): riepilogo strutturato dell'idea analizzata.

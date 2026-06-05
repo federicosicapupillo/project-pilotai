@@ -12,10 +12,14 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "IdeaPilot AI — Dalla tua idea alla tua prima app" },
-      { name: "description", content: "Il metodo per imprenditori e creator senza competenze tecniche: scheda progetto, agenti AI, prompt operativi, roadmap." },
-      { property: "og:title", content: "IdeaPilot AI" },
-      { property: "og:description", content: "Diventa il regista di una squadra di agenti AI e porta la tua idea online." },
+      { title: "IdeaPilot AI — Trasforma la tua idea in app con agenti AI" },
+      { name: "description", content: "Il metodo guidato per imprenditori e creator senza competenze tecniche: descrivi l'idea, ricevi una scheda progetto chiara, un team di agenti AI con prompt operativi pronti e una roadmap passo passo per costruire la prima versione." },
+      { property: "og:title", content: "IdeaPilot AI — Trasforma la tua idea in app con agenti AI" },
+      { property: "og:description", content: "Descrivi l'idea, ottieni scheda progetto, agenti AI consigliati, prompt pronti e roadmap operativa per arrivare alla prima versione della tua app." },
+      { property: "og:url", content: "https://ideapilots.app/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://ideapilots.app/" },
     ],
   }),
   component: Index,

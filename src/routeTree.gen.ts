@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RiepilogoIdeaRouteImport } from './routes/riepilogo-idea'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrezziRouteImport } from './routes/prezzi'
@@ -38,6 +39,11 @@ import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_aut
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
   path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RiepilogoIdeaRoute = RiepilogoIdeaRouteImport.update({
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tools': typeof ToolsRoute
   '/agente-ai': typeof AuthenticatedAgenteAiRoute
   '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tools': typeof ToolsRoute
   '/agente-ai': typeof AuthenticatedAgenteAiRoute
   '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/prezzi': typeof PrezziRoute
   '/pricing': typeof PricingRoute
   '/riepilogo-idea': typeof RiepilogoIdeaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tools': typeof ToolsRoute
   '/_authenticated/agente-ai': typeof AuthenticatedAgenteAiRoute
   '/_authenticated/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
+    | '/sitemap.xml'
     | '/tools'
     | '/agente-ai'
     | '/checkout-agente'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
+    | '/sitemap.xml'
     | '/tools'
     | '/agente-ai'
     | '/checkout-agente'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/prezzi'
     | '/pricing'
     | '/riepilogo-idea'
+    | '/sitemap.xml'
     | '/tools'
     | '/_authenticated/agente-ai'
     | '/_authenticated/checkout-agente'
@@ -342,6 +354,7 @@ export interface RootRouteChildren {
   PrezziRoute: typeof PrezziRoute
   PricingRoute: typeof PricingRoute
   RiepilogoIdeaRoute: typeof RiepilogoIdeaRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ToolsRoute: typeof ToolsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -353,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/tools'
       fullPath: '/tools'
       preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/riepilogo-idea': {
@@ -570,6 +590,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrezziRoute: PrezziRoute,
   PricingRoute: PricingRoute,
   RiepilogoIdeaRoute: RiepilogoIdeaRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ToolsRoute: ToolsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }

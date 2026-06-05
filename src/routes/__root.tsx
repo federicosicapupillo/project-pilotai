@@ -109,6 +109,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "IdeaPilot AI",
+          url: "https://ideapilots.app",
+          logo: "https://ideapilots.app/favicon.ico",
+          description:
+            "IdeaPilot AI è il metodo guidato per imprenditori e creator senza competenze tecniche: trasforma un'idea in app con scheda progetto, agenti AI, prompt operativi e roadmap.",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "IdeaPilot AI",
+          url: "https://ideapilots.app",
+          inLanguage: "it-IT",
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
