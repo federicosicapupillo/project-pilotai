@@ -613,3 +613,63 @@ function MessageBubble({ role, content }: { role: "user" | "assistant"; content:
     </div>
   );
 }
+
+type OperationalPrompt = {
+  id: string;
+  title: string;
+  agent_name: string;
+  recommended_tool: string;
+  instructions: string;
+  prompt_text: string;
+  step_title: string;
+  created_at: string;
+  copied: boolean;
+};
+
+function OperationalPromptCard({
+  prompt,
+  onCopied,
+}: {
+  prompt: OperationalPrompt;
+  onCopied: (id: string) => void;
+}) {
+  const [justCopied, setJustCopied] = useState(false);
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(prompt.prompt_text);
+      setJustCopied(true);
+      onCopied(prompt.id);
+      setTimeout(() => setJustCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }
+  return (
+    <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="font-display font-semibold">{prompt.title}</h3>
+          <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
+            <span>Generato da: <span className="text-foreground/90">{prompt.agent_name}</span></span>
+            <span>Step: <span className="text-foreground/90">{prompt.step_title}</span></span>
+            <span>Da usare su: <span className="text-foreground/90">{prompt.recommended_tool}</span></span>
+          </div>
+        </div>
+        {prompt.copied && (
+          <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">
+            Copiato
+          </span>
+        )}
+      </div>
+      <p className="text-xs text-muted-foreground mt-3">{prompt.instructions}</p>
+      <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-relaxed bg-background/60 border border-border/50 rounded-lg p-3 text-foreground/90">
+        {prompt.prompt_text}
+      </pre>
+      <div className="mt-3 flex justify-end">
+        <Button type="button" variant="outline" size="sm" onClick={handleCopy}>
+          <Copy className="size-3.5" /> {justCopied ? "Copiato!" : "Copia prompt"}
+        </Button>
+      </div>
+    </div>
+  );
+}
