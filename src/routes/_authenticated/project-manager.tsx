@@ -19,6 +19,7 @@ import { writeCompletedSteps } from "@/lib/roadmap-progress";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { ToolIcon } from "@/components/ToolIcon";
 import { resolveAgentIdentity } from "@/lib/agent-identity";
+import { TeamAtWork } from "@/components/TeamAtWork";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
   head: () => ({ meta: [{ title: "Il tuo AI Project Manager" }] }),
@@ -719,11 +720,19 @@ ${text}`;
                   )}
                 </div>
               )}
-            {mutation.isPending && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="size-3.5 animate-spin text-primary" />
-                Sto coordinando il team…
-              </div>
+            {(mutation.isPending || opGenMutation.isPending) && (
+              <TeamAtWork
+                stepTitle={currentStep.title}
+                mode={
+                  opGenMutation.isPending
+                    ? "generating-prompt"
+                    : pendingValidation
+                      ? "validating"
+                      : reviewMode === "schema-review"
+                        ? "schema"
+                        : "thinking"
+                }
+              />
             )}
             {mutation.isError && (
               <p className="text-sm text-destructive">
