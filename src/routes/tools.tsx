@@ -173,6 +173,7 @@ function ToolsPage() {
         </div>
       </div>
 
+      {hasAccess ? (
       <div className="mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/60 text-xs text-muted-foreground mb-3">
           <Wrench className="size-3.5 text-primary" /> Dietro le quinte del team
@@ -182,10 +183,44 @@ function ToolsPage() {
           Ogni agente del tuo team lavora con strumenti specifici. Qui sotto trovi tutti gli strumenti usati: non devi capirli tutti, ci pensa il tuo agente AI a guidarti su quale serve e quando.
         </p>
       </div>
+      ) : (
+        <div
+          className="relative mb-12 rounded-2xl p-8 sm:p-10 overflow-hidden border border-primary/30 text-center"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 12%, transparent), color-mix(in oklab, var(--accent) 8%, transparent))",
+          }}
+        >
+          <div className="absolute -top-16 -right-10 size-40 rounded-full bg-primary/20 blur-3xl pointer-events-none" aria-hidden />
+          <div className="absolute -bottom-16 -left-10 size-40 rounded-full bg-accent/15 blur-3xl pointer-events-none" aria-hidden />
+          <div className="relative">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background/40 border border-primary/40 text-[11px] uppercase tracking-wider text-primary/90 mb-4">
+              <Lock className="size-3" /> Strumenti operativi bloccati
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-semibold">
+              Gli strumenti del team si sbloccano dopo l'attivazione
+            </h2>
+            <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+              Adesso vedi <strong className="text-foreground/90">chi fa cosa</strong> nel tuo team AI.
+              Attiva il Team AI per scoprire anche <strong className="text-foreground/90">con quali strumenti</strong> lavora ogni agente e sbloccare il motore operativo reale dietro al team.
+            </p>
+            <div className="mt-6">
+              <Button variant="hero" size="lg" asChild>
+                <Link to="/prezzi">
+                  Attiva Team AI - 29€ <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Accesso immediato dopo l'attivazione. Tutti gli strumenti assegnati ad ogni agente diventano visibili.
+            </p>
+          </div>
+        </div>
+      )}
 
-      {isLoading && <div className="text-muted-foreground">Caricamento…</div>}
+      {hasAccess && isLoading && <div className="text-muted-foreground">Caricamento…</div>}
 
-      {orderedCats.map((cat) => (
+      {hasAccess && orderedCats.map((cat) => (
         <section key={cat} className="mb-10">
           <div className="flex items-baseline justify-between mb-3">
             <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{cat}</h2>
