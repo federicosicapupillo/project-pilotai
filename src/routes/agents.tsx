@@ -11,7 +11,18 @@ import { useAcademyAccess } from "@/components/AcademyLock";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 
 export const Route = createFileRoute("/agents")({
-  head: () => ({ meta: [{ title: "Libreria Agenti — IdeaPilot AI" }] }),
+  head: () => ({
+    meta: [
+      { title: "Libreria Agenti AI — IdeaPilot AI" },
+      { name: "description", content: "Esplora la squadra di agenti AI di IdeaPilot: Stratega, Validatore, UX, Builder, QA e altri. Ogni agente ha un ruolo chiaro, prompt operativi pronti e gli strumenti consigliati per la sua fase." },
+      { property: "og:title", content: "Libreria Agenti AI — IdeaPilot AI" },
+      { property: "og:description", content: "La squadra di agenti AI consigliati per portare la tua idea dalla scheda progetto alla prima versione dell'app, con prompt pronti per ogni fase." },
+      { property: "og:url", content: "https://ideapilots.app/agents" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://ideapilots.app/agents" },
+    ],
+  }),
   component: AgentsPage,
 });
 
