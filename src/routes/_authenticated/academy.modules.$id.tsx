@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Target, Sparkles, CheckCircle2, Circle, Bot, Wrench } from "lucide-react";
 import { ToolBadge } from "@/components/ToolBadge";
+import { AcademyLock, useAcademyAccess } from "@/components/AcademyLock";
 
 export const Route = createFileRoute("/_authenticated/academy/modules/$id")({
   head: () => ({ meta: [{ title: "Modulo — Academy" }] }),
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/academy/modules/$id")({
 
 function ModulePage() {
   const { id } = Route.useParams();
+  const { hasAccess, isLoading: accessLoading } = useAcademyAccess();
   const { data, isLoading } = useQuery({
     queryKey: ["module", id],
     queryFn: async () => {
@@ -22,10 +24,13 @@ function ModulePage() {
       if (e1) throw e1; if (e2) throw e2; if (e3) throw e3;
       return { mod, lessons: lessons ?? [], progress: progress ?? [] };
     },
+    enabled: hasAccess,
   });
 
   const completedSet = new Set((data?.progress ?? []).filter((p) => p.status === "completed").map((p) => p.lesson_id));
 
+  if (accessLoading) return <div className="max-w-5xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
+  if (!hasAccess) return <AcademyLock />;
   if (isLoading) return <div className="max-w-5xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
   if (!data?.mod) return <div className="max-w-5xl mx-auto px-6 py-10">Modulo non trovato.</div>;
 
