@@ -85,21 +85,21 @@ function DashboardPage() {
       </div>
 
       {hasAccess ? (
-        <Link to="/agente-ai" className="block mb-10">
+        <Link to="/project-manager" className="block mb-10">
           <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 hover:border-primary/70 transition-all">
             <div className="size-12 rounded-full gradient-bg grid place-items-center shrink-0">
               <Bot className="size-6 text-primary-foreground" />
             </div>
             <div className="flex-1">
               <h3 className="font-display font-semibold text-lg">
-                Inizia a far costruire l'app al tuo primo agente personale
+                Parla con il tuo AI Project Manager
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Apri il tuo agente AI e trasforma l'analisi nel piano operativo per la tua prima app.
+                Dagli una direttiva, chiedigli il prossimo passo o fagli coordinare il Team AI sul tuo progetto.
               </p>
             </div>
             <Button variant="hero" size="lg" className="shrink-0">
-              Vai all'agente <ArrowRight className="size-4" />
+              Parla con il mio Project Manager <ArrowRight className="size-4" />
             </Button>
           </div>
         </Link>
