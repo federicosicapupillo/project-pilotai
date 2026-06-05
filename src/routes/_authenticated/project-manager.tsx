@@ -598,13 +598,20 @@ REGOLE:
                 <Loader2 className="size-3.5 animate-spin text-primary" /> Sto generando il prompt operativo…
               </div>
             )}
-            {(opPrompts?.prompts ?? []).map((p) => (
-              <OperationalPromptCard
-                key={p.id}
-                prompt={p}
-                onCopied={(id) => copyMutation.mutate(id)}
-              />
-            ))}
+            {(() => {
+              // Mostra UN SOLO prompt: il più recente per lo step corrente del progetto attivo.
+              // Lo storico completo resta nel pannello "Storico Project Manager".
+              const all = opPrompts?.prompts ?? [];
+              const latest =
+                all.find((p) => p.step_title === currentStep.title) ?? all[0];
+              if (!latest) return null;
+              return (
+                <OperationalPromptCard
+                  prompt={latest}
+                  onCopied={(id) => copyMutation.mutate(id)}
+                />
+              );
+            })()}
           </div>
         </section>
         </div>
