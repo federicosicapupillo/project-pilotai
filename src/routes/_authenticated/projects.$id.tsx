@@ -148,42 +148,85 @@ function ProjectPage() {
         </TabsContent>
 
         <TabsContent value="stack" className="mt-6 space-y-6">
-          <OperativeCircuit />
-          <div className="glass-card rounded-2xl p-6">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Stack consigliato</div>
-                <h3 className="font-display font-semibold text-lg mt-0.5">Ordine d'uso per questo progetto</h3>
+          <OperativeCircuit hideTools={!hasAccess} />
+          {hasAccess ? (
+            <div className="glass-card rounded-2xl p-6">
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Stack consigliato</div>
+                  <h3 className="font-display font-semibold text-lg mt-0.5">Ordine d'uso per questo progetto</h3>
+                </div>
+                <Link to="/workbook/$projectId" params={{ projectId: id }} className="text-xs text-primary hover:underline inline-flex items-center gap-1">
+                  <BookOpen className="size-3.5" /> Apri workbook
+                </Link>
               </div>
-              <Link to="/workbook/$projectId" params={{ projectId: id }} className="text-xs text-primary hover:underline inline-flex items-center gap-1">
-                <BookOpen className="size-3.5" /> Apri workbook
-              </Link>
-            </div>
-            <ol className="space-y-3">
-              {stackOrder.map((s, i) => (
-                <li key={s.tool} className="flex items-start gap-3">
-                  <span className="size-6 rounded-full bg-secondary/70 text-xs grid place-items-center font-display font-semibold text-muted-foreground shrink-0">
-                    {i + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <ToolBadge name={s.tool} size="sm" />
-                      {s.required && (
-                        <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">Obbligatorio</span>
-                      )}
-                      {s.optional && (
-                        <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-secondary/60 text-muted-foreground border border-border/60">Opzionale</span>
-                      )}
+              <ol className="space-y-3">
+                {stackOrder.map((s, i) => (
+                  <li key={s.tool} className="flex items-start gap-3">
+                    <span className="size-6 rounded-full bg-secondary/70 text-xs grid place-items-center font-display font-semibold text-muted-foreground shrink-0">
+                      {i + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <ToolBadge name={s.tool} size="sm" />
+                        {s.required && (
+                          <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">Obbligatorio</span>
+                        )}
+                        {s.optional && (
+                          <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-secondary/60 text-muted-foreground border border-border/60">Opzionale</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">{s.why}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">{s.why}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <p className="text-xs text-muted-foreground mt-4">
-              Stripe e Twilio servono solo se la prima versione della tua app richiede pagamenti reali o telefonia/SMS. Non sono il primo passo.
-            </p>
-          </div>
+                  </li>
+                ))}
+              </ol>
+              <p className="text-xs text-muted-foreground mt-4">
+                Stripe e Twilio servono solo se la prima versione della tua app richiede pagamenti reali o telefonia/SMS. Non sono il primo passo.
+              </p>
+            </div>
+          ) : (
+            <div className="glass-card rounded-2xl p-6">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Metodo</div>
+              <h3 className="font-display font-semibold text-lg mt-0.5">Ordine operativo del progetto</h3>
+              <ol className="mt-4 space-y-3">
+                {[
+                  "Chiarire l'idea",
+                  "Analizzare il contesto",
+                  "Organizzare il progetto",
+                  "Costruire la prima versione",
+                  "Gestire dati e accessi",
+                  "Testare e migliorare",
+                  "Preparare il lancio",
+                ].map((step, i) => (
+                  <li key={step} className="flex items-start gap-3">
+                    <span className="size-6 rounded-full bg-secondary/70 text-xs grid place-items-center font-display font-semibold text-muted-foreground shrink-0">
+                      {i + 1}
+                    </span>
+                    <span className="text-sm text-foreground/90 mt-0.5">{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <p className="text-xs text-muted-foreground mt-4 italic">
+                Gli strumenti reali usati in ogni fase si sbloccano dopo l'attivazione del Team AI.
+              </p>
+            </div>
+          )}
+          {!hasAccess && (
+            <div className="rounded-2xl p-6 sm:p-8 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft text-center">
+              <h3 className="text-xl sm:text-2xl font-display font-semibold">
+                Vuoi sbloccare gli strumenti del tuo Team AI?
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto">
+                Ora vedi il metodo. Dopo l'attivazione vedrai anche gli strumenti reali, l'ordine operativo completo e come usarli nel tuo progetto.
+              </p>
+              <div className="mt-5 flex justify-center">
+                <Button size="lg" variant="hero" onClick={() => activate("project_stack_cta")}>
+                  <Lock className="size-4" /> Attiva il mio Team AI - 29€
+                </Button>
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="agents" className="mt-6">
