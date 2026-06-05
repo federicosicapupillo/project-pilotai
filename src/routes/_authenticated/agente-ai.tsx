@@ -66,7 +66,7 @@ function AgenteAIPage() {
         </p>
         <div className="mt-8">
           <Button variant="hero" size="lg" onClick={() => navigate({ to: "/checkout-agente" })}>
-            Attiva il mio agente AI - 29€ <ArrowRight className="size-4" />
+            Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
           </Button>
         </div>
       </main>
