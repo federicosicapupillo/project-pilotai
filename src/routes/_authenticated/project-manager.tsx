@@ -343,6 +343,26 @@ REGOLE:
               <div className="font-medium mt-1 truncate">{nextStep?.title ?? "—"}</div>
             </div>
           </div>
+          <div className="mt-5 pt-4 border-t border-border/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p className="text-xs text-muted-foreground">
+              Avanza lungo la roadmap (bloccata). Lo step corrente è{" "}
+              <span className="text-foreground/90 font-medium">{currentStep.title}</span>.
+            </p>
+            <Button
+              type="button"
+              variant="hero"
+              size="lg"
+              onClick={continueAppCreation}
+              disabled={mutation.isPending}
+              className="w-full sm:w-auto"
+            >
+              {mutation.isPending ? (
+                <><Loader2 className="size-4 animate-spin" /> Preparo lo schema…</>
+              ) : (
+                <><ArrowRight className="size-4" /> Continuiamo con la creazione dell'app</>
+              )}
+            </Button>
+          </div>
         </div>
       )}
 
