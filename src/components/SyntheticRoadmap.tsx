@@ -12,14 +12,14 @@ export type SyntheticStep = {
 };
 
 export const SYNTHETIC_STEPS: SyntheticStep[] = [
-  { n: 1, title: "Progetto creato", description: "La tua idea è stata trasformata in una scheda progetto iniziale.", status: "done" },
-  { n: 2, title: "Punti di forza individuati", description: "Il Team AI ha analizzato cosa rende interessante il progetto e dove può creare valore.", status: "done" },
-  { n: 3, title: "Prima versione definita", description: "Abbiamo ridotto l'idea alle funzioni essenziali per creare una prima versione funzionante.", status: "in_progress" },
-  { n: 4, title: "Struttura dell'app", description: "Definizione delle schermate principali, dei flussi utente e della logica generale.", status: "todo" },
-  { n: 5, title: "Dashboard e area progetto", description: "Creazione dell'area dove l'utente potrà vedere dati, stato, contenuti o funzioni principali.", status: "todo" },
-  { n: 6, title: "Backend e salvataggio dati", description: "Preparazione della parte tecnica per salvare informazioni, utenti, contenuti e impostazioni.", status: "todo" },
-  { n: 7, title: "Test e correzioni", description: "Controllo dei passaggi deboli, errori, funzioni mancanti e miglioramenti necessari.", status: "todo" },
-  { n: 8, title: "Lancio prima versione", description: "Preparazione della prima versione da mostrare, testare o presentare.", status: "todo" },
+  { n: 1, title: "Progetto definito", description: "La tua idea è stata trasformata in un progetto chiaro e pronto per partire.", status: "done" },
+  { n: 2, title: "Punti di forza e criticità", description: "Il Team AI sta analizzando cosa funziona, cosa migliorare e quali rischi evitare.", status: "in_progress" },
+  { n: 3, title: "MVP / prima versione", description: "Definiremo solo le funzioni essenziali per creare una prima versione semplice.", status: "todo" },
+  { n: 4, title: "Schermate principali", description: "Creeremo la struttura delle schermate principali dell'app.", status: "todo" },
+  { n: 5, title: "Dashboard e area utente", description: "Costruiremo l'area dove l'utente potrà vedere e gestire le informazioni.", status: "todo" },
+  { n: 6, title: "Backend e dati", description: "Organizzeremo salvataggi, login, database e dati del progetto.", status: "todo" },
+  { n: 7, title: "Test e correzioni", description: "Controlleremo errori, blocchi, flussi deboli e miglioramenti.", status: "todo" },
+  { n: 8, title: "Prima versione pronta", description: "Prepareremo la prima versione da testare, mostrare o migliorare.", status: "todo" },
 ];
 
 export function syntheticProgress() {
