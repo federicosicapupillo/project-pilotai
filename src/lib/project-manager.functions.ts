@@ -132,7 +132,7 @@ export const sendPmMessage = createServerFn({ method: "POST" })
         .select("name, role")
         .eq("project_id", data.projectId)
         .limit(20);
-      ctx.agents = agents ?? [];
+      ctx.agents = (agents ?? []).map((a) => ({ name: a.name, role: a.role ?? "" }));
     }
 
     // Load recent history (for memory)
