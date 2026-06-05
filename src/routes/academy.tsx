@@ -42,6 +42,11 @@ function AcademyPage() {
   });
   const nextLesson = orderedLessons.find((l) => !completedSet.has(l.id));
 
+  if (accessLoading) {
+    return <div className="max-w-7xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
+  }
+  if (!hasAccess) return <AcademyLock />;
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
