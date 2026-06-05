@@ -8,7 +8,7 @@ import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitB
 import {
   ArrowRight, Sparkles, Clock, Activity, Layers, Users, AlertCircle,
   Lightbulb, Wrench, Bot, ListChecks, Info, Loader2,
-  Monitor, Plug, Wand2, TrendingUp,
+  Monitor, Plug, Wand2, TrendingUp, Euro,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import {
@@ -241,6 +241,14 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
                 </p>
               </Section>
             </div>
+
+            {/* Costo stimato senza AccentiAI */}
+            <CostWithoutAccentiAI
+              idea={params.idea}
+              projectType={summary.project_type}
+              difficulty={summary.difficulty}
+              onActivate={goToRoadmap}
+            />
 
             {/* Potenziale massimo stimato */}
             {summary.max_revenue && (
