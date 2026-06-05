@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
-import { toast } from "sonner";
 import { trackEvent } from "@/lib/tracking";
 
 export const Route = createFileRoute("/_authenticated/roadmap-success")({
@@ -12,11 +11,8 @@ function RoadmapSuccessPage() {
   const navigate = useNavigate();
 
   const onUpsell = async () => {
-    await trackEvent("upsell_academy_click", { from: "roadmap-success" });
-    if (typeof window !== "undefined") localStorage.setItem("pending_plan", "academy");
-    toast.message("Pagamento in configurazione", {
-      description: "Il checkout dell'Academy sarà attivato a breve. Ti avviseremo via email.",
-    });
+    await trackEvent("upsell_team_ai_click", { from: "roadmap-success" });
+    if (typeof window !== "undefined") localStorage.setItem("pending_plan", "team_ai");
     navigate({ to: "/prezzi" });
   };
 
@@ -32,21 +28,21 @@ function RoadmapSuccessPage() {
             La tua roadmap è pronta. Vuoi essere <span className="gradient-text">guidato passo passo</span>?
           </h1>
           <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-            Ora sai cosa costruire. Con l'Academy completa ti accompagniamo lezione dopo lezione,
+            Ora sai cosa costruire. Con il Team AI attivo ti accompagniamo step dopo step,
             agente dopo agente, fino alla prima versione funzionante della tua app.
           </p>
 
           <div className="mt-8 glass-card rounded-2xl p-6 text-left max-w-xl mx-auto border border-accent/40">
             <div className="flex items-baseline justify-between">
-              <h3 className="font-display font-semibold text-xl">Academy Completa</h3>
-              <div className="font-display font-semibold text-2xl gradient-text">97€</div>
+              <h3 className="font-display font-semibold text-xl">Team AI Completo</h3>
+              <div className="font-display font-semibold text-2xl gradient-text">29€</div>
             </div>
             <ul className="mt-4 space-y-2 text-sm">
               {[
-                "12 moduli Academy, 60 lezioni operative",
-                "Libreria agenti AI e strumenti no-code",
-                "Prompt avanzati copiabili ed esercizi pratici",
-                "Workbook completo e checklist di avanzamento",
+                "8 agenti AI dedicati alla tua idea",
+                "Prompt operativi pronti all'uso",
+                "Roadmap di costruzione passo passo",
+                "Strumenti sbloccabili e Workbook completo",
               ].map((f) => (
                 <li key={f} className="flex items-start gap-2">
                   <Check className="size-4 text-primary mt-0.5 shrink-0" /> {f}
@@ -57,7 +53,7 @@ function RoadmapSuccessPage() {
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button variant="hero" size="xl" onClick={onUpsell}>
-              Sblocca l'Academy completa <ArrowRight className="size-4" />
+              Attiva il mio Team AI <ArrowRight className="size-4" />
             </Button>
             <Link to="/dashboard">
               <Button variant="glass" size="xl">Continua solo con la Roadmap</Button>

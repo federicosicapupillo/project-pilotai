@@ -44,7 +44,7 @@ Regole rigide:
 - Niente teoria, niente promesse magiche.
 - Ogni step è eseguibile dall'utente in autonomia, anche se non è tecnico.
 - Ogni step indica agente, tool e prompt già personalizzato sull'idea.
-- Distingui Academy (formazione) e costruzione concreta dell'app: questa è la roadmap di COSTRUZIONE.
+- Questa è la roadmap di COSTRUZIONE concreta dell'app, non un percorso formativo.
 - Italiano semplice, diretto, motivante.`;
 
 function buildUserPrompt(d: z.infer<typeof InputSchema>) {

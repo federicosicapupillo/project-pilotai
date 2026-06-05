@@ -107,7 +107,7 @@ function MyPathPage() {
                 ))}
               </div>
             </div>
-            <Link to="/academy/lessons/$id" params={{ id: next.id }}>
+            <Link to="/dashboard">
               <Button variant="hero"><Sparkles className="size-4" /> Continua</Button>
             </Link>
           </div>
@@ -134,8 +134,8 @@ function MyPathPage() {
           <p className="text-xs uppercase tracking-wider text-muted-foreground">Ultimo output salvato</p>
           <p className="font-medium mt-1">{lastLesson.title}</p>
           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{lastProgress?.notes}</p>
-          <Link to="/academy/lessons/$id" params={{ id: lastLesson.id }} className="text-xs text-primary hover:underline mt-2 inline-flex items-center gap-1">
-            Rivedi lezione <ArrowRight className="size-3" />
+          <Link to="/dashboard" className="text-xs text-primary hover:underline mt-2 inline-flex items-center gap-1">
+            Apri dashboard <ArrowRight className="size-3" />
           </Link>
         </div>
       )}
@@ -151,8 +151,7 @@ function MyPathPage() {
               return (
                 <Link
                   key={m.id}
-                  to="/academy/modules/$id"
-                  params={{ id: m.id }}
+                  to="/dashboard"
                   className="glass-card rounded-xl p-4 flex items-center gap-3 hover:border-primary/50 transition-all"
                 >
                   {mPct === 100 ? <CheckCircle2 className="size-5 text-primary" /> : <span className="size-5 grid place-items-center text-xs text-muted-foreground">{mPct}%</span>}
