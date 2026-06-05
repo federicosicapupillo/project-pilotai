@@ -29,8 +29,15 @@ export function writeCompletedSteps(projectId: string, list: string[]) {
 
 export function computeRoadmap(projectId: string | null | undefined) {
   const completed = readCompletedSteps(projectId);
-  const steps: RoadmapStep[] = SYNTHETIC_STEPS.map((s) =>
-    completed.includes(s.title)
+  // Normalizzazione: se uno step successivo è completato, tutti i precedenti
+  // devono risultare completati. Calcoliamo l'indice più alto fra gli step
+  // marcati come completati e lo usiamo come soglia.
+  const completedIdxs = SYNTHETIC_STEPS
+    .map((s, i) => (completed.includes(s.title) ? i : -1))
+    .filter((i) => i >= 0);
+  const maxCompletedIdx = completedIdxs.length > 0 ? Math.max(...completedIdxs) : -1;
+  const steps: RoadmapStep[] = SYNTHETIC_STEPS.map((s, i) =>
+    i <= maxCompletedIdx
       ? { ...s, status: "done" as const }
       : { ...s, status: "todo" as const },
   );
