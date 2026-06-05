@@ -118,7 +118,14 @@ function ProjectPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="scheda">
+      <Tabs
+        defaultValue="scheda"
+        onValueChange={(v) => {
+          if (v === "agents") {
+            navigate({ to: "/agents", search: { projectId: id } as never });
+          }
+        }}
+      >
         <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full">
           <TabsTrigger value="scheda"><ClipboardList className="size-4" /> Scheda</TabsTrigger>
           <TabsTrigger value="stack"><Layers className="size-4" /> Stack</TabsTrigger>
@@ -229,33 +236,6 @@ function ProjectPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="agents" className="mt-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            {agents?.map((a) => (
-              <div key={a.id} className="glass-card rounded-xl p-5">
-                <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-lg gradient-bg grid place-items-center glow-soft">
-                    <Sparkles className="size-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="font-display font-semibold">{a.name}</h3>
-                    <p className="text-xs text-muted-foreground">{a.role}</p>
-                  </div>
-                </div>
-                <dl className="mt-4 space-y-2 text-sm">
-                  <div><dt className="text-xs uppercase text-muted-foreground tracking-wider">Quando usarlo</dt><dd>{a.when_to_use}</dd></div>
-                  <div><dt className="text-xs uppercase text-muted-foreground tracking-wider">Output atteso</dt><dd>{a.expected_output}</dd></div>
-                </dl>
-                <div className="mt-4 rounded-lg border border-border/60 bg-background/60 p-3 font-mono text-xs whitespace-pre-wrap max-h-48 overflow-auto">
-                  {a.prompt_text}
-                </div>
-                <Button variant="glass" size="sm" className="mt-3 w-full" onClick={() => copy(a.prompt_text ?? "")}>
-                  <Copy className="size-4" /> Copia prompt
-                </Button>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
 
         <TabsContent value="prompts" className="mt-6 space-y-4">
           {prompts?.map((p) => (
