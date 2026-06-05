@@ -302,6 +302,9 @@ function normalizeIdeas(value: unknown, data: z.infer<typeof InputSchema>) {
 export const generateAppIdeas = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
+    const { enforceIpRateLimit } = await import("./rate-limit.server");
+    await enforceIpRateLimit({ endpoint: "generateAppIdeas", maxRequests: 5, windowSeconds: 3600 });
+
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("LOVABLE_API_KEY mancante");
 
