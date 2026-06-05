@@ -69,7 +69,6 @@ export function AgentPromptsSection({ projectId }: { projectId?: string | null }
   });
 
   const [viewing, setViewing] = useState<OpPromptFull | null>(null);
-  const [viewingLoading, setViewingLoading] = useState(false);
   const [openingId, setOpeningId] = useState<string | null>(null);
   const [copyingId, setCopyingId] = useState<string | null>(null);
 
@@ -87,9 +86,7 @@ export function AgentPromptsSection({ projectId }: { projectId?: string | null }
 
   async function openPrompt(p: OpPromptMeta) {
     setOpeningId(p.id);
-    setViewingLoading(true);
     const full = await loadFull(p.id);
-    setViewingLoading(false);
     setOpeningId(null);
     if (full) setViewing(full);
     else toast.error("Impossibile aprire il prompt");
