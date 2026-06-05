@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-react";
 import { computeProgress, currentPhase, nextActionableStep, type RoadmapItem } from "@/lib/app-roadmap";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
@@ -20,6 +21,7 @@ function statusBadge(status: string) {
 }
 
 function DashboardPage() {
+  const { activate, hasAccess } = useActivateTeam();
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
@@ -53,6 +55,7 @@ function DashboardPage() {
 
   const { data: recentPrompts } = useQuery({
     queryKey: ["recent-prompts"],
+    enabled: hasAccess,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("prompts")
@@ -81,24 +84,43 @@ function DashboardPage() {
         </Link>
       </div>
 
-      <Link to="/agente-ai" className="block mb-10">
-        <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 hover:border-primary/70 transition-all">
+      {hasAccess ? (
+        <Link to="/agente-ai" className="block mb-10">
+          <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 hover:border-primary/70 transition-all">
+            <div className="size-12 rounded-full gradient-bg grid place-items-center shrink-0">
+              <Bot className="size-6 text-primary-foreground" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-display font-semibold text-lg">
+                Inizia a far costruire l'app al tuo primo agente personale
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Apri il tuo agente AI e trasforma l'analisi nel piano operativo per la tua prima app.
+              </p>
+            </div>
+            <Button variant="hero" size="lg" className="shrink-0">
+              Vai all'agente <ArrowRight className="size-4" />
+            </Button>
+          </div>
+        </Link>
+      ) : (
+        <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 mb-10">
           <div className="size-12 rounded-full gradient-bg grid place-items-center shrink-0">
             <Bot className="size-6 text-primary-foreground" />
           </div>
           <div className="flex-1">
             <h3 className="font-display font-semibold text-lg">
-              Inizia a far costruire l'app al tuo primo agente personale
+              Inizia a far costruire l'app al tuo Team AI
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Apri il tuo agente AI e trasforma l'analisi nel piano operativo per la tua prima app.
+              Il progetto è pronto. Attiva il Team AI per sbloccare prompt, roadmap, strumenti e istruzioni operative.
             </p>
           </div>
-          <Button variant="hero" size="lg" className="shrink-0">
-            Vai all'agente <ArrowRight className="size-4" />
+          <Button variant="hero" size="lg" className="shrink-0" onClick={() => activate("dashboard_banner")}>
+            <Lock className="size-4" /> Attiva il mio Team AI - 29€
           </Button>
         </div>
-      </Link>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         <section className="lg:col-span-2 space-y-4">
@@ -180,40 +202,64 @@ function DashboardPage() {
         </section>
 
         <aside className="space-y-4">
-          <h2 className="text-sm uppercase tracking-wider text-muted-foreground font-semibold">
-            Ultimi prompt generati
-          </h2>
-          <div className="glass-card rounded-xl p-4">
-            {!recentPrompts || recentPrompts.length === 0 ? (
-              <p className="text-sm text-muted-foreground p-4 text-center">
-                Nessun prompt ancora. Crea un progetto per generare la prima squadra di prompt.
-              </p>
-            ) : (
-              <ul className="divide-y divide-border/50">
-                {recentPrompts.map((pr) => (
-                  <li key={pr.id} className="py-3 flex items-start gap-3">
-                    <div className="size-8 rounded-md bg-secondary grid place-items-center shrink-0">
-                      <Activity className="size-4 text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium line-clamp-1">{pr.title}</p>
-                      <p className="text-xs text-muted-foreground">{pr.category}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {hasAccess ? (
+            <>
+              <h2 className="text-sm uppercase tracking-wider text-muted-foreground font-semibold">
+                Ultimi prompt generati
+              </h2>
+              <div className="glass-card rounded-xl p-4">
+                {!recentPrompts || recentPrompts.length === 0 ? (
+                  <p className="text-sm text-muted-foreground p-4 text-center">
+                    Nessun prompt ancora. Crea un progetto per generare la prima squadra di prompt.
+                  </p>
+                ) : (
+                  <ul className="divide-y divide-border/50">
+                    {recentPrompts.map((pr) => (
+                      <li key={pr.id} className="py-3 flex items-start gap-3">
+                        <div className="size-8 rounded-md bg-secondary grid place-items-center shrink-0">
+                          <Activity className="size-4 text-primary" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium line-clamp-1">{pr.title}</p>
+                          <p className="text-xs text-muted-foreground">{pr.category}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
-          <div className="glass-card rounded-xl p-5">
-            <h3 className="font-display font-semibold">Roadmap sintetica</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Ogni progetto ha una roadmap di 10 step. Apri un progetto per vedere lo stato.
-            </p>
-            <Link to="/method" className="inline-flex items-center gap-1 text-sm text-primary mt-3 hover:underline">
-              Scopri il metodo <ArrowRight className="size-3" />
-            </Link>
-          </div>
+              <div className="glass-card rounded-xl p-5">
+                <h3 className="font-display font-semibold">Roadmap sintetica</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Ogni progetto ha una roadmap di 10 step. Apri un progetto per vedere lo stato.
+                </p>
+                <Link to="/method" className="inline-flex items-center gap-1 text-sm text-primary mt-3 hover:underline">
+                  Scopri il metodo <ArrowRight className="size-3" />
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-2xl p-6 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft">
+              <h3 className="font-display font-semibold text-lg">
+                Prompt e roadmap si sbloccano dopo l'attivazione
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Il tuo progetto è stato creato. Per vedere prompt operativi, roadmap completa, strumenti e istruzioni devi attivare il Team AI.
+              </p>
+              <Button
+                variant="hero"
+                size="lg"
+                className="mt-4 w-full"
+                onClick={() => activate("dashboard_side_cta")}
+              >
+                <Lock className="size-4" /> Attiva il mio Team AI - 29€
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                Accesso immediato dopo il pagamento.
+              </p>
+            </div>
+          )}
         </aside>
       </div>
     </div>
