@@ -13,6 +13,7 @@ import {
 import { ToolBadge } from "@/components/ToolBadge";
 import { ActiveProjectBox } from "@/components/ActiveProjectBox";
 import { useActiveProject, personalizePrompt } from "@/hooks/use-active-project";
+import { AcademyLock, useAcademyAccess } from "@/components/AcademyLock";
 
 export const Route = createFileRoute("/_authenticated/academy/lessons/$id")({
   head: () => ({ meta: [{ title: "Lezione — Academy" }] }),
@@ -196,6 +197,7 @@ async function syncWorkbooksOnCompletion({ userId, completedLesson, currentModul
 function LessonPage() {
   const { id } = Route.useParams();
   const { user } = useAuth();
+  const { hasAccess, isLoading: accessLoading } = useAcademyAccess();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { active } = useActiveProject();
@@ -268,6 +270,8 @@ function LessonPage() {
   });
 
   if (isLoading) return <div className="max-w-4xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
+  if (accessLoading) return <div className="max-w-4xl mx-auto px-6 py-10 text-muted-foreground">Caricamento…</div>;
+  if (!hasAccess) return <AcademyLock />;
   if (!data?.lesson) return <div className="max-w-4xl mx-auto px-6 py-10">Lezione non trovata.</div>;
 
   const { lesson, mod, siblings } = data;
