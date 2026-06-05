@@ -16,6 +16,18 @@ import {
   type Estimate, type IdeaParams,
 } from "@/lib/idea-estimate";
 import { generateIdeaSummary } from "@/lib/idea-summary.functions";
+import {
+  hashIdea,
+  classifyIdeaTier,
+  tierPotential,
+  tierCost,
+  tierHours,
+  tierDifficultyLabel,
+  tierDifficultyReason,
+  loadCachedSummary,
+  saveCachedSummary,
+  type IdeaTier,
+} from "@/lib/idea-deterministic";
 
 export const Route = createFileRoute("/riepilogo-idea")({
   head: () => ({
@@ -80,19 +92,45 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
   const navigate = useNavigate();
   const generate = useServerFn(generateIdeaSummary);
 
+  // Deterministic per-idea key + tier (stable across refresh / re-submit of same idea).
+  const ideaHash = useMemo(() => hashIdea(params.idea), [params.idea]);
+  const tier: IdeaTier = useMemo(
+    () => classifyIdeaTier(params.idea, params.target),
+    [params.idea, params.target],
+  );
+
+  // Cached summary for repeat visits (no AI re-call).
+  type SummaryType = Awaited<ReturnType<typeof generateIdeaSummary>>;
+  const cached = useMemo<SummaryType | null>(
+    () => loadCachedSummary<SummaryType>(ideaHash),
+    [ideaHash],
+  );
+
   const { data: summary, isLoading, isError, refetch, isFetching } = useQuery({
-    queryKey: ["idea-summary", params.idea, params.target, result.projectType],
-    queryFn: () =>
-      generate({
+    queryKey: ["idea-summary", ideaHash],
+    queryFn: async () => {
+      const res = await generate({
         data: {
           idea: params.idea,
           target: params.target,
           projectType: result.projectType,
         },
-      }),
-    staleTime: 1000 * 60 * 30,
+      });
+      saveCachedSummary(ideaHash, res);
+      return res;
+    },
+    initialData: cached ?? undefined,
+    staleTime: Infinity,
+    gcTime: Infinity,
     retry: 1,
   });
+
+  // Deterministic, idea-stable values (override any AI variance).
+  const stablePotential = useMemo(() => tierPotential(tier), [tier]);
+  const stableCost = useMemo(() => tierCost(tier), [tier]);
+  const stableHours = useMemo(() => tierHours(tier), [tier]);
+  const stableDifficulty = useMemo(() => tierDifficultyLabel(tier), [tier]);
+  const stableDifficultyReason = useMemo(() => tierDifficultyReason(tier), [tier]);
 
   const goToRoadmap = () => {
     if (typeof window !== "undefined") {
@@ -156,10 +194,8 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
 
             {/* 2 — Valore stimato della tua idea */}
             <ValueEstimateSection
-              idea={params.idea}
-              target={params.target}
-              projectType={summary.project_type}
-              difficulty={summary.difficulty}
+              potentialAmount={stablePotential.amount}
+              costAmount={stableCost.amount}
               onActivate={goToRoadmap}
             />
 
@@ -236,14 +272,14 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
             {/* 9 + 10 — Difficoltà + Tempo */}
             <div className="grid sm:grid-cols-2 gap-4">
               <Section icon={Activity} title="Complessità progetto">
-                <DifficultyBadge level={summary.difficulty} />
+                <DifficultyBadge level={stableDifficulty} />
                 <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-                  {summary.difficulty_reason}
+                  {stableDifficultyReason}
                 </p>
               </Section>
               <Section icon={Clock} title="Tempo stimato">
                 <div className="font-display font-semibold text-2xl gradient-text">
-                  {summary.estimated_hours}
+                  {stableHours}
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   Tempo indicativo per la <strong>prima versione funzionante</strong>, non per l'app completa.
