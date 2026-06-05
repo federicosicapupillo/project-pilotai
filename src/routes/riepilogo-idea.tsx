@@ -635,11 +635,19 @@ function ValueEstimateSection({
           </div>
 
           <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
-            <Button variant="hero" size="lg" onClick={onActivate}>
-              Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-            </Button>
+            {isAuthed ? (
+              <Button variant="hero" size="lg" onClick={onGenerateProject}>
+                Genera questo progetto <ArrowRight className="size-4" />
+              </Button>
+            ) : (
+              <Button variant="hero" size="lg" onClick={onActivate}>
+                Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+              </Button>
+            )}
             <p className="text-xs text-muted-foreground">
-              Accesso immediato. Non ottieni l'app completa finita: attivi il tuo Team AI per partire dall'idea e costruire la prima versione.
+              {isAuthed
+                ? "Sei già registrato: puoi trasformare subito questa valutazione in un nuovo progetto nel tuo account."
+                : "Accesso immediato. Non ottieni l'app completa finita: attivi il tuo Team AI per partire dall'idea e costruire la prima versione."}
             </p>
           </div>
 
