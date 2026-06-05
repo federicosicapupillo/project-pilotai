@@ -327,12 +327,7 @@ REGOLE:
       ? completedSteps
       : [...completedSteps, closed];
     setCompletedSteps(newCompleted);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(
-        `pm_completed_steps:${activeProject.id}`,
-        JSON.stringify(newCompleted),
-      );
-    }
+    writeCompletedSteps(activeProject.id, newCompleted);
     setReviewMode("schema-review");
     if (!next) {
       mutation.mutate({
