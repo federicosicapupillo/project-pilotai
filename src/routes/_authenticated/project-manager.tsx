@@ -131,6 +131,17 @@ function ProjectManagerPage() {
     mutation.mutate(text);
   }
 
+  function continueAppCreation() {
+    if (mutation.isPending) return;
+    if (!activeProject) {
+      alert("Prima di continuare devi definire il progetto.");
+      return;
+    }
+    const step = nextStep?.title ?? currentStep.title;
+    const command = `Proseguiamo con la creazione dell'app. Il progetto è già stato definito. Avvia ora lo step previsto dalla roadmap: ${step}. Lavora solo su questo step, secondo la roadmap attiva (bloccata). Analizza punti di forza, criticità, rischi principali, aspetti da semplificare, cosa tenere nella prima versione e cosa rimandare al Backlog migliorie future. Proponi l'avanzamento allo step successivo solo dopo aver completato questo.`;
+    mutation.mutate(command);
+  }
+
   const messages = [INTRO, ...(history?.messages ?? [])];
 
   useEffect(() => {
