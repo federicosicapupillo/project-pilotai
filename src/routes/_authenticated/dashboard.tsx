@@ -332,7 +332,7 @@ function ProjectCard({
           </span>
         </div>
       </div>
-      <h3 className="font-display font-semibold mt-4 line-clamp-1">{p.title}</h3>
+      <h3 className="font-display font-semibold mt-4 line-clamp-1" title={p.title}>{shortProjectName(p.title)}</h3>
       <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
         {p.idea_description ?? "—"}
       </p>
@@ -371,7 +371,7 @@ function ProjectCard({
             to="/projects/$id"
             params={{ id: p.id }}
             onClick={(e) => e.stopPropagation()}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-border/70 bg-secondary/60 hover:bg-secondary text-foreground font-medium transition-colors"
           >
             Dettagli
           </Link>
