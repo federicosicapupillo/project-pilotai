@@ -87,8 +87,39 @@ Genera un riepilogo strutturato, coerente, specifico per QUESTA idea.`;
     });
 
     const parsed = extractJSON(text);
-    return OutputSchema.parse(parsed);
+    const summary = OutputSchema.parse(parsed);
+    summary.max_revenue = computeMaxRevenue(data.idea, data.target, summary.project_type);
+    return summary;
   });
+
+// Deterministic potenziale massimo: same idea → same value, sempre.
+// Leggermente più alto del realistico (richiesta utente).
+function computeMaxRevenue(idea: string, target: string, projectType: string): string {
+  const seed = `${idea.trim().toLowerCase()}|${(target ?? "").trim().toLowerCase()}`;
+  const h = hash32(seed);
+
+  const type = (projectType || "").toLowerCase();
+  // Fasce (min, max) leggermente più ottimistiche del reale
+  let min = 2000, max = 5000;
+  if (/marketplace/.test(type)) { min = 7000; max = 12000; }
+  else if (/gestional|automazion|b2b|saas/.test(type)) { min = 5000; max = 9000; }
+  else if (/tool|ai|mobile|web app/.test(type)) { min = 3000; max = 6500; }
+  else if (/landing|utility|utilit/.test(type)) { min = 1500; max = 3500; }
+
+  // Step di 500 per valori "puliti"
+  const steps = Math.floor((max - min) / 500) + 1;
+  const value = min + (h % steps) * 500;
+  return `Fino a ${value.toLocaleString("it-IT")}€/mese`;
+}
+
+function hash32(s: string): number {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
 
 function extractJSON(raw: string): unknown {
   let cleaned = raw
