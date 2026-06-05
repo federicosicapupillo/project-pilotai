@@ -126,9 +126,25 @@ function PrezziPage() {
                 <p className="text-xs text-muted-foreground mt-3 max-w-md mx-auto">
                   Accesso iniziale al Team AI operativo per trasformare la tua idea nella prima versione dell'app.
                 </p>
-                <p className="text-xs text-primary/90 mt-3 max-w-md mx-auto">
-                  Offerta early access valida per i primi utenti. Il prezzo potrà aumentare dopo la fase di lancio.
-                </p>
+                <div className="relative mt-5 max-w-md mx-auto">
+                  <div aria-hidden className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary/60 via-fuchsia-500/50 to-primary/60 blur-md opacity-70" />
+                  <div className="relative rounded-2xl border-2 border-primary/70 bg-background/80 backdrop-blur px-4 py-3.5 flex items-start gap-3 text-left glow-soft">
+                    <div className="shrink-0 size-9 rounded-xl gradient-bg grid place-items-center glow-soft">
+                      <Zap className="size-4 text-primary-foreground" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/15 border border-primary/50 text-[10px] font-bold uppercase tracking-wider text-primary">
+                        Early access
+                      </div>
+                      <div className="mt-1.5 text-sm sm:text-[15px] font-semibold text-foreground leading-snug">
+                        <span className="gradient-text">Prezzo lancio</span> riservato ai <span className="text-primary">primi utenti</span>
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground leading-snug">
+                        Attiva ora il Team AI a 29€. Dopo questa fase iniziale, il prezzo <span className="text-foreground font-semibold">potrà aumentare</span>.
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <p className="text-sm text-muted-foreground mt-7 max-w-2xl mx-auto text-center">
