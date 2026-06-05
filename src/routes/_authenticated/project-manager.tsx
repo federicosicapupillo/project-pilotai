@@ -131,6 +131,17 @@ function ProjectManagerPage() {
     mutation.mutate(text);
   }
 
+  function continueAppCreation() {
+    if (mutation.isPending) return;
+    if (!activeProject) {
+      alert("Prima di continuare devi definire il progetto.");
+      return;
+    }
+    const step = nextStep?.title ?? currentStep.title;
+    const command = `Proseguiamo con la creazione dell'app. Il progetto è già stato definito. Avvia ora lo step previsto dalla roadmap: ${step}. Lavora solo su questo step, secondo la roadmap attiva (bloccata). Analizza punti di forza, criticità, rischi principali, aspetti da semplificare, cosa tenere nella prima versione e cosa rimandare al Backlog migliorie future. Proponi l'avanzamento allo step successivo solo dopo aver completato questo.`;
+    mutation.mutate(command);
+  }
+
   const messages = [INTRO, ...(history?.messages ?? [])];
 
   useEffect(() => {
@@ -335,6 +346,26 @@ function ProjectManagerPage() {
               </Button>
             </div>
           </form>
+
+          <div className="border-t border-border/40 p-3 sm:p-4 bg-background/20">
+            <Button
+              type="button"
+              variant="hero"
+              size="lg"
+              className="w-full"
+              onClick={continueAppCreation}
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? (
+                <><Loader2 className="size-4 animate-spin" /> Sto preparando il prossimo step…</>
+              ) : (
+                <><ArrowRight className="size-4" /> Continuiamo con la creazione dell'app</>
+              )}
+            </Button>
+            <p className="text-[11px] text-muted-foreground text-center mt-2">
+              Avanza al prossimo step della roadmap (bloccata): {nextStep?.title ?? currentStep.title}
+            </p>
+          </div>
         </section>
 
         {/* SIDEBAR */}
