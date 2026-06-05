@@ -36,9 +36,22 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
     try {
       const stripe = createStripeClient(data.environment);
 
-      const prices = await stripe.prices.list({ lookup_keys: ["agente_ai_29"] });
-      if (!prices.data.length) return { error: "Price 'agente_ai_29' not found" };
-      const stripePrice = prices.data[0];
+      // Prefer an explicit price id from env (set in Lovable Secrets):
+      //   STRIPE_LIVE_TEAM_AI_PRICE_ID    (used when environment === "live")
+      //   STRIPE_SANDBOX_TEAM_AI_PRICE_ID (optional, sandbox override)
+      // Fall back to the shared lookup_key "agente_ai_29" otherwise.
+      const configuredPriceId =
+        data.environment === "live"
+          ? process.env.STRIPE_LIVE_TEAM_AI_PRICE_ID
+          : process.env.STRIPE_SANDBOX_TEAM_AI_PRICE_ID;
+      let stripePrice;
+      if (configuredPriceId) {
+        stripePrice = await stripe.prices.retrieve(configuredPriceId);
+      } else {
+        const prices = await stripe.prices.list({ lookup_keys: ["agente_ai_29"] });
+        if (!prices.data.length) return { error: "Price 'agente_ai_29' not found" };
+        stripePrice = prices.data[0];
+      }
 
       // Resolve or create Customer with userId metadata
       let customerId: string | undefined;
