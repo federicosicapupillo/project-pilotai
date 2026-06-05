@@ -497,7 +497,14 @@ REGOLE:
               className="w-full resize-none rounded-lg bg-secondary/40 border border-border/50 px-3 py-2 text-sm focus:outline-none focus:border-primary/60"
               disabled={mutation.isPending}
             />
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between gap-3">
+              <span
+                className={`text-[11px] tabular-nums ${
+                  input.length > 100000 ? "text-destructive" : "text-muted-foreground/70"
+                }`}
+              >
+                Caratteri: {input.length.toLocaleString("it-IT")} / 100.000
+              </span>
               <Button type="submit" variant="hero" disabled={mutation.isPending || !input.trim()}>
                 {mutation.isPending ? (
                   <><Loader2 className="size-4 animate-spin" /> Invio…</>
