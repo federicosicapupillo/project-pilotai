@@ -4,9 +4,9 @@ import {
   Search,
   Rocket,
   LayoutGrid,
-  Sparkles,
-  Code2,
+  LayoutDashboard,
   Database,
+  ClipboardCheck,
   CheckCircle2,
   Check,
   Loader2,
@@ -24,55 +24,19 @@ type Step = {
   title: string;
   micro: string;
   icon: LucideIcon;
+  status: Status;
 };
 
 const STEPS: Step[] = [
-  { n: 1, title: "Idea definita", micro: "Idea chiarita e impostazione del progetto.", icon: Lightbulb },
-  { n: 2, title: "Analisi completata", micro: "Punti di forza, criticità e direzione individuati.", icon: Search },
-  { n: 3, title: "MVP impostato", micro: "Definizione della prima versione utile.", icon: Rocket },
-  { n: 4, title: "Schermate da creare", micro: "Struttura, flussi e schermate principali.", icon: LayoutGrid },
-  { n: 5, title: "Prompt pronti", micro: "Istruzioni operative pronte per gli agenti AI.", icon: Sparkles },
-  { n: 6, title: "Costruzione frontend", micro: "Realizzazione dell'interfaccia della prima versione.", icon: Code2 },
-  { n: 7, title: "Backend e database", micro: "Salvataggio dati, utenti e logica lato server.", icon: Database },
-  { n: 8, title: "Test finale e rilascio", micro: "Controlli, rifiniture e lancio della prima versione.", icon: CheckCircle2 },
+  { n: 1, title: "Progetto definito", micro: "La tua idea è stata trasformata in un progetto chiaro e pronto per partire.", icon: Lightbulb, status: "done" },
+  { n: 2, title: "Punti di forza e criticità", micro: "Il Team AI sta analizzando cosa funziona, cosa migliorare e quali rischi evitare.", icon: Search, status: "current" },
+  { n: 3, title: "MVP / prima versione", micro: "Definiremo solo le funzioni essenziali per creare una prima versione semplice.", icon: Rocket, status: "todo" },
+  { n: 4, title: "Schermate principali", micro: "Creeremo la struttura delle schermate principali dell'app.", icon: LayoutGrid, status: "todo" },
+  { n: 5, title: "Dashboard e area utente", micro: "Costruiremo l'area dove l'utente potrà vedere e gestire le informazioni.", icon: LayoutDashboard, status: "todo" },
+  { n: 6, title: "Backend e dati", micro: "Organizzeremo salvataggi, login, database e dati del progetto.", icon: Database, status: "todo" },
+  { n: 7, title: "Test e correzioni", micro: "Controlleremo errori, blocchi, flussi deboli e miglioramenti.", icon: ClipboardCheck, status: "todo" },
+  { n: 8, title: "Prima versione pronta", micro: "Prepareremo la prima versione da testare, mostrare o migliorare.", icon: CheckCircle2, status: "todo" },
 ];
-
-export type RoadmapSignals = {
-  hasProject?: boolean;
-  hasAnalysis?: boolean;
-  hasMvp?: boolean;
-  hasScreens?: boolean;
-  hasPrompts?: boolean;
-};
-
-function computeStatuses(s: RoadmapSignals): Status[] {
-  const done = [
-    !!s.hasProject,
-    !!s.hasAnalysis,
-    !!s.hasMvp,
-    !!s.hasScreens,
-    !!s.hasPrompts,
-    false,
-    false,
-    false,
-  ];
-  // ensure monotonic: once we hit a not-done, the rest are not-done for "done" calc
-  let stopped = false;
-  const monotonic = done.map((d) => {
-    if (stopped) return false;
-    if (!d) {
-      stopped = true;
-      return false;
-    }
-    return true;
-  });
-  const firstTodo = monotonic.findIndex((d) => !d);
-  return monotonic.map((d, i) => {
-    if (d) return "done";
-    if (i === firstTodo) return "current";
-    return "todo";
-  });
-}
 
 export function DashboardRoadmap({
   signals,
