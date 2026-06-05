@@ -52,6 +52,7 @@ function DashboardPage() {
       if (error) throw error;
       return data;
     },
+    staleTime: 60_000,
   });
 
   const { data: roadmaps } = useQuery({
@@ -61,7 +62,11 @@ function DashboardPage() {
       const ids = projects!.map((p) => p.id);
       const { data, error } = await supabase
         .from("roadmap_items")
-        .select("project_id, title, status, progress_weight, order_index, phase, recommended_agent, recommended_tool, description, prompt_text, expected_output, checklist_items")
+        // Only the lightweight fields needed for ProjectCard's progress
+        // computation and current-phase label. Heavy fields (prompt_text,
+        // expected_output, checklist_items, description) are loaded on
+        // demand from the project detail page.
+        .select("project_id, status, progress_weight, order_index, phase")
         .in("project_id", ids);
       if (error) throw error;
       const byProject = new Map<string, RoadmapItem[]>();
@@ -71,6 +76,7 @@ function DashboardPage() {
       }
       return byProject;
     },
+    staleTime: 60_000,
   });
 
   // Active project: persisted via useActiveProject (localStorage). Falls back
