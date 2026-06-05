@@ -273,10 +273,10 @@ export function OperativeCircuit({
                         <div className="mt-4 pt-3 border-t border-white/5">
                           <div className="rounded-lg border border-dashed border-primary/30 bg-primary/[0.06] px-2.5 py-2 text-left">
                             <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-primary/90 font-semibold">
-                              <LockIcon className="size-3" /> Tool bloccati
+                              <LockIcon className="size-3" /> Sbloccabili
                             </div>
                             <p className="text-[10.5px] leading-snug text-muted-foreground mt-1">
-                              Attiva il Team AI per vedere gli strumenti operativi di questo agente.
+                              Strumenti operativi disponibili dopo l'attivazione del Team AI.
                             </p>
                           </div>
                         </div>
