@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Copy, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen } from "lucide-react";
+import { ArrowLeft, Copy, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen, MessageSquare, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { ToolBadge } from "@/components/ToolBadge";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
