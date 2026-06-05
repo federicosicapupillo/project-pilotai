@@ -346,17 +346,26 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
                 aria-hidden
               />
               <h2 className="font-display font-semibold text-2xl sm:text-3xl">
-                Vuoi iniziare a costruire questa app?
+                Vuoi vedere chi lavorerà sulla tua idea?
               </h2>
               <p className="text-sm sm:text-base text-foreground/85 mt-3 max-w-2xl">
-                Attiva il tuo agente AI personale e trasforma questa analisi nel primo piano operativo per creare la tua prima app.
+                Abbiamo preparato il Team AI che può aiutarti a trasformare questa idea in una prima app: ogni agente ha un ruolo preciso e lavora insieme agli altri.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <Button variant="hero" size="xl" onClick={goToRoadmap}>
-                  Attiva il mio agente AI - 29€ <ArrowRight className="size-4" />
+                <Button
+                  variant="hero"
+                  size="xl"
+                  onClick={() => {
+                    void trackEvent("riepilogo_cta_vai_a_agents");
+                    void navigate({ to: "/agents" });
+                  }}
+                >
+                  <Users className="size-4" />
+                  Scopri il Team AI che lavorerà sulla tua idea
+                  <ArrowRight className="size-4" />
                 </Button>
               </div>
-              <p className="text-xs text-foreground/70 mt-4">Pagamento sicuro. Accesso immediato dopo l'acquisto.</p>
+              <p className="text-xs text-foreground/70 mt-4">Prima conosci la squadra. Poi decidi se attivarla.</p>
             </div>
 
             <p className="text-[11px] text-muted-foreground flex items-start gap-1.5 px-2">
