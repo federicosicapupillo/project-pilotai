@@ -6,7 +6,7 @@ import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle } f
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import { getPmHistory, sendPmMessage } from "@/lib/project-manager.functions";
+import { getPmHistory, sendPmMessage, getPmLogs } from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS, syntheticProgress } from "@/components/SyntheticRoadmap";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
@@ -98,11 +98,18 @@ function ProjectManagerPage() {
 
   const fetchHistory = useServerFn(getPmHistory);
   const send = useServerFn(sendPmMessage);
+  const fetchLogs = useServerFn(getPmLogs);
 
   const { data: history } = useQuery({
     queryKey: ["pm-history", activeId],
     enabled: !!hasAccess && !!activeId,
     queryFn: () => fetchHistory({ data: { projectId: activeId } }),
+  });
+
+  const { data: logs } = useQuery({
+    queryKey: ["pm-logs", activeId],
+    enabled: !!hasAccess && !!activeId,
+    queryFn: () => fetchLogs({ data: { projectId: activeId, limit: 30 } }),
   });
 
   const [input, setInput] = useState("");
@@ -113,6 +120,7 @@ function ProjectManagerPage() {
     mutationFn: (message: string) => send({ data: { projectId: activeId, message } }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["pm-history", activeId] });
+      qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
       setInput("");
       requestAnimationFrame(() => inputRef.current?.focus());
     },
@@ -418,6 +426,39 @@ function ProjectManagerPage() {
                   className="px-2 py-1.5 rounded-md bg-secondary/40 border border-border/40 text-muted-foreground"
                 >
                   {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* STORICO PROJECT MANAGER */}
+          <div className="glass-card rounded-2xl p-5 border border-border/60">
+            <h3 className="font-display font-semibold">Storico Project Manager</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              Tutto ciò che il PM ha detto, generato e deciso. Salvato in automatico.
+            </p>
+            <ul className="mt-3 space-y-2 max-h-80 overflow-y-auto pr-1">
+              {(logs?.logs ?? []).length === 0 && (
+                <li className="text-xs text-muted-foreground">Nessuna attività registrata ancora.</li>
+              )}
+              {(logs?.logs ?? []).map((l) => (
+                <li key={l.id} className="text-xs border border-border/40 rounded-md p-2 bg-secondary/30">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium text-foreground/90 truncate">{l.action_type}</span>
+                    <span className="text-[10px] text-muted-foreground shrink-0">
+                      {new Date(l.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                  {l.step_title && (
+                    <div className="text-[11px] text-muted-foreground mt-1 truncate">
+                      Step: {l.step_title}
+                    </div>
+                  )}
+                  {(l.user_message || l.project_manager_response || l.decision) && (
+                    <p className="mt-1 line-clamp-3 text-foreground/80">
+                      {l.decision || l.project_manager_response || l.user_message}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

@@ -4,6 +4,55 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { PROJECT_MANAGER_SYSTEM_PROMPT } from "@/prompts/projectManagerSystemPrompt";
 
+// Mask common secret-like patterns before persisting log content.
+function redactSecrets(input: string | null | undefined): string | null {
+  if (!input) return input ?? null;
+  let s = String(input);
+  // sk-..., pk_live_..., generic tokens, JWTs, bearer headers, long base64-ish keys
+  s = s.replace(/\b(sk|pk|rk)_(live|test)_[A-Za-z0-9]{8,}\b/g, "[DATO SENSIBILE NASCOSTO]");
+  s = s.replace(/\bsk-[A-Za-z0-9_-]{16,}\b/g, "[DATO SENSIBILE NASCOSTO]");
+  s = s.replace(/\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g, "[DATO SENSIBILE NASCOSTO]");
+  s = s.replace(/\b(bearer|authorization|api[_-]?key|password|token|secret)\s*[:=]\s*["']?[^\s"'<>]+/gi, "$1: [DATO SENSIBILE NASCOSTO]");
+  return s;
+}
+
+async function logPmAction(
+  supabase: ReturnType<typeof createLovableAiGatewayProvider> extends never ? never : any,
+  userId: string,
+  row: {
+    project_id?: string | null;
+    action_type: string;
+    step_title?: string | null;
+    next_step_title?: string | null;
+    user_message?: string | null;
+    project_manager_prompt?: string | null;
+    project_manager_response?: string | null;
+    decision?: string | null;
+    backlog_item_id?: string | null;
+    operation_id?: string | null;
+    metadata?: Record<string, unknown> | null;
+  },
+) {
+  try {
+    await supabase.from("project_manager_logs").insert({
+      user_id: userId,
+      project_id: row.project_id ?? null,
+      action_type: row.action_type,
+      step_title: row.step_title ?? null,
+      next_step_title: row.next_step_title ?? null,
+      user_message: redactSecrets(row.user_message ?? null),
+      project_manager_prompt: redactSecrets(row.project_manager_prompt ?? null),
+      project_manager_response: redactSecrets(row.project_manager_response ?? null),
+      decision: row.decision ?? null,
+      backlog_item_id: row.backlog_item_id ?? null,
+      operation_id: row.operation_id ?? null,
+      metadata: row.metadata ?? null,
+    });
+  } catch (err) {
+    console.error("[pm logs] insert failed", err);
+  }
+}
+
 function buildContext(p: {
   title?: string | null;
   idea?: string | null;
@@ -214,6 +263,28 @@ export const sendPmMessage = createServerFn({ method: "POST" })
     const { error: insErr } = await supabase.from("pm_messages").insert(rows);
     if (insErr) console.error("pm_messages insert error", insErr);
 
+    // Append-only logs (best-effort, never block the response).
+    const opBase = `${userId}:${data.projectId ?? "none"}:${Date.now()}`;
+    await logPmAction(supabase, userId, {
+      project_id: data.projectId,
+      action_type: "user_message_received",
+      step_title: ctx.currentStep ?? null,
+      next_step_title: ctx.nextStep ?? null,
+      user_message: data.message,
+      operation_id: `${opBase}:user`,
+      metadata: { progress_pct: ctx.progressPct ?? null },
+    });
+    await logPmAction(supabase, userId, {
+      project_id: data.projectId,
+      action_type: "project_manager_response",
+      step_title: ctx.currentStep ?? null,
+      next_step_title: ctx.nextStep ?? null,
+      project_manager_response: assistantText,
+      project_manager_prompt: PROJECT_MANAGER_SYSTEM_PROMPT.slice(0, 500),
+      operation_id: `${opBase}:reply`,
+      metadata: { progress_pct: ctx.progressPct ?? null, model: "google/gemini-3-flash-preview" },
+    });
+
     return { reply: assistantText };
   });
 
@@ -256,13 +327,45 @@ export const addBacklogItem = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { error } = await supabase.from("improvement_backlog").insert({
+    const { data: inserted, error } = await supabase.from("improvement_backlog").insert({
       user_id: userId,
       project_id: data.projectId,
       title: data.title,
       description: data.description,
       source: "pm_chat",
-    });
+    }).select("id").maybeSingle();
     if (error) throw new Error(error.message);
+    await logPmAction(supabase, userId, {
+      project_id: data.projectId,
+      action_type: "improvement_sent_to_backlog",
+      decision: data.title,
+      backlog_item_id: inserted?.id ?? null,
+      metadata: { description: redactSecrets(data.description) },
+      operation_id: `backlog:${userId}:${data.projectId ?? "none"}:${Date.now()}`,
+    });
     return { ok: true };
+  });
+
+export const getPmLogs = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { projectId?: string | null; limit?: number }) => ({
+    projectId:
+      typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
+        ? d.projectId
+        : null,
+    limit: Math.min(Math.max(Number(d.limit ?? 50), 1), 200),
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    let q = supabase
+      .from("project_manager_logs")
+      .select(
+        "id, action_type, step_title, next_step_title, user_message, project_manager_response, decision, backlog_item_id, metadata, created_at, project_id",
+      )
+      .order("created_at", { ascending: false })
+      .limit(data.limit);
+    q = data.projectId ? q.eq("project_id", data.projectId) : q.is("project_id", null);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { logs: rows ?? [] };
   });
