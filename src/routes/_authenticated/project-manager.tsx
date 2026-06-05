@@ -692,30 +692,54 @@ ${text}`;
                     </>
                   ) : (
                     <>
-                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                        Cosa vuoi fare con questa risposta?
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={approveSchema}
-                          disabled={opGenMutation.isPending}
-                          className="text-xs px-3 py-2 rounded-lg border border-primary/50 bg-primary/10 hover:bg-primary/20 text-foreground inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
-                        >
-                          {opGenMutation.isPending ? (
-                            <><Loader2 className="size-3.5 animate-spin" /> Sto generando il prompt…</>
-                          ) : (
-                            <><ThumbsUp className="size-3.5" /> Approvo e genera il prompt</>
-                          )}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={rejectSchema}
-                          className="text-xs px-3 py-2 rounded-lg border border-border/60 hover:border-destructive/60 hover:text-foreground text-muted-foreground inline-flex items-center justify-center gap-1.5"
-                        >
-                          <ThumbsDown className="size-3.5" /> Non approvo / voglio modificare
-                        </button>
-                      </div>
+                      {(() => {
+                        const existingPrompt = (opPrompts?.prompts ?? []).find(
+                          (p) => p.step_title === currentStep.title,
+                        );
+                        const alreadyGenerated = !!existingPrompt;
+                        const isGenerating = opGenMutation.isPending;
+                        return (
+                          <>
+                            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                              {alreadyGenerated
+                                ? "Prompt operativo già pronto per questo step"
+                                : "Cosa vuoi fare con questa risposta?"}
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <button
+                                type="button"
+                                onClick={approveSchema}
+                                disabled={isGenerating || alreadyGenerated}
+                                aria-disabled={isGenerating || alreadyGenerated}
+                                className="text-xs px-3 py-2 rounded-lg border border-primary/50 bg-primary/10 hover:bg-primary/20 text-foreground inline-flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-primary/10"
+                              >
+                                {isGenerating ? (
+                                  <><Loader2 className="size-3.5 animate-spin" /> Sto generando il prompt…</>
+                                ) : alreadyGenerated ? (
+                                  <><Check className="size-3.5" /> Prompt già generato</>
+                                ) : (
+                                  <><ThumbsUp className="size-3.5" /> Approvo e genera il prompt</>
+                                )}
+                              </button>
+                              {!alreadyGenerated && (
+                                <button
+                                  type="button"
+                                  onClick={rejectSchema}
+                                  disabled={isGenerating}
+                                  className="text-xs px-3 py-2 rounded-lg border border-border/60 hover:border-destructive/60 hover:text-foreground text-muted-foreground inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                                >
+                                  <ThumbsDown className="size-3.5" /> Non approvo / voglio modificare
+                                </button>
+                              )}
+                            </div>
+                            {alreadyGenerated && (
+                              <p className="text-[11px] text-muted-foreground mt-1">
+                                Hai già approvato questo step e generato il prompt operativo. Puoi copiarlo qui sotto e incollarlo nello strumento consigliato.
+                              </p>
+                            )}
+                          </>
+                        );
+                      })()}
                     </>
                   )}
                 </div>
