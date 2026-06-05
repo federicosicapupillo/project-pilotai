@@ -450,13 +450,16 @@ export const generateOperationalPrompt = createServerFn({ method: "POST" })
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
-    // Dedupe: if an identical (project, step) prompt was created in the last 30s, return it.
-    const since = new Date(Date.now() - 30_000).toISOString();
+    // Dedupe forte: per ogni (progetto, step) deve esistere UN SOLO prompt operativo
+    // visibile. Se ne esiste già uno, lo restituiamo invece di rigenerarlo.
+    // Questo previene duplicati da doppio click, retry React, refresh, render
+    // multipli e chiamate concorrenti.
     let dq = supabase
       .from("operational_prompts")
-      .select("id, title, agent_name, recommended_tool, instructions, prompt_text, step_title, created_at, copied")
+      .select(
+        "id, title, agent_name, recommended_tool, instructions, prompt_text, step_title, created_at, copied",
+      )
       .eq("step_title", data.stepTitle)
-      .gte("created_at", since)
       .order("created_at", { ascending: false })
       .limit(1);
     dq = data.projectId ? dq.eq("project_id", data.projectId) : dq.is("project_id", null);
