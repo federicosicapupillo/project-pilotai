@@ -151,6 +151,23 @@ export const sendPmMessage = createServerFn({ method: "POST" })
       ctx.agents = (agents ?? []).map((a) => ({ name: a.name, role: a.role ?? "" }));
     }
 
+    // Synthetic roadmap fallback (kept in sync with src/components/SyntheticRoadmap.tsx)
+    const SYNTH = [
+      "Progetto definito",
+      "Punti di forza e criticità",
+      "MVP / prima versione",
+      "Schermate principali",
+      "Dashboard e area utente",
+      "Backend e dati",
+      "Test e correzioni",
+      "Prima versione pronta",
+    ];
+    if (!ctx.currentStep) {
+      ctx.currentStep = SYNTH[1];
+      ctx.nextStep = SYNTH[2];
+      ctx.progressPct = 12;
+    }
+
     // Load recent history (for memory)
     let histQ = supabase
       .from("pm_messages")
