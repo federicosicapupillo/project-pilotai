@@ -819,12 +819,12 @@ ${text}`;
               <span className="text-xs text-muted-foreground">{pct}%</span>
             </div>
             <ol className="mt-3 space-y-2">
-              {SYNTHETIC_STEPS.map((s) => (
+              {dynamicSteps.map((s) => (
                 <li key={s.n} className="flex items-start gap-2 text-xs">
                   <span className="mt-0.5 shrink-0">
                     {s.status === "done" ? (
                       <Check className="size-3.5 text-primary" />
-                    ) : s.status === "in_progress" ? (
+                    ) : s.title === currentStep.title ? (
                       <Loader2 className="size-3.5 text-accent animate-spin" />
                     ) : (
                       <Circle className="size-3 text-muted-foreground" />
@@ -832,7 +832,7 @@ ${text}`;
                   </span>
                   <span
                     className={
-                      s.status === "in_progress"
+                      s.title === currentStep.title
                         ? "text-foreground font-medium"
                         : s.status === "done"
                         ? "text-muted-foreground line-through"
