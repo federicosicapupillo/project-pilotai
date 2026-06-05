@@ -19,7 +19,8 @@ import { generateProjectContent } from "@/lib/ai-generation.functions";
 import { generateAppRoadmap } from "@/lib/app-roadmap.functions";
 import { buildFallbackRoadmap } from "@/lib/app-roadmap";
 import { toast } from "sonner";
-import { Sparkles, ArrowLeft, Check, Loader2 } from "lucide-react";
+import { Sparkles, ArrowLeft } from "lucide-react";
+import { GenerationProgressDialog, type GenState } from "@/components/GenerationProgressDialog";
 
 export const Route = createFileRoute("/_authenticated/new-project")({
   head: () => ({ meta: [{ title: "Nuovo progetto — Da Idea ad App" }] }),
@@ -29,7 +30,11 @@ export const Route = createFileRoute("/_authenticated/new-project")({
 function NewProjectPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
-  const [steps, setSteps] = useState<Array<{ label: string; status: "todo" | "doing" | "done" }>>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [genState, setGenState] = useState<GenState>("idle");
+  const [phase, setPhase] = useState(0);
+  const [errorMsg, setErrorMsg] = useState<string | undefined>();
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
   const generate = useServerFn(generateProjectContent);
   const generateRoadmap = useServerFn(generateAppRoadmap);
   const [form, setForm] = useState({
@@ -63,24 +68,13 @@ function NewProjectPage() {
 
   const set = <K extends keyof typeof form>(k: K, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const initialSteps = () => [
-    { label: "Sto analizzando la tua idea…", status: "doing" as const },
-    { label: "Scheda progetto generata", status: "todo" as const },
-    { label: "Agenti AI creati", status: "todo" as const },
-    { label: "Prompt operativi pronti", status: "todo" as const },
-    { label: "Sto creando la roadmap di costruzione della tua app…", status: "todo" as const },
-    { label: "Roadmap pronta: puoi iniziare a costruire", status: "todo" as const },
-  ];
-  const advance = (i: number) =>
-    setSteps((prev) =>
-      prev.map((s, idx) => (idx < i ? { ...s, status: "done" } : idx === i ? { ...s, status: "doing" } : s)),
-    );
-  const finishAll = () => setSteps((prev) => prev.map((s) => ({ ...s, status: "done" })));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const runGeneration = async () => {
+    if (busy) return;
     setBusy(true);
-    setSteps(initialSteps());
+    setErrorMsg(undefined);
+    setPhase(0);
+    setGenState("running");
+    setDialogOpen(true);
     try {
       const { data: userRes } = await supabase.auth.getUser();
       if (!userRes.user) throw new Error("Non autenticato");
@@ -90,6 +84,7 @@ function NewProjectPage() {
         .select("*")
         .single();
       if (error || !project) throw error ?? new Error("Errore creazione");
+      setCreatedProjectId(project.id);
 
       // Try AI generation; fall back to templates on any failure.
       let analysis: ReturnType<typeof ANALYSIS_TEMPLATE>;
@@ -146,13 +141,13 @@ function NewProjectPage() {
         }));
       }
 
-      advance(1);
+      setPhase(1);
       await supabase.from("project_analysis").insert({ project_id: project.id, ...analysis });
-      advance(2);
+      setPhase(2);
       await supabase.from("agents").insert(agents);
-      advance(3);
+      setPhase(3);
       await supabase.from("prompts").insert(prompts);
-      advance(4);
+      setPhase(4);
 
       // App Construction Roadmap (rich, personalized). Fallback to deterministic template on any failure.
       try {
@@ -204,17 +199,33 @@ function NewProjectPage() {
         }));
       }
       await supabase.from("roadmap_items").insert(roadmap);
-      finishAll();
+      setPhase(5);
+      setGenState("done");
 
       toast.success(usedAi ? "Progetto generato con AI!" : "Progetto creato!");
-      navigate({ to: "/projects/$id", params: { id: project.id } });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Errore";
-      toast.error(message);
-      setSteps([]);
+      setErrorMsg(message);
+      setGenState("error");
     } finally {
       setBusy(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void runGeneration();
+  };
+
+  const handleGoToProject = () => {
+    if (!createdProjectId) return;
+    setDialogOpen(false);
+    navigate({ to: "/projects/$id", params: { id: createdProjectId } });
+  };
+
+  const handleClose = () => {
+    setDialogOpen(false);
+    if (genState !== "running") setGenState("idle");
   };
 
   return (
@@ -237,23 +248,6 @@ function NewProjectPage() {
       </p>
 
       <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
-        {busy && steps.length > 0 && (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
-            {steps.map((s, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm">
-                {s.status === "done" ? (
-                  <Check className="size-4 text-primary shrink-0" />
-                ) : s.status === "doing" ? (
-                  <Loader2 className="size-4 text-primary animate-spin shrink-0" />
-                ) : (
-                  <span className="size-4 rounded-full border border-border shrink-0" />
-                )}
-                <span className={s.status === "todo" ? "text-muted-foreground" : ""}>{s.label}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
         <Field label="Titolo del progetto" required>
           <Input value={form.title} onChange={(e) => set("title", e.target.value)} required maxLength={120} />
         </Field>
@@ -323,6 +317,16 @@ function NewProjectPage() {
           {busy ? "Generazione in corso…" : "Genera scheda progetto"}
         </Button>
       </form>
+
+      <GenerationProgressDialog
+        open={dialogOpen}
+        state={genState}
+        phase={phase}
+        errorMessage={errorMsg}
+        onRetry={() => void runGeneration()}
+        onClose={handleClose}
+        onGoToProject={handleGoToProject}
+      />
     </div>
   );
 }
