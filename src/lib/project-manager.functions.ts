@@ -369,3 +369,227 @@ export const getPmLogs = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { logs: rows ?? [] };
   });
+
+// Step → competent agent + recommended tool + usage instructions.
+const STEP_AGENT_MAP: Record<
+  string,
+  { agent: string; tool: string; instructions: string }
+> = {
+  "Progetto definito": {
+    agent: "Agente Stratega",
+    tool: "ChatGPT",
+    instructions: "Copia questo prompt in ChatGPT per affinare il posizionamento e le priorità strategiche del progetto.",
+  },
+  "Punti di forza e criticità": {
+    agent: "Agente Validatore",
+    tool: "ChatGPT",
+    instructions: "Copia questo prompt in ChatGPT per validare l'idea, individuare rischi, ipotesi da testare e priorità.",
+  },
+  "MVP / prima versione": {
+    agent: "Agente MVP",
+    tool: "Lovable",
+    instructions: "Copia questo prompt e incollalo nella chat di Lovable del progetto attivo per trasformare l'idea nella prima versione MVP.",
+  },
+  "Schermate principali": {
+    agent: "Agente UX",
+    tool: "Lovable",
+    instructions: "Copia questo prompt nella chat di Lovable del progetto attivo per generare le schermate principali, i flussi e le CTA.",
+  },
+  "Dashboard e area utente": {
+    agent: "Agente Costruttore",
+    tool: "Lovable",
+    instructions: "Copia questo prompt nella chat di Lovable per costruire la dashboard e l'area utente.",
+  },
+  "Backend e dati": {
+    agent: "Agente Architetto Dati",
+    tool: "Lovable (Supabase)",
+    instructions: "Copia questo prompt nella chat di Lovable per creare tabelle, relazioni e policy su Supabase in modo sicuro.",
+  },
+  "Test e correzioni": {
+    agent: "Agente Controllo Qualità",
+    tool: "Lovable",
+    instructions: "Copia questo prompt nella chat di Lovable per eseguire test, controlli, checklist e regressioni.",
+  },
+  "Prima versione pronta": {
+    agent: "Agente di Lancio",
+    tool: "Lovable",
+    instructions: "Copia questo prompt nella chat di Lovable per preparare la prima versione al lancio (beta o pubblico).",
+  },
+};
+
+function resolveAgentForStep(stepTitle: string) {
+  return (
+    STEP_AGENT_MAP[stepTitle] ?? {
+      agent: "Agente Istruttore",
+      tool: "Lovable",
+      instructions: "Copia questo prompt nella chat di Lovable per eseguire lo step previsto dalla roadmap.",
+    }
+  );
+}
+
+export const generateOperationalPrompt = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { projectId?: string | null; stepTitle: string }) => {
+    const stepTitle = String(d.stepTitle ?? "").trim();
+    if (!stepTitle) throw new Error("Step richiesto");
+    if (stepTitle.length > 200) throw new Error("Step troppo lungo");
+    return {
+      projectId:
+        typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
+          ? d.projectId
+          : null,
+      stepTitle,
+    };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const key = process.env.LOVABLE_API_KEY;
+    if (!key) throw new Error("Missing LOVABLE_API_KEY");
+
+    // Dedupe: if an identical (project, step) prompt was created in the last 30s, return it.
+    const since = new Date(Date.now() - 30_000).toISOString();
+    let dq = supabase
+      .from("operational_prompts")
+      .select("id, title, agent_name, recommended_tool, instructions, prompt_text, step_title, created_at, copied")
+      .eq("step_title", data.stepTitle)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    dq = data.projectId ? dq.eq("project_id", data.projectId) : dq.is("project_id", null);
+    const { data: dupes } = await dq;
+    if (dupes && dupes.length > 0) return { prompt: dupes[0], deduped: true };
+
+    // Load light project context.
+    let projectTitle: string | null = null;
+    let projectIdea: string | null = null;
+    if (data.projectId) {
+      const { data: project } = await supabase
+        .from("projects")
+        .select("title, idea_description")
+        .eq("id", data.projectId)
+        .maybeSingle();
+      if (project) {
+        projectTitle = project.title;
+        projectIdea = project.idea_description;
+      }
+    }
+
+    const mapping = resolveAgentForStep(data.stepTitle);
+
+    const gateway = createLovableAiGatewayProvider(key);
+    const model = gateway("google/gemini-3-flash-preview");
+
+    const systemPrompt = `Sei ${mapping.agent}, agente operativo del Team AI di "Da idea ad app".
+Genera un PROMPT OPERATIVO completo, pronto da incollare in ${mapping.tool}, per eseguire lo step di roadmap: "${data.stepTitle}".
+
+Il prompt deve essere strutturato in italiano con queste sezioni esatte (titoli in maiuscolo):
+CONTESTO
+OBIETTIVO
+MODIFICA RICHIESTA / INTERVENTO RICHIESTO
+REGOLE DA RISPETTARE
+COSA NON MODIFICARE
+CONTROLLO QUALITÀ FINALE
+RISULTATO ATTESO
+
+Vincoli:
+- Non modificare la roadmap attiva.
+- Non saltare step.
+- Le migliorie extra vanno nel Backlog migliorie future.
+- Lo strumento di destinazione è ${mapping.tool}: scrivi il prompt in modo coerente con quello strumento.
+- Restituisci SOLO il prompt operativo finale, senza preamboli o note.`;
+
+    const userPrompt = `Step roadmap attivo: ${data.stepTitle}
+Progetto: ${projectTitle ?? "(non specificato)"}
+Idea: ${projectIdea ?? "(non specificata)"}
+
+Genera il prompt operativo finale per lo step.`;
+
+    let promptText = "";
+    try {
+      const result = await generateText({
+        model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+      });
+      promptText = result.text.trim();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "unknown";
+      if (/429/.test(msg)) throw new Error("Sono al limite richieste. Riprova tra qualche secondo.");
+      if (/402/.test(msg)) throw new Error("Crediti AI esauriti. Aggiungili dalle impostazioni per continuare.");
+      throw err;
+    }
+    if (!promptText) throw new Error("Generazione fallita, riprova.");
+
+    const title = `Prompt operativo — ${data.stepTitle}`;
+
+    const { data: inserted, error: insErr } = await supabase
+      .from("operational_prompts")
+      .insert({
+        user_id: userId,
+        project_id: data.projectId,
+        step_title: data.stepTitle,
+        agent_name: mapping.agent,
+        recommended_tool: mapping.tool,
+        instructions: mapping.instructions,
+        title,
+        prompt_text: promptText,
+      })
+      .select("id, title, agent_name, recommended_tool, instructions, prompt_text, step_title, created_at, copied")
+      .single();
+    if (insErr) throw new Error(insErr.message);
+
+    await logPmAction(supabase, userId, {
+      project_id: data.projectId,
+      action_type: "operational_prompt_generated",
+      step_title: data.stepTitle,
+      project_manager_prompt: promptText.slice(0, 4000),
+      decision: `Prompt generato da ${mapping.agent} per ${mapping.tool}`,
+      operation_id: `opprompt:${inserted.id}`,
+      metadata: {
+        operational_prompt_id: inserted.id,
+        agent: mapping.agent,
+        tool: mapping.tool,
+      },
+    });
+
+    return { prompt: inserted, deduped: false };
+  });
+
+export const listOperationalPrompts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { projectId?: string | null }) => ({
+    projectId:
+      typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
+        ? d.projectId
+        : null,
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    let q = supabase
+      .from("operational_prompts")
+      .select("id, title, agent_name, recommended_tool, instructions, prompt_text, step_title, created_at, copied")
+      .order("created_at", { ascending: false })
+      .limit(20);
+    q = data.projectId ? q.eq("project_id", data.projectId) : q.is("project_id", null);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { prompts: rows ?? [] };
+  });
+
+export const markOperationalPromptCopied = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => {
+    if (!/^[0-9a-fA-F-]{36}$/.test(String(d.id))) throw new Error("ID non valido");
+    return { id: d.id };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { error } = await supabase
+      .from("operational_prompts")
+      .update({ copied: true })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

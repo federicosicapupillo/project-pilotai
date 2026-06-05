@@ -2,11 +2,18 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle } from "lucide-react";
+import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle, Copy, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import { getPmHistory, sendPmMessage, getPmLogs } from "@/lib/project-manager.functions";
+import {
+  getPmHistory,
+  sendPmMessage,
+  getPmLogs,
+  generateOperationalPrompt,
+  listOperationalPrompts,
+  markOperationalPromptCopied,
+} from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS, syntheticProgress } from "@/components/SyntheticRoadmap";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
@@ -43,6 +50,7 @@ const QUICK_ACTIONS = [
 
 const FOLLOWUP_ACTIONS = [
   "Approvo, vai avanti",
+  "Genera prompt operativo",
   "Fammi vedere un'alternativa",
   "Semplifica",
   "Approfondisci",
@@ -99,6 +107,9 @@ function ProjectManagerPage() {
   const fetchHistory = useServerFn(getPmHistory);
   const send = useServerFn(sendPmMessage);
   const fetchLogs = useServerFn(getPmLogs);
+  const genOpPrompt = useServerFn(generateOperationalPrompt);
+  const listOpPrompts = useServerFn(listOperationalPrompts);
+  const markCopied = useServerFn(markOperationalPromptCopied);
 
   const { data: history } = useQuery({
     queryKey: ["pm-history", activeId],
@@ -110,6 +121,26 @@ function ProjectManagerPage() {
     queryKey: ["pm-logs", activeId],
     enabled: !!hasAccess && !!activeId,
     queryFn: () => fetchLogs({ data: { projectId: activeId, limit: 30 } }),
+  });
+
+  const { data: opPrompts } = useQuery({
+    queryKey: ["pm-op-prompts", activeId],
+    enabled: !!hasAccess && !!activeId,
+    queryFn: () => listOpPrompts({ data: { projectId: activeId } }),
+  });
+
+  const opGenMutation = useMutation({
+    mutationFn: (stepTitle: string) =>
+      genOpPrompt({ data: { projectId: activeId, stepTitle } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["pm-op-prompts", activeId] });
+      qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
+    },
+  });
+
+  const copyMutation = useMutation({
+    mutationFn: (id: string) => markCopied({ data: { id } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["pm-op-prompts", activeId] }),
   });
 
   const [input, setInput] = useState("");
@@ -128,6 +159,11 @@ function ProjectManagerPage() {
 
   function sendQuick(text: string) {
     if (mutation.isPending) return;
+    if (text === "Genera prompt operativo") {
+      if (!activeProject || opGenMutation.isPending) return;
+      opGenMutation.mutate(currentStep.title);
+      return;
+    }
     mutation.mutate(text);
   }
 
@@ -368,6 +404,56 @@ function ProjectManagerPage() {
           </div>
         </section>
 
+        {/* OPERATIONAL PROMPT PANEL — fuori dalla chat */}
+        <section className="order-3 lg:col-span-2 glass-card rounded-2xl border border-border/60 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+                <Wrench className="size-3.5 text-primary" /> Prompt operativo generato
+              </div>
+              <h2 className="font-display font-semibold text-xl mt-1">
+                Prompt pronti da copiare nello strumento giusto
+              </h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                Quando l'analisi di uno step è confermata, l'agente competente genera qui un prompt operativo separato dalla chat.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="hero"
+              onClick={() => sendQuick("Genera prompt operativo")}
+              disabled={opGenMutation.isPending || !activeProject}
+            >
+              {opGenMutation.isPending ? (
+                <><Loader2 className="size-4 animate-spin" /> Sto generando…</>
+              ) : (
+                <><Sparkles className="size-4" /> Genera per: {currentStep.title}</>
+              )}
+            </Button>
+          </div>
+
+          {opGenMutation.isError && (
+            <p className="text-sm text-destructive mt-3">
+              {(opGenMutation.error as Error)?.message ?? "Errore nella generazione."}
+            </p>
+          )}
+
+          <div className="mt-5 space-y-4">
+            {(opPrompts?.prompts ?? []).length === 0 && !opGenMutation.isPending && (
+              <div className="text-sm text-muted-foreground border border-dashed border-border/60 rounded-xl p-6 text-center">
+                Nessun prompt operativo ancora generato. Clicca su "Genera per: {currentStep.title}" per crearne uno.
+              </div>
+            )}
+            {(opPrompts?.prompts ?? []).map((p) => (
+              <OperationalPromptCard
+                key={p.id}
+                prompt={p}
+                onCopied={(id) => copyMutation.mutate(id)}
+              />
+            ))}
+          </div>
+        </section>
+
         {/* SIDEBAR */}
         <aside className="order-1 lg:order-2 space-y-4">
           {activeProject ? (
@@ -523,6 +609,66 @@ function MessageBubble({ role, content }: { role: "user" | "assistant"; content:
           Project Manager
         </div>
         <p className="text-sm whitespace-pre-wrap leading-relaxed text-foreground/90">{content}</p>
+      </div>
+    </div>
+  );
+}
+
+type OperationalPrompt = {
+  id: string;
+  title: string;
+  agent_name: string;
+  recommended_tool: string;
+  instructions: string;
+  prompt_text: string;
+  step_title: string;
+  created_at: string;
+  copied: boolean;
+};
+
+function OperationalPromptCard({
+  prompt,
+  onCopied,
+}: {
+  prompt: OperationalPrompt;
+  onCopied: (id: string) => void;
+}) {
+  const [justCopied, setJustCopied] = useState(false);
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(prompt.prompt_text);
+      setJustCopied(true);
+      onCopied(prompt.id);
+      setTimeout(() => setJustCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }
+  return (
+    <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="font-display font-semibold">{prompt.title}</h3>
+          <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
+            <span>Generato da: <span className="text-foreground/90">{prompt.agent_name}</span></span>
+            <span>Step: <span className="text-foreground/90">{prompt.step_title}</span></span>
+            <span>Da usare su: <span className="text-foreground/90">{prompt.recommended_tool}</span></span>
+          </div>
+        </div>
+        {prompt.copied && (
+          <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">
+            Copiato
+          </span>
+        )}
+      </div>
+      <p className="text-xs text-muted-foreground mt-3">{prompt.instructions}</p>
+      <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-relaxed bg-background/60 border border-border/50 rounded-lg p-3 text-foreground/90">
+        {prompt.prompt_text}
+      </pre>
+      <div className="mt-3 flex justify-end">
+        <Button type="button" variant="outline" size="sm" onClick={handleCopy}>
+          <Copy className="size-3.5" /> {justCopied ? "Copiato!" : "Copia prompt"}
+        </Button>
       </div>
     </div>
   );
