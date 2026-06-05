@@ -34,7 +34,6 @@ import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authentic
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
 import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
-import { Route as AuthenticatedAcademyLessonsRouteImport } from './routes/_authenticated/academy.lessons.'
 
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
@@ -166,12 +165,6 @@ const AuthenticatedAcademyLessonsIdRoute =
     path: '/academy/lessons/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAcademyLessonsRoute =
-  AuthenticatedAcademyLessonsRouteImport.update({
-    id: '/academy/lessons/',
-    path: '/academy/lessons/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -195,7 +188,6 @@ export interface FileRoutesByFullPath {
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
-  '/academy/lessons/': typeof AuthenticatedAcademyLessonsRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -222,7 +214,6 @@ export interface FileRoutesByTo {
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
-  '/academy/lessons': typeof AuthenticatedAcademyLessonsRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -251,7 +242,6 @@ export interface FileRoutesById {
   '/_authenticated/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
-  '/_authenticated/academy/lessons/': typeof AuthenticatedAcademyLessonsRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -280,7 +270,6 @@ export interface FileRouteTypes {
     | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
-    | '/academy/lessons/'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
     | '/api/public/payments/webhook'
@@ -307,7 +296,6 @@ export interface FileRouteTypes {
     | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
-    | '/academy/lessons'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
     | '/api/public/payments/webhook'
@@ -335,7 +323,6 @@ export interface FileRouteTypes {
     | '/_authenticated/roadmap-success'
     | '/_authenticated/projects/$id'
     | '/_authenticated/workbook/$projectId'
-    | '/_authenticated/academy/lessons/'
     | '/_authenticated/academy/lessons/$id'
     | '/_authenticated/academy/modules/$id'
     | '/api/public/payments/webhook'
@@ -535,13 +522,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcademyLessonsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/academy/lessons/': {
-      id: '/_authenticated/academy/lessons/'
-      path: '/academy/lessons'
-      fullPath: '/academy/lessons/'
-      preLoaderRoute: typeof AuthenticatedAcademyLessonsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
   }
 }
 
@@ -555,7 +535,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRoadmapSuccessRoute: typeof AuthenticatedRoadmapSuccessRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
-  AuthenticatedAcademyLessonsRoute: typeof AuthenticatedAcademyLessonsRoute
   AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
   AuthenticatedAcademyModulesIdRoute: typeof AuthenticatedAcademyModulesIdRoute
 }
@@ -570,7 +549,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRoadmapSuccessRoute: AuthenticatedRoadmapSuccessRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
-  AuthenticatedAcademyLessonsRoute: AuthenticatedAcademyLessonsRoute,
   AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
   AuthenticatedAcademyModulesIdRoute: AuthenticatedAcademyModulesIdRoute,
 }
