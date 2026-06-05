@@ -52,6 +52,7 @@ import { RESEARCHER_AGENT_SYSTEM_PROMPT } from "@/prompts/researcherAgentSystemP
 import { VALIDATING_AGENT_SYSTEM_PROMPT } from "@/prompts/validatingAgentSystemPrompt";
 import { MVP_AGENT_SYSTEM_PROMPT } from "@/prompts/mvpAgentSystemPrompt";
 import { UX_AGENT_SYSTEM_PROMPT } from "@/prompts/uxAgentSystemPrompt";
+import { INSTRUCTOR_AGENT_SYSTEM_PROMPT } from "@/prompts/instructorAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -97,11 +98,11 @@ export const AGENT_TEMPLATE = (idea: string) => [
     prompt_text: `${UX_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA PROGETTARE LATO UX:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta l'analisi e rispondi con il FORMATO RISPOSTA STANDARD (18 sezioni in markdown) chiudendo con il BRIEF UX PER GLI ALTRI AGENTI. Etichetta esplicitamente i problemi come "Rischio confusione", "CTA da riscrivere", "Flusso da semplificare" o "Rischio abbandono". Se l'utente chiede se la UX è pronta, dichiara UX PRONTA / DA SEMPLIFICARE / CONFUSA / TROPPO COMPLESSA / BUONA MA DA TESTARE / NON ANCORA PRONTA.`,
   },
   {
-    name: "Agente Prompt Engineer",
-    role: "Crea il prompt operativo per Lovable / no-code.",
-    when_to_use: "Quando hai schermate e funzioni e devi generare la prima versione.",
-    expected_output: "Prompt pronto da incollare in Lovable.",
-    prompt_text: `Sei un prompt engineer specializzato in Lovable. Genera un prompt completo per costruire la prima versione dell'app "${idea}". Includi: scopo, pagine, componenti, schema database, autenticazione, stile visivo e regole importanti (cosa NON fare). Scrivilo in italiano, chiaro e operativo.`,
+    name: "Agente Istruttore",
+    role: "Trasforma decisioni, brief e richieste in prompt operativi pronti per Lovable, Antigravity e sviluppatori.",
+    when_to_use: "Quando hai bisogno di un prompt chiaro e copiabile per costruire, correggere bug, aggiungere funzioni o controllare qualità senza ambiguità.",
+    expected_output: "Prompt operativo in blocco copiabile con contesto, obiettivo, intervento, regole, cosa non modificare, controllo qualità e risultato atteso.",
+    prompt_text: `${INSTRUCTOR_AGENT_SYSTEM_PROMPT}\n\n---\nRICHIESTA DELL'UTENTE DA TRASFORMARE IN ISTRUZIONI OPERATIVE:\n"${idea}"\n\nSegui il METODO DI LAVORO e rispondi nel FORMATO RISPOSTA STANDARD (blocco \`\`\`txt copiabile). Proteggi sempre routing, login, database, permessi, layout esistente e funzioni già funzionanti. Se la richiesta è troppo ampia, dichiara che va divisa in più prompt.`,
   },
   {
     name: "Agente Tester",
