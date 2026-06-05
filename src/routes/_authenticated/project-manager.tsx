@@ -408,21 +408,6 @@ REGOLE:
                 content={m.content}
               />
             ))}
-            {/* Quick actions under the intro, before the user has sent anything */}
-            {messages.length === 1 && !mutation.isPending && (
-              <div className="flex flex-wrap gap-2 pl-11">
-                {QUICK_ACTIONS.map((a) => (
-                  <button
-                    key={a}
-                    type="button"
-                    onClick={() => sendQuick(a)}
-                    className="text-xs px-3 py-1.5 rounded-full border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/60 text-foreground/90 transition-colors"
-                  >
-                    {a}
-                  </button>
-                ))}
-              </div>
-            )}
             {/* Follow-up actions after the latest assistant reply */}
             {messages.length > 1 &&
               messages[messages.length - 1].role === "assistant" &&
