@@ -9,7 +9,7 @@ import {
   ClipboardCheck,
   CheckCircle2,
   Check,
-  Loader2,
+  Play,
   Lock,
   MessageSquare,
   ArrowRight,
