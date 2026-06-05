@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateObject } from "ai";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { APP_ROADMAP_PHASES, PHASE_WEIGHT, buildFallbackRoadmap, type AppRoadmapPhase } from "./app-roadmap";
 
 const InputSchema = z.object({
@@ -125,6 +126,7 @@ function fallbackRoadmap(data: z.infer<typeof InputSchema>): RoadmapDto[] {
 }
 
 export const generateAppRoadmap = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     const key = process.env.LOVABLE_API_KEY;
