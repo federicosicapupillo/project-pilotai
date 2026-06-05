@@ -660,7 +660,7 @@ function ValueEstimateSection({
   );
 }
 
-function CostWithoutAccentiAI({
+function CostWithoutAgentiAI({
   idea,
   projectType,
   difficulty,
@@ -697,7 +697,7 @@ function CostWithoutAccentiAI({
       />
 
       <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
-        <Euro className="size-3.5 text-primary" /> Costo stimato senza AccentiAI
+        <Euro className="size-3.5 text-primary" /> Costo stimato senza Agenti AI
       </div>
 
       <div className="font-display font-semibold text-4xl sm:text-5xl gradient-text leading-tight">
@@ -711,14 +711,14 @@ function CostWithoutAccentiAI({
       {/* Confronto */}
       <div className="mt-6 grid sm:grid-cols-2 gap-3">
         <div className="rounded-xl border border-border/60 bg-background/40 p-4">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Senza AccentiAI</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Senza Agenti AI</div>
           <div className="font-display font-semibold text-2xl mt-1">{amount}</div>
           <div className="text-[11px] text-muted-foreground mt-1">
             Analisi, progettazione, sviluppo e test esterni.
           </div>
         </div>
         <div className="rounded-xl border border-primary/50 ring-1 ring-primary/20 p-4 bg-background/40">
-          <div className="text-[10px] uppercase tracking-wider text-primary">Con AccentiAI</div>
+          <div className="text-[10px] uppercase tracking-wider text-primary">Con Agenti AI</div>
           <div className="font-display font-semibold text-2xl mt-1 gradient-text">Da 29€</div>
           <div className="text-[11px] text-muted-foreground mt-1">
             Tu porti l'idea. Il team AI prepara struttura, funzioni, schermate, prompt e passaggi operativi.
@@ -727,7 +727,7 @@ function CostWithoutAccentiAI({
       </div>
 
       <p className="text-[11px] text-muted-foreground mt-4 italic">
-        Il valore può variare in base a funzioni, integrazioni e complessità. AccentiAI non sostituisce
+        Il valore può variare in base a funzioni, integrazioni e complessità. Agenti AI non sostituisce
         completamente uno sviluppatore: ti permette di partire, chiarire l'idea e costruire una prima
         versione riducendo drasticamente i costi iniziali.
       </p>
