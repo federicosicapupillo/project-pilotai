@@ -331,6 +331,51 @@ export type Database = {
           },
         ]
       }
+      operational_prompts: {
+        Row: {
+          agent_name: string
+          copied: boolean
+          created_at: string
+          id: string
+          instructions: string
+          project_id: string | null
+          prompt_text: string
+          recommended_tool: string
+          step_title: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_name: string
+          copied?: boolean
+          created_at?: string
+          id?: string
+          instructions: string
+          project_id?: string | null
+          prompt_text: string
+          recommended_tool: string
+          step_title: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_name?: string
+          copied?: boolean
+          created_at?: string
+          id?: string
+          instructions?: string
+          project_id?: string | null
+          prompt_text?: string
+          recommended_tool?: string
+          step_title?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pm_messages: {
         Row: {
           content: string
