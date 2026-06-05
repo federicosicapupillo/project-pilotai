@@ -310,11 +310,6 @@ function ProjectPage() {
         </div>
       )}
 
-      <div className="mt-10 text-center">
-        <Link to="/library" className="text-sm text-primary hover:underline">
-          Esplora la libreria di prompt globale →
-        </Link>
-      </div>
     </div>
   );
 }
