@@ -276,7 +276,7 @@ export function AgentPromptsSection({ projectId }: { projectId?: string | null }
                   <pre className="text-xs whitespace-pre-wrap font-mono">{viewing.prompt_text}</pre>
                 </div>
                 <div className="flex justify-end">
-                  <Button variant="hero" onClick={() => copyPrompt(viewing)}>
+                  <Button variant="hero" onClick={() => void copyPromptFull(viewing)}>
                     <Copy className="size-4" /> Copia prompt
                   </Button>
                 </div>
