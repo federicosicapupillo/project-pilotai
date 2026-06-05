@@ -204,7 +204,11 @@ function ProjectManagerPage() {
             className="flex-1 overflow-y-auto px-4 sm:px-5 py-5 space-y-4 max-h-[60vh] min-h-[360px]"
           >
             {messages.map((m) => (
-              <MessageBubble key={m.id} role={m.role} content={m.content} />
+              <MessageBubble
+                key={m.id}
+                role={m.role === "user" ? "user" : "assistant"}
+                content={m.content}
+              />
             ))}
             {mutation.isPending && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
