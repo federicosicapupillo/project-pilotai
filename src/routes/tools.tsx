@@ -292,13 +292,55 @@ function ToolsPage() {
         </section>
       ))}
 
+      {!hasAccess && (
+        <section className="mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/60 text-xs text-muted-foreground mb-3">
+            <Lock className="size-3.5 text-primary" /> Anteprima del metodo
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-display font-semibold">Ordine operativo del progetto</h2>
+          <p className="text-muted-foreground mt-2 max-w-2xl">
+            Il tuo Team AI segue un ordine di lavoro preciso per trasformare un'idea in una prima app funzionante.
+          </p>
+          <ol className="mt-6 grid sm:grid-cols-2 gap-3">
+            {[
+              "Chiarire l'idea",
+              "Analizzare il mercato",
+              "Organizzare il progetto",
+              "Costruire la prima versione",
+              "Gestire dati e accessi",
+              "Testare e migliorare",
+              "Preparare il lancio",
+            ].map((label, i) => (
+              <li
+                key={label}
+                className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/40 px-4 py-3"
+              >
+                <span className="grid place-items-center size-8 rounded-full bg-primary/15 border border-primary/40 text-primary text-sm font-semibold shrink-0">
+                  {i + 1}
+                </span>
+                <span className="text-sm text-foreground/90">{label}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="text-xs text-muted-foreground mt-4 italic">
+            Gli strumenti reali usati in ogni fase si sbloccano dopo l'attivazione del Team AI.
+          </p>
+        </section>
+      )}
+
       {/* CTA finale */}
       <section className="mt-12 relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/15 via-violet-500/10 to-fuchsia-500/10 p-8 sm:p-12 text-center">
         <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
         <div className="relative">
-          <h2 className="text-3xl sm:text-4xl font-display font-semibold">Adesso hai il tuo team. Vuoi iniziare a usarlo?</h2>
+          <h2 className="text-3xl sm:text-4xl font-display font-semibold">
+            {hasAccess
+              ? "Adesso hai il tuo team. Vuoi iniziare a usarlo?"
+              : "Vuoi sbloccare gli strumenti del tuo Team AI?"}
+          </h2>
           <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-            Attiva il tuo agente AI personale e inizia a costruire la tua app con il supporto della squadra giusta.
+            {hasAccess
+              ? "Attiva il tuo agente AI personale e inizia a costruire la tua app con il supporto della squadra giusta."
+              : "Ora vedi il metodo. Dopo l'attivazione vedrai anche gli strumenti reali, l'ordine operativo completo e come usarli nel tuo progetto."}
           </p>
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button variant="hero" size="lg" onClick={handleActivate}>
@@ -310,6 +352,9 @@ function ToolsPage() {
               </Button>
             </Link>
           </div>
+          {!hasAccess && (
+            <p className="text-xs text-muted-foreground mt-3">Accesso immediato dopo il pagamento.</p>
+          )}
         </div>
       </section>
     </div>
