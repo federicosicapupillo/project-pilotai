@@ -152,7 +152,7 @@ export function OperativeCircuit({
 }: {
   compact?: boolean;
   badge?: string;
-  title?: React.ReactNode;
+  title?: ReactNode;
   subtitle?: string;
   counterLabel?: string;
   footerNote?: string;
