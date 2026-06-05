@@ -9,7 +9,7 @@ import {
   ClipboardCheck,
   CheckCircle2,
   Check,
-  Loader2,
+  Play,
   Lock,
   MessageSquare,
   ArrowRight,
@@ -127,7 +127,7 @@ export function DashboardRoadmap({
                     {isDone ? (
                       <Check className="size-4" />
                     ) : isCurrent ? (
-                      <Loader2 className="size-4 animate-spin" />
+                      <Play className="size-3.5 fill-current" />
                     ) : (
                       <Icon className="size-4" />
                     )}
