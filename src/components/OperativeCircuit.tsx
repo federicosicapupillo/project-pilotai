@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ToolIcon } from "./ToolIcon";
 import {
   ArrowRight, Lightbulb, Search, Brain, Code2, GitBranch,
@@ -138,7 +138,27 @@ const ROLE_LABEL: Record<Tool["role"], string> = {
   opzionale: "Opzionale",
 };
 
-export function OperativeCircuit({ compact = false }: { compact?: boolean }) {
+type StepOverride = { role?: string; when?: string };
+
+export function OperativeCircuit({
+  compact = false,
+  badge = "Circuito operativo",
+  title,
+  subtitle = "Ogni fase ha i suoi strumenti: qui vedi quali usare e quando. Non serve usarli tutti insieme.",
+  counterLabel,
+  footerNote = "Questo è il tuo arsenale completo: in ogni fase usi solo gli strumenti giusti.",
+  stepOverrides,
+  stepLabelPrefix = "Step",
+}: {
+  compact?: boolean;
+  badge?: string;
+  title?: ReactNode;
+  subtitle?: string;
+  counterLabel?: string;
+  footerNote?: string;
+  stepOverrides?: Record<string, StepOverride>;
+  stepLabelPrefix?: string;
+}) {
   const [active, setActive] = useState<number | null>(null);
 
   return (
@@ -153,18 +173,20 @@ export function OperativeCircuit({ compact = false }: { compact?: boolean }) {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-primary/90 backdrop-blur">
             <span className="size-1.5 rounded-full bg-primary animate-pulse" />
-            Circuito operativo
+            {badge}
           </div>
           <h3 className="font-display font-semibold text-2xl sm:text-4xl mt-3 tracking-tight">
-            Dal pensiero al <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">lancio</span>
+            {title ?? (
+              <>Dal pensiero al <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">lancio</span></>
+            )}
           </h3>
           <p className="text-sm sm:text-base text-muted-foreground mt-2 max-w-2xl">
-            Ogni fase ha i suoi strumenti: qui vedi quali usare e quando. Non serve usarli tutti insieme.
+            {subtitle}
           </p>
         </div>
         <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-foreground/80 shrink-0 mt-1 backdrop-blur">
           <span className="size-1 rounded-full bg-emerald-400" />
-          {STEPS.length} fasi
+          {counterLabel ?? `${STEPS.length} fasi`}
         </span>
       </div>
 
@@ -174,6 +196,7 @@ export function OperativeCircuit({ compact = false }: { compact?: boolean }) {
           {STEPS.map((s, i) => {
             const isActive = active === i;
             const Icon = s.icon;
+            const override = stepOverrides?.[s.label];
             return (
               <div key={s.label} className="flex items-stretch shrink-0 snap-start">
                 <button
@@ -192,7 +215,7 @@ export function OperativeCircuit({ compact = false }: { compact?: boolean }) {
                     className="text-[10px] font-semibold uppercase tracking-[0.22em]"
                     style={{ color: s.color }}
                   >
-                    Step {i + 1}
+                    {stepLabelPrefix} {i + 1}
                   </span>
 
                   <div className="mt-3 mx-auto grid place-items-center size-14 rounded-2xl border transition-transform duration-300 group-hover:scale-105"
@@ -206,12 +229,22 @@ export function OperativeCircuit({ compact = false }: { compact?: boolean }) {
                   </div>
 
                   <div className="font-display font-semibold text-lg mt-3">{s.label}</div>
+                  {override?.role && (
+                    <p className="text-[11px] text-foreground/70 mt-1 italic leading-snug">
+                      {override.role}
+                    </p>
+                  )}
 
                   {!compact && (
                     <>
                       <p className="text-[11px] leading-relaxed text-muted-foreground mt-2 min-h-[3.75rem]">
                         {s.desc}
                       </p>
+                      {override?.when && (
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-primary/80 mt-2">
+                          {override.when}
+                        </p>
+                      )}
 
                       <div className="mt-4 pt-3 border-t border-white/5 flex flex-col gap-1.5">
                         {s.tools.slice(0, 4).map((t) => (
@@ -295,7 +328,7 @@ export function OperativeCircuit({ compact = false }: { compact?: boolean }) {
       )}
 
       <p className="relative text-center text-xs sm:text-sm text-muted-foreground mt-6 italic">
-        Questo è il tuo arsenale completo: in ogni fase usi solo gli strumenti giusti.
+        {footerNote}
       </p>
     </section>
   );
