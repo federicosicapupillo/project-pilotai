@@ -48,6 +48,7 @@ export const ROADMAP_TEMPLATE = [
 
 import { STRATEGIST_AGENT_SYSTEM_PROMPT } from "@/prompts/strategistAgentSystemPrompt";
 import { VALIDATOR_AGENT_SYSTEM_PROMPT } from "@/prompts/validatorAgentSystemPrompt";
+import { RESEARCHER_AGENT_SYSTEM_PROMPT } from "@/prompts/researcherAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -63,6 +64,13 @@ export const AGENT_TEMPLATE = (idea: string) => [
     when_to_use: "Subito dopo lo Stratega, prima di definire l'MVP e iniziare a costruire.",
     expected_output: "Validazione strutturata con verdetto operativo e indicazione se si può avanzare all'MVP.",
     prompt_text: `${VALIDATOR_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA VALIDARE:\n"${idea}"\n\nApplica il METODO DI VALIDAZIONE e rispondi con il FORMATO RISPOSTA STANDARD (9 sezioni) seguito da OUTPUT PER PROJECT MANAGER. Se manca una direzione strategica approvata, dichiara che si tratta di una validazione preliminare.`,
+  },
+  {
+    name: "Agente Ricercatore",
+    role: "Analizza mercato, target, competitor e rischi per preparare il terreno agli altri agenti.",
+    when_to_use: "Quando serve capire settore, alternative esistenti, ipotesi da verificare e dati mancanti prima di costruire.",
+    expected_output: "Analisi strutturata in 12 sezioni con brief di ricerca finale per Stratega, Project Manager, Validatore e Agente Tecnico.",
+    prompt_text: `${RESEARCHER_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA ANALIZZARE:\n"${idea}"\n\nClassifica prima il tipo di progetto, poi adatta l'analisi e rispondi con il FORMATO RISPOSTA STANDARD (12 sezioni in markdown) chiudendo con il BRIEF DI RICERCA PER GLI ALTRI AGENTI. Se non hai accesso a fonti aggiornate, dichiaralo e marca i dati come "Dato da verificare", "Stima indicativa" o "Inferenza logica".`,
   },
   {
     name: "Agente Product Manager",
