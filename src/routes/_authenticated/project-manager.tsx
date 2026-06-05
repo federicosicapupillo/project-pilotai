@@ -225,7 +225,13 @@ function ProjectManagerPage() {
   const opPanelRef = useRef<HTMLElement>(null);
 
   const mutation = useMutation({
-    mutationFn: (message: string) => send({ data: { projectId: activeId, message } }),
+    mutationFn: (vars: string | { message: string; displayMessage?: string }) => {
+      const payload =
+        typeof vars === "string"
+          ? { projectId: activeId, message: vars }
+          : { projectId: activeId, message: vars.message, displayMessage: vars.displayMessage };
+      return send({ data: payload });
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["pm-history", activeId] });
       qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
@@ -281,7 +287,10 @@ REGOLE:
 - Non generare ancora il prompt operativo completo: solo lo schema.
 - Le migliorie extra vanno nel Backlog migliorie future.`;
     setReviewMode("schema-review");
-    mutation.mutate(command);
+    mutation.mutate({
+      message: command,
+      displayMessage: `Proseguiamo: voglio lavorare sullo step "${step}".`,
+    });
   }
 
   function approveSchema() {
@@ -302,9 +311,10 @@ REGOLE:
   function applyCorrection(label: string) {
     if (mutation.isPending) return;
     setReviewMode("schema-review");
-    mutation.mutate(
-      `Non approvo ancora lo schema dello step "${currentStep.title}". Rigeneralo applicando questa correzione: "${label}". Mantieni la stessa struttura (analisi, decisioni, da tenere, da rimandare, consiglio operativo). Non modificare la roadmap, non saltare step. Non generare ancora il prompt operativo.`,
-    );
+    mutation.mutate({
+      message: `Non approvo ancora lo schema dello step "${currentStep.title}". Rigeneralo applicando questa correzione: "${label}". Mantieni la stessa struttura (analisi, decisioni, da tenere, da rimandare, consiglio operativo). Non modificare la roadmap, non saltare step. Non generare ancora il prompt operativo.`,
+      displayMessage: `Non approvo lo schema. Correzione richiesta: ${label}.`,
+    });
   }
 
   // L'utente approva il risultato dell'AI esterna: chiudi lo step corrente,
@@ -325,9 +335,10 @@ REGOLE:
     }
     setReviewMode("schema-review");
     if (!next) {
-      mutation.mutate(
-        `Ho approvato il risultato dell'AI esterna per lo step "${closed}". Segna lo step come completato. La roadmap è terminata: fammi un riepilogo finale del percorso.`,
-      );
+      mutation.mutate({
+        message: `Ho approvato il risultato dell'AI esterna per lo step "${closed}". Segna lo step come completato. La roadmap è terminata: fammi un riepilogo finale del percorso.`,
+        displayMessage: `Approvo il risultato dello step "${closed}". La roadmap è completata.`,
+      });
       return;
     }
     const command = `Ho approvato il risultato dell'AI esterna per lo step "${closed}". Segnalo come completato e passa ORA allo step successivo della roadmap: "${next}".
@@ -352,7 +363,10 @@ REGOLE:
 - Non saltare step.
 - Non generare ancora il prompt operativo.
 - Non rigenerare il prompt dello step appena chiuso ("${closed}").`;
-    mutation.mutate(command);
+    mutation.mutate({
+      message: command,
+      displayMessage: `Approvo il risultato dello step "${closed}". Passiamo allo step successivo: "${next}".`,
+    });
   }
 
   function rejectExternalResult() {
@@ -362,9 +376,10 @@ REGOLE:
   function applyValidationCorrection(label: string) {
     if (mutation.isPending) return;
     setReviewMode("idle");
-    mutation.mutate(
-      `Non approvo ancora il risultato dell'AI esterna per lo step "${currentStep.title}". Correzione richiesta: "${label}". Analizza di nuovo la risposta incollata in precedenza e dimmi cosa manca o cosa va corretto, senza chiudere lo step e senza modificare la roadmap.`,
-    );
+    mutation.mutate({
+      message: `Non approvo ancora il risultato dell'AI esterna per lo step "${currentStep.title}". Correzione richiesta: "${label}". Analizza di nuovo la risposta incollata in precedenza e dimmi cosa manca o cosa va corretto, senza chiudere lo step e senza modificare la roadmap.`,
+      displayMessage: `Non approvo il risultato. Correzione richiesta: ${label}.`,
+    });
   }
 
   const messages = [INTRO, ...(history?.messages ?? [])];
