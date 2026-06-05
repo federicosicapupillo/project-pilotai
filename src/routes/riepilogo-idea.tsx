@@ -621,14 +621,22 @@ function ValueEstimateSection({
 
           <div className="mt-6 grid sm:grid-cols-2 gap-3">
             <div className="rounded-xl p-4 bg-background/40 border border-border/60">
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Solo realizzazione da professionisti</div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Costo stimato senza Agenti AI</div>
               <div className="font-display font-semibold text-2xl mt-1 text-muted-foreground line-through decoration-primary/50">
                 Fino a {cost.amount}
               </div>
+              <p className="text-[11px] text-muted-foreground mt-2">
+                Costo indicativo se affidassi la realizzazione iniziale a freelance, agenzia o sviluppatore esterno.
+              </p>
             </div>
             <div className="rounded-xl p-4 bg-background/40 border border-primary/50">
-              <div className="text-[11px] uppercase tracking-wider text-primary/90">Parti da 29€ con il Team AI</div>
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-primary/60 bg-primary/10 text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">
+                Prezzo lancio Team AI
+              </div>
               <div className="font-display font-semibold text-2xl gradient-text mt-1">29€ una tantum</div>
+              <p className="text-[11px] text-muted-foreground mt-2">
+                Parti subito con il tuo Team AI operativo e costruisci la prima versione guidata del progetto.
+              </p>
             </div>
           </div>
 
@@ -638,9 +646,14 @@ function ValueEstimateSection({
                 Genera questo progetto <ArrowRight className="size-4" />
               </Button>
             ) : (
-              <Button variant="hero" size="lg" onClick={onActivate}>
-                Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-              </Button>
+              <div className="flex flex-col gap-1.5">
+                <Button variant="hero" size="lg" onClick={onActivate}>
+                  Parti ora con il Team AI - 29€ <ArrowRight className="size-4" />
+                </Button>
+                <p className="text-[11px] text-foreground/70">
+                  Pagamento unico. Nessun abbonamento attivato automaticamente.
+                </p>
+              </div>
             )}
             <p className="text-xs text-muted-foreground">
               {isAuthed
@@ -739,8 +752,11 @@ function CostWithoutAgentiAI({
         </p>
         <div className="mt-4">
           <Button variant="hero" size="lg" onClick={onActivate}>
-            Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+            Parti ora con il Team AI - 29€ <ArrowRight className="size-4" />
           </Button>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            Pagamento unico. Nessun abbonamento attivato automaticamente.
+          </p>
         </div>
       </div>
     </section>

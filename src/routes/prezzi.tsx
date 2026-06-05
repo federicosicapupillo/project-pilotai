@@ -63,7 +63,7 @@ function PrezziPage() {
 
   const goToDashboard = () => navigate({ to: "/dashboard" });
 
-  const PrimaryCta = ({ label = "Attiva il mio Team AI - 29€" }: { label?: string }) =>
+  const PrimaryCta = ({ label = "Parti ora con il Team AI - 29€" }: { label?: string }) =>
     hasAccess ? (
       <Button variant="hero" size="lg" className="w-full" onClick={goToDashboard}>
         Vai alla dashboard <ArrowRight className="size-4" />
@@ -116,12 +116,19 @@ function PrezziPage() {
                   Attiva la squadra di agenti AI che lavora sulla tua idea e ti aiuta a trasformarla nella prima versione della tua app.
                 </p>
 
-                <div className="mt-6 flex items-baseline justify-center gap-2">
+                <div className="mt-6 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/60 bg-primary/10 text-[11px] font-semibold uppercase tracking-wider text-primary glow-soft">
+                  <Sparkles className="size-3" /> Prezzo lancio
+                </div>
+                <div className="mt-3 flex items-baseline justify-center gap-2">
                   <div className="font-display font-semibold text-7xl gradient-text leading-none">29€</div>
                 </div>
-                <div className="text-xs text-muted-foreground mt-2">
-                  Accesso iniziale · Pagamento sicuro · Attivazione immediata
-                </div>
+                <div className="text-sm text-foreground/90 mt-2 font-medium">Una tantum</div>
+                <p className="text-xs text-muted-foreground mt-3 max-w-md mx-auto">
+                  Accesso iniziale al Team AI operativo per trasformare la tua idea nella prima versione dell'app.
+                </p>
+                <p className="text-xs text-primary/90 mt-3 max-w-md mx-auto">
+                  Offerta early access valida per i primi utenti. Il prezzo potrà aumentare dopo la fase di lancio.
+                </p>
               </div>
 
               <p className="text-sm text-muted-foreground mt-7 max-w-2xl mx-auto text-center">
@@ -159,7 +166,10 @@ function PrezziPage() {
               {/* CTA */}
               <div className="mt-7 max-w-sm mx-auto">
                 <PrimaryCta />
-                <p className="text-xs text-muted-foreground text-center mt-3 inline-flex items-center justify-center gap-1.5 w-full">
+                <p className="text-xs text-foreground/80 text-center mt-3">
+                  Pagamento unico. Nessun abbonamento attivato automaticamente.
+                </p>
+                <p className="text-xs text-muted-foreground text-center mt-2 inline-flex items-center justify-center gap-1.5 w-full">
                   <ShieldCheck className="size-3.5" /> Pagamento sicuro · Accesso immediato al tuo Team AI
                 </p>
               </div>
