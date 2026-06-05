@@ -154,6 +154,15 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
               </div>
             </Section>
 
+            {/* 2 — Valore stimato della tua idea */}
+            <ValueEstimateSection
+              idea={params.idea}
+              target={params.target}
+              projectType={summary.project_type}
+              difficulty={summary.difficulty}
+              onActivate={goToRoadmap}
+            />
+
             {/* 2 — Target */}
             <Section icon={Users} title="Target">
               <p className="text-sm sm:text-base text-foreground/90 leading-relaxed">{summary.target}</p>
@@ -241,41 +250,6 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
                 </p>
               </Section>
             </div>
-
-            {/* Costo stimato senza AccentiAI */}
-            <CostWithoutAccentiAI
-              idea={params.idea}
-              projectType={summary.project_type}
-              difficulty={summary.difficulty}
-              onActivate={goToRoadmap}
-            />
-
-            {/* Potenziale massimo stimato */}
-            {summary.max_revenue && (
-              <section
-                className="relative rounded-2xl p-6 sm:p-8 overflow-hidden border border-primary/40"
-                style={{
-                  background:
-                    "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
-                  boxShadow:
-                    "0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 10px 40px -10px color-mix(in oklab, var(--primary) 35%, transparent)",
-                }}
-              >
-                <div
-                  className="absolute -top-16 -right-12 size-40 rounded-full bg-primary/20 blur-3xl pointer-events-none"
-                  aria-hidden
-                />
-                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
-                  <TrendingUp className="size-3.5 text-primary" /> Potenziale massimo stimato
-                </div>
-                <div className="font-display font-semibold text-3xl sm:text-4xl gradient-text leading-tight">
-                  {summary.max_revenue}
-                </div>
-                <p className="text-xs text-muted-foreground mt-3 max-w-xl">
-                  Stima indicativa basata su una prima versione funzionante, target corretto e primi clienti paganti.
-                </p>
-              </section>
-            )}
 
             {/* 11 — Cosa farà il tuo agente AI */}
             <Section icon={Bot} title="Cosa farà il tuo agente AI">
@@ -446,6 +420,137 @@ function estimateExternalCost(idea: string, projectType: string, difficulty: str
   if (difficulty === "Facile") return { amount: "Fino a 3.000€", tier: "semplice" };
   if (difficulty === "Medio") return { amount: "Fino a 8.000€", tier: "media" };
   return { amount: "Fino a 15.000€", tier: "avanzata" };
+}
+
+function estimatePotentialRevenue(idea: string, target: string, projectType: string): {
+  amount: string;
+  tier: "utility" | "professionisti" | "b2b" | "marketplace";
+} {
+  const t = `${idea} ${target} ${projectType}`.toLowerCase();
+  const marketplaceKw = [
+    "marketplace", "piattaforma", "annunci", "candidatur",
+    "venditori e compratori", "host e ospiti", "due tipologie",
+    "due tipi di utent", "chat tra utent", "recensioni", "admin", "matching",
+  ];
+  const b2bKw = [
+    "gestional", "automazion", "b2b", "azienda", "aziende",
+    "crm", "erp", "team", "dipendent", "dashboard", "saas",
+  ];
+  const proKw = [
+    "professionist", "freelance", "consulent", "studio",
+    "piccola attivit", "piccole attivit", "negozio", "ristorante",
+    "palestra", "coach", "agente immobiliare",
+  ];
+  if (marketplaceKw.some((k) => t.includes(k))) {
+    return { amount: "Fino a 10.000€/mese", tier: "marketplace" };
+  }
+  if (b2bKw.some((k) => t.includes(k))) {
+    return { amount: "Fino a 8.000€/mese", tier: "b2b" };
+  }
+  if (proKw.some((k) => t.includes(k))) {
+    return { amount: "Fino a 3.000€/mese", tier: "professionisti" };
+  }
+  return { amount: "Fino a 1.000€/mese", tier: "utility" };
+}
+
+function ValueEstimateSection({
+  idea,
+  target,
+  projectType,
+  difficulty,
+  onActivate,
+}: {
+  idea: string;
+  target: string;
+  projectType: string;
+  difficulty: string;
+  onActivate: () => void;
+}) {
+  const potential = estimatePotentialRevenue(idea, target, projectType);
+  const cost = estimateExternalCost(idea, projectType, difficulty);
+
+  return (
+    <section className="space-y-5">
+      <div className="text-center sm:text-left">
+        <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+          <Euro className="size-3.5 text-primary" /> Valore stimato della tua idea
+        </div>
+        <h2 className="font-display font-semibold text-2xl sm:text-3xl mt-2">
+          Quanto può <span className="gradient-text">valere</span> e quanto sarebbe <span className="gradient-text">costata</span>
+        </h2>
+        <p className="text-sm text-muted-foreground mt-2 max-w-2xl">
+          Il tuo agente AI ha stimato il possibile potenziale economico dell'idea e il costo che avresti potuto sostenere per farla realizzare da zero.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* CARD 1 — Potenziale massimo */}
+        <div
+          className="relative rounded-2xl p-6 sm:p-7 overflow-hidden border border-primary/40"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+            boxShadow:
+              "0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 10px 40px -10px color-mix(in oklab, var(--primary) 35%, transparent)",
+          }}
+        >
+          <div className="absolute -top-16 -right-12 size-40 rounded-full bg-primary/20 blur-3xl pointer-events-none" aria-hidden />
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+            <TrendingUp className="size-3.5 text-primary" /> Potenziale massimo stimato
+          </div>
+          <div className="font-display font-semibold text-3xl sm:text-4xl gradient-text leading-tight">
+            {potential.amount}
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Stima indicativa basata su una prima versione funzionante, target corretto e primi clienti paganti.
+          </p>
+        </div>
+
+        {/* CARD 2 — Costo senza AccentiAI */}
+        <div
+          className="relative rounded-2xl p-6 sm:p-7 overflow-hidden border border-primary/50"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 10%, transparent), color-mix(in oklab, var(--accent) 8%, transparent))",
+            boxShadow:
+              "0 0 0 1px color-mix(in oklab, var(--primary) 30%, transparent), 0 10px 40px -10px color-mix(in oklab, var(--primary) 40%, transparent)",
+          }}
+        >
+          <div className="absolute -top-16 -left-12 size-40 rounded-full bg-primary/20 blur-3xl pointer-events-none" aria-hidden />
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+            <Euro className="size-3.5 text-primary" /> Costo stimato senza AccentiAI
+          </div>
+          <div className="font-display font-semibold text-3xl sm:text-4xl gradient-text leading-tight">
+            {cost.amount}
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-primary/90 mt-2">Solo realizzazione</div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Stima indicativa del costo che avresti potuto sostenere per far creare questa prima versione da freelance, agenzia o sviluppatore esterno.
+          </p>
+        </div>
+      </div>
+
+      <div
+        className="rounded-2xl p-5 sm:p-6 border border-primary/40"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 14%, transparent))",
+        }}
+      >
+        <p className="font-display font-semibold text-base sm:text-lg">
+          Prima di investire migliaia di euro nella realizzazione, puoi partire da <span className="gradient-text">29€</span> e far lavorare il tuo Team AI sulla tua idea.
+        </p>
+        <div className="mt-4">
+          <Button variant="hero" size="lg" onClick={onActivate}>
+            Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+          </Button>
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-3 italic">
+          Le stime non includono marketing, server, manutenzione o evoluzioni future.
+        </p>
+      </div>
+    </section>
+  );
 }
 
 function CostWithoutAccentiAI({
