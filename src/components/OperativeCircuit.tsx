@@ -149,6 +149,8 @@ export function OperativeCircuit({
   footerNote = "Questo è il tuo arsenale completo: in ogni fase usi solo gli strumenti giusti.",
   stepOverrides,
   stepLabelPrefix = "Step",
+  hideTools = false,
+  lockCta,
 }: {
   compact?: boolean;
   badge?: string;
@@ -158,8 +160,11 @@ export function OperativeCircuit({
   footerNote?: string;
   stepOverrides?: Record<string, StepOverride>;
   stepLabelPrefix?: string;
+  hideTools?: boolean;
+  lockCta?: ReactNode;
 }) {
   const [active, setActive] = useState<number | null>(null);
+  const showTools = !hideTools;
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#0a0f1f] via-[#0b1124] to-[#070a18] p-6 sm:p-8">
@@ -246,6 +251,7 @@ export function OperativeCircuit({
                         </p>
                       )}
 
+                      {showTools ? (
                       <div className="mt-4 pt-3 border-t border-white/5 flex flex-col gap-1.5">
                         {s.tools.slice(0, 4).map((t) => (
                           <span
@@ -263,6 +269,18 @@ export function OperativeCircuit({
                           </span>
                         )}
                       </div>
+                      ) : (
+                        <div className="mt-4 pt-3 border-t border-white/5">
+                          <div className="rounded-lg border border-dashed border-primary/30 bg-primary/[0.06] px-2.5 py-2 text-left">
+                            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-primary/90 font-semibold">
+                              <LockIcon className="size-3" /> Tool bloccati
+                            </div>
+                            <p className="text-[10.5px] leading-snug text-muted-foreground mt-1">
+                              Attiva il Team AI per vedere gli strumenti operativi di questo agente.
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
                 </button>
@@ -280,7 +298,7 @@ export function OperativeCircuit({
       </div>
 
       {/* DETAIL */}
-      {active !== null && !compact && (
+      {active !== null && !compact && showTools && (
         <div className="relative mt-5 rounded-2xl border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent backdrop-blur-md p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -324,6 +342,32 @@ export function OperativeCircuit({
               );
             })}
           </div>
+        </div>
+      )}
+
+      {active !== null && !compact && !showTools && (
+        <div className="relative mt-5 rounded-2xl border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent backdrop-blur-md p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-primary font-semibold">
+                <span className="size-1.5 rounded-full bg-primary" />
+                {stepLabelPrefix} {active + 1} · {STEPS[active].label}
+              </div>
+              <p className="text-base text-foreground mt-2">{STEPS[active].desc}</p>
+              <p className="text-sm text-muted-foreground mt-2 italic">
+                Gli strumenti operativi di questo agente si sbloccano con l'attivazione del Team AI.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActive(null)}
+              className="size-7 grid place-items-center rounded-full border border-white/10 bg-white/5 text-xs text-muted-foreground hover:text-foreground hover:border-white/30 shrink-0"
+              aria-label="Chiudi"
+            >
+              ✕
+            </button>
+          </div>
+          {lockCta && <div className="mt-4">{lockCta}</div>}
         </div>
       )}
 
