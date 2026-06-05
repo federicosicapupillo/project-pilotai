@@ -479,34 +479,56 @@ ${text}`;
 
       {/* PROJECT STATUS CARD */}
       {activeProject && (
-        <div className="mb-6 glass-card rounded-2xl p-5 border border-border/60">
-          <div className="grid sm:grid-cols-4 gap-4">
+        <section
+          aria-label="Riepilogo progetto"
+          className="mb-10 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.08] via-background/40 to-accent/[0.08] p-6 sm:p-7 shadow-[0_0_40px_-20px_oklch(0.7_0.18_280/0.5)]"
+        >
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Progetto</div>
-              <div className="font-display font-semibold mt-1 truncate">{activeProject.title}</div>
-            </div>
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Stato</div>
-              <div className="font-medium mt-1 truncate">{currentStep.title}</div>
-            </div>
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Avanzamento</div>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
-                  <div className="h-full gradient-bg" style={{ width: `${pct}%` }} />
-                </div>
-                <span className="text-sm font-semibold gradient-text">{pct}%</span>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+                Progetto
+              </div>
+              <div className="font-display font-semibold text-lg sm:text-xl text-foreground mt-2 leading-tight line-clamp-2">
+                {activeProject.title}
               </div>
             </div>
             <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Prossimo output</div>
-              <div className="font-medium mt-1 truncate">{nextStep?.title ?? "—"}</div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+                Stato attuale
+              </div>
+              <div className="font-display font-semibold text-lg sm:text-xl text-foreground mt-2 leading-tight line-clamp-2">
+                {currentStep.title}
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-baseline justify-between gap-2">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+                  Avanzamento
+                </div>
+                <span className="font-display font-semibold text-lg sm:text-xl gradient-text leading-none">
+                  {pct}%
+                </span>
+              </div>
+              <div className="mt-3 h-2.5 rounded-full bg-secondary/80 overflow-hidden border border-border/40">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-primary via-accent to-primary shadow-[0_0_12px_oklch(0.7_0.18_280/0.55)] transition-[width] duration-700"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+                Prossimo output
+              </div>
+              <div className="font-display font-semibold text-lg sm:text-xl text-foreground mt-2 leading-tight line-clamp-2">
+                {nextStep?.title ?? "—"}
+              </div>
             </div>
           </div>
-          <div className="mt-5 pt-4 border-t border-border/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <p className="text-xs text-muted-foreground">
-              Avanza lungo la roadmap (bloccata). Lo step corrente è{" "}
-              <span className="text-foreground/90 font-medium">{currentStep.title}</span>.
+          <div className="mt-6 pt-5 border-t border-primary/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Roadmap bloccata. Stai lavorando su{" "}
+              <span className="text-foreground font-medium">{currentStep.title}</span>.
             </p>
             <Button
               type="button"
@@ -514,7 +536,7 @@ ${text}`;
               size="lg"
               onClick={continueAppCreation}
               disabled={mutation.isPending}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto shrink-0"
             >
               {mutation.isPending ? (
                 <><Loader2 className="size-4 animate-spin" /> Preparo lo schema…</>
@@ -523,6 +545,17 @@ ${text}`;
               )}
             </Button>
           </div>
+        </section>
+      )}
+
+      {/* Visual divider between summary and chat */}
+      {activeProject && (
+        <div className="mb-6 flex items-center gap-4" aria-hidden="true">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Conversazione
+          </span>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
       )}
 
@@ -553,6 +586,22 @@ ${text}`;
           </div>
         )}
         <section className="flex flex-col glass-card rounded-2xl border border-border/60 overflow-hidden">
+          <header className="flex items-center gap-3 px-4 sm:px-5 py-3 border-b border-border/60 bg-background/40">
+            <div className="size-8 rounded-lg grid place-items-center bg-primary/15 border border-primary/30 text-primary shrink-0">
+              <Bot className="size-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-display font-semibold text-sm leading-tight">
+                Chat del Project Manager
+              </div>
+              <div className="text-[11px] text-muted-foreground leading-tight">
+                Conversazione operativa sullo step corrente
+              </div>
+            </div>
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-primary font-medium px-2 py-1 rounded-full bg-primary/10 border border-primary/30 shrink-0">
+              <span className="size-1.5 rounded-full bg-primary animate-pulse" /> Online
+            </span>
+          </header>
           <div
             ref={scrollerRef}
             className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-4 max-h-[48vh] min-h-[260px]"
