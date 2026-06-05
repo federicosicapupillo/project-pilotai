@@ -15,6 +15,9 @@ import {
   markOperationalPromptCopied,
 } from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS, syntheticProgress } from "@/components/SyntheticRoadmap";
+import { AgentAvatar } from "@/components/AgentAvatar";
+import { ToolIcon } from "@/components/ToolIcon";
+import { resolveAgentIdentity } from "@/lib/agent-identity";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
   head: () => ({ meta: [{ title: "Il tuo AI Project Manager" }] }),
