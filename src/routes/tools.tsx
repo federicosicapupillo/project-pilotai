@@ -95,12 +95,73 @@ function ToolsPage() {
         />
       </div>
 
-      <div className="mb-12 glass-card rounded-2xl p-8 sm:p-10 text-center">
-        <h2 className="text-2xl sm:text-3xl font-display font-semibold">Non devi fare tutto da solo</h2>
-        <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-          L'errore più comune è pensare di dover capire tutto da soli. In realtà, ti serve il team giusto.
-          Questa è la squadra di agenti AI selezionati per accompagnarti fase dopo fase nella creazione della tua app.
-        </p>
+      <div
+        className="relative mb-12 rounded-2xl p-8 sm:p-12 overflow-hidden border border-primary/40 text-center"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 16%, transparent), color-mix(in oklab, var(--accent) 12%, transparent))",
+          boxShadow:
+            "0 0 0 1px color-mix(in oklab, var(--primary) 28%, transparent), 0 20px 60px -20px color-mix(in oklab, var(--primary) 45%, transparent)",
+        }}
+      >
+        <div className="absolute -top-20 -right-16 size-56 rounded-full bg-primary/25 blur-3xl pointer-events-none" aria-hidden />
+        <div className="absolute -bottom-20 -left-16 size-56 rounded-full bg-accent/20 blur-3xl pointer-events-none" aria-hidden />
+
+        <div className="relative">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background/40 border border-primary/40 text-[11px] uppercase tracking-wider text-primary/90 mb-4">
+            <Sparkles className="size-3" /> Il tuo ruolo nel progetto
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl font-display font-semibold leading-[1.1]">
+            Tu devi solo <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">approvare</span>
+          </h2>
+
+          <p className="text-base sm:text-lg text-foreground/85 mt-5 max-w-2xl mx-auto leading-relaxed">
+            Non devi sapere programmare, disegnare schermate o capire i flussi tecnici. I tuoi agenti AI
+            lavorano sulla tua idea e ti mostrano cosa hanno preparato.{" "}
+            <strong className="text-foreground">Tu devi solo approvare oppure chiedere modifiche.</strong>
+          </p>
+
+          <div className="mt-7 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-background/50 border border-primary/50">
+            <span className="text-lg sm:text-xl font-display font-semibold">
+              Tu <span className="text-foreground">controlli</span>. Gli agenti{" "}
+              <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">eseguono</span>.
+            </span>
+          </div>
+
+          <ul className="mt-7 grid sm:grid-cols-2 gap-2 max-w-2xl mx-auto text-left">
+            {[
+              "Nessuna competenza tecnica necessaria",
+              "Nessun caos da gestire da solo",
+              "Tu approvi, il team AI avanza",
+              "Se qualcosa non ti piace, gli agenti la correggono",
+            ].map((t) => (
+              <li
+                key={t}
+                className="flex items-start gap-2 text-sm rounded-lg bg-background/40 border border-border/60 px-3 py-2.5"
+              >
+                <Sparkles className="size-3.5 mt-0.5 shrink-0 text-primary" />
+                <span className="text-foreground/90">{t}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 pt-6 border-t border-border/40">
+            <h3 className="font-display font-semibold text-xl sm:text-2xl">
+              Vuoi mettere al lavoro i tuoi agenti AI?
+            </h3>
+            <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
+              Porta la tua idea. Guarda cosa preparano. Approva solo ciò che ti convince.
+            </p>
+            <div className="mt-5">
+              <Button variant="hero" size="lg" asChild>
+                <Link to="/prezzi">
+                  Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="mb-10">
