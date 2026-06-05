@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
   Check, ArrowRight, Sparkles, Lock, ShieldCheck,
   Compass, ClipboardList, LayoutGrid, GitBranch, Wand2,
-  Hammer, ShieldAlert, Rocket, LineChart, GraduationCap,
+  Hammer, ShieldAlert, Rocket, LineChart, GraduationCap, Zap,
   type LucideIcon,
 } from "lucide-react";
 import { useActivateTeam } from "@/hooks/use-activate-team";
