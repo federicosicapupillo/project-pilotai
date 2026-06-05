@@ -248,16 +248,6 @@ function DashboardPage() {
                   </ul>
                 )}
               </div>
-
-              <div className="glass-card rounded-xl p-5">
-                <h3 className="font-display font-semibold">Roadmap sintetica</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Ogni progetto ha una roadmap di 10 step. Apri un progetto per vedere lo stato.
-                </p>
-                <Link to="/method" className="inline-flex items-center gap-1 text-sm text-primary mt-3 hover:underline">
-                  Scopri il metodo <ArrowRight className="size-3" />
-                </Link>
-              </div>
             </>
           ) : (
             <div className="rounded-2xl p-6 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft">
