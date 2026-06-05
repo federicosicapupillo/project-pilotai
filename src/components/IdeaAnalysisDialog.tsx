@@ -509,6 +509,69 @@ function MiniStat({
   );
 }
 
+function ImpactStat({
+  icon: Icon,
+  label,
+  value,
+  description,
+  microcopy,
+  tone,
+  highlight,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  description: string;
+  microcopy?: string;
+  tone: "potential" | "cost" | "savings";
+  highlight?: boolean;
+}) {
+  const accent =
+    tone === "savings"
+      ? "var(--primary)"
+      : tone === "potential"
+        ? "var(--accent)"
+        : "var(--muted-foreground)";
+  return (
+    <div
+      className="relative rounded-2xl p-5 overflow-hidden border flex flex-col gap-3"
+      style={{
+        borderColor: `color-mix(in oklab, ${accent} ${highlight ? 70 : 45}%, transparent)`,
+        background: highlight
+          ? "linear-gradient(140deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 12%, transparent))"
+          : "linear-gradient(140deg, color-mix(in oklab, var(--primary) 8%, transparent), color-mix(in oklab, var(--accent) 5%, transparent))",
+        boxShadow: highlight
+          ? "0 0 0 1px color-mix(in oklab, var(--primary) 55%, transparent), 0 18px 50px -20px color-mix(in oklab, var(--primary) 65%, transparent)"
+          : "0 10px 30px -20px color-mix(in oklab, var(--primary) 35%, transparent)",
+      }}
+    >
+      <div
+        className="inline-flex items-center gap-2 size-9 rounded-xl justify-center"
+        style={{
+          background: `color-mix(in oklab, ${accent} 18%, transparent)`,
+          border: `1px solid color-mix(in oklab, ${accent} 45%, transparent)`,
+        }}
+      >
+        <Icon className="size-4 text-primary" />
+      </div>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
+      </div>
+      <div className="font-display font-bold text-3xl sm:text-[2rem] leading-[1.05] gradient-text">
+        {value}
+      </div>
+      <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
+        {description}
+      </p>
+      {microcopy && (
+        <p className="text-[10px] text-muted-foreground/80 mt-auto pt-1 border-t border-border/40">
+          {microcopy}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function DifficultyBadge({ level }: { level: string }) {
   const color =
     level === "Facile"
