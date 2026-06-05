@@ -21,16 +21,19 @@ import { ToolIcon } from "@/components/ToolIcon";
 import { resolveAgentIdentity } from "@/lib/agent-identity";
 import { toast } from "sonner";
 
-type OpPrompt = {
+type OpPromptMeta = {
   id: string;
   project_id: string | null;
   step_title: string;
   agent_name: string;
   recommended_tool: string;
-  instructions: string;
   title: string;
-  prompt_text: string;
   created_at: string;
+};
+
+type OpPromptFull = OpPromptMeta & {
+  instructions: string;
+  prompt_text: string;
 };
 
 function formatDateTime(iso: string) {
@@ -48,23 +51,49 @@ export function AgentPromptsSection({ projectId }: { projectId?: string | null }
     queryKey: ["agent-prompts", projectId ?? "none"],
     enabled: !!projectId,
     queryFn: async () => {
-      if (!projectId) return [] as OpPrompt[];
+      if (!projectId) return [] as OpPromptMeta[];
       const { data, error } = await supabase
         .from("operational_prompts")
         .select(
-          "id, project_id, step_title, agent_name, recommended_tool, instructions, title, prompt_text, created_at",
+          // Lightweight list payload: skip the heavy prompt_text and
+          // instructions fields here; they're loaded on demand when the
+          // user opens "Vedi prompt" or clicks "Copia prompt".
+          "id, project_id, step_title, agent_name, recommended_tool, title, created_at",
         )
         .eq("project_id", projectId)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as OpPrompt[];
+      return (data ?? []) as OpPromptMeta[];
     },
+    staleTime: 30_000,
   });
 
-  const [viewing, setViewing] = useState<OpPrompt | null>(null);
+  const [viewing, setViewing] = useState<OpPromptFull | null>(null);
+  const [openingId, setOpeningId] = useState<string | null>(null);
+  const [copyingId, setCopyingId] = useState<string | null>(null);
+
+  async function loadFull(id: string): Promise<OpPromptFull | null> {
+    const { data, error } = await supabase
+      .from("operational_prompts")
+      .select(
+        "id, project_id, step_title, agent_name, recommended_tool, title, created_at, instructions, prompt_text",
+      )
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as OpPromptFull;
+  }
+
+  async function openPrompt(p: OpPromptMeta) {
+    setOpeningId(p.id);
+    const full = await loadFull(p.id);
+    setOpeningId(null);
+    if (full) setViewing(full);
+    else toast.error("Impossibile aprire il prompt");
+  }
 
   const grouped = useMemo(() => {
-    const map = new Map<string, OpPrompt[]>();
+    const map = new Map<string, OpPromptMeta[]>();
     for (const p of prompts ?? []) {
       const key = p.agent_name || "Agente";
       if (!map.has(key)) map.set(key, []);
@@ -80,13 +109,24 @@ export function AgentPromptsSection({ projectId }: { projectId?: string | null }
     return entries;
   }, [prompts]);
 
-  const copyPrompt = async (p: OpPrompt) => {
+  const copyPromptFull = async (p: OpPromptFull) => {
     try {
       await navigator.clipboard.writeText(p.prompt_text);
       toast.success("Prompt copiato");
     } catch {
       toast.error("Impossibile copiare il prompt");
     }
+  };
+
+  const copyPromptById = async (p: OpPromptMeta) => {
+    setCopyingId(p.id);
+    const full = await loadFull(p.id);
+    setCopyingId(null);
+    if (!full) {
+      toast.error("Impossibile copiare il prompt");
+      return;
+    }
+    void copyPromptFull(full);
   };
 
   return (
@@ -166,17 +206,21 @@ export function AgentPromptsSection({ projectId }: { projectId?: string | null }
                               size="sm"
                               variant="glass"
                               className="h-7 text-xs"
-                              onClick={() => setViewing(p)}
+                              onClick={() => void openPrompt(p)}
+                              disabled={openingId === p.id}
                             >
-                              <Eye className="size-3" /> Vedi prompt
+                              <Eye className="size-3" />
+                              {openingId === p.id ? "Apertura…" : "Vedi prompt"}
                             </Button>
                             <Button
                               size="sm"
                               variant="glass"
                               className="h-7 text-xs"
-                              onClick={() => copyPrompt(p)}
+                              onClick={() => void copyPromptById(p)}
+                              disabled={copyingId === p.id}
                             >
-                              <Copy className="size-3" /> Copia prompt
+                              <Copy className="size-3" />
+                              {copyingId === p.id ? "Copia…" : "Copia prompt"}
                             </Button>
                           </div>
                         </li>
@@ -229,7 +273,7 @@ export function AgentPromptsSection({ projectId }: { projectId?: string | null }
                   <pre className="text-xs whitespace-pre-wrap font-mono">{viewing.prompt_text}</pre>
                 </div>
                 <div className="flex justify-end">
-                  <Button variant="hero" onClick={() => copyPrompt(viewing)}>
+                  <Button variant="hero" onClick={() => void copyPromptFull(viewing)}>
                     <Copy className="size-4" /> Copia prompt
                   </Button>
                 </div>
