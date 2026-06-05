@@ -50,6 +50,7 @@ const QUICK_ACTIONS = [
 
 const FOLLOWUP_ACTIONS = [
   "Approvo, vai avanti",
+  "Genera prompt operativo",
   "Fammi vedere un'alternativa",
   "Semplifica",
   "Approfondisci",
