@@ -218,10 +218,14 @@ function ProjectCard({
   project: p,
   roadmapItems,
   hasAccess,
+  isActive,
+  onSelect,
 }: {
   project: ProjectRow;
   roadmapItems: RoadmapItem[];
   hasAccess: boolean;
+  isActive: boolean;
+  onSelect: () => void;
 }) {
   const pr = computeProgress(roadmapItems);
   const phase = currentPhase(roadmapItems);
@@ -231,43 +235,84 @@ function ProjectCard({
   const displayTotal = hasAccess ? rm.total : pr.total;
   const displayPhase = hasAccess ? (rm.currentStep?.title ?? "Roadmap") : phase;
   return (
-    <Link
-      to="/projects/$id"
-      params={{ id: p.id }}
-      className="glass-card rounded-xl p-5 hover:border-primary/50 transition-all group"
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
+      className={[
+        "glass-card rounded-xl p-5 transition-all group cursor-pointer relative text-left",
+        isActive
+          ? "border-primary/70 shadow-[0_0_28px_-12px_oklch(0.7_0.18_280/0.7)] ring-1 ring-primary/40"
+          : "hover:border-primary/50",
+      ].join(" ")}
     >
-                <div className="flex items-start justify-between">
-                  <div className="size-10 rounded-lg bg-secondary grid place-items-center">
-                    <Folder className="size-5 text-primary" />
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-secondary text-muted-foreground">
-                    {statusBadge(p.status)}
-                  </span>
-                </div>
-                <h3 className="font-display font-semibold mt-4 line-clamp-1">{p.title}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
-                  {p.idea_description ?? "—"}
-                </p>
-                      <div className="mt-4 flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">App {displayPct}% · {displayDone}/{displayTotal}</span>
-                        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
-                      </div>
-                      <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
-                        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
-                      </div>
-                      {hasAccess ? (
-                        <SyntheticRoadmapCompact projectId={p.id} />
-                      ) : (
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
-                          Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
-                        <span>{p.product_type ?? "Progetto"}</span>
-                        <span className="flex items-center gap-1 text-primary group-hover:translate-x-1 transition-transform">
-                          Continua costruzione <ArrowRight className="size-3" />
-                        </span>
-                      </div>
-    </Link>
+      <div className="flex items-start justify-between gap-2">
+        <div className="size-10 rounded-lg bg-secondary grid place-items-center">
+          <Folder className="size-5 text-primary" />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          {isActive && (
+            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-primary/15 border border-primary/40 text-primary font-semibold">
+              <CheckCircle2 className="size-3" /> Progetto attivo
+            </span>
+          )}
+          <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-secondary text-muted-foreground">
+            {statusBadge(p.status)}
+          </span>
+        </div>
+      </div>
+      <h3 className="font-display font-semibold mt-4 line-clamp-1">{p.title}</h3>
+      <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
+        {p.idea_description ?? "—"}
+      </p>
+      <div className="mt-4 flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">
+          App {displayPct}% · {displayDone}/{displayTotal}
+        </span>
+        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
+      </div>
+      <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
+        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
+      </div>
+      {hasAccess ? (
+        <SyntheticRoadmapCompact projectId={p.id} />
+      ) : (
+        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
+          Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
+        </p>
+      )}
+      <div className="flex items-center justify-between mt-3 gap-2">
+        <span className="text-xs text-muted-foreground truncate">
+          {p.product_type ?? "Progetto"}
+        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            to="/projects/$id"
+            params={{ id: p.id }}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Dettagli
+          </Link>
+          <Link
+            to="/project-manager"
+            search={{ projectId: p.id } as never}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-primary/40 bg-primary/10 hover:bg-primary/20 text-foreground font-medium transition-colors"
+          >
+            Continua costruzione <ArrowRight className="size-3" />
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
