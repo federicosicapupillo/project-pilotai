@@ -14,7 +14,7 @@ export const Route = createFileRoute("/prezzi")({
       { title: "Prezzi — Attiva il tuo Team AI operativo" },
       { name: "description", content: "Pacchetto Team AI Operativo a 29€. Tu dai le direttive, gli agenti AI preparano struttura, schermate, funzioni e prompt per la prima versione della tua app." },
       { property: "og:title", content: "Prezzi — Attiva il tuo Team AI operativo" },
-      { property: "og:description", content: "29€ per attivare il pacchetto Team AI: 8 agenti, percorso personale e academy pratica al lavoro sulla tua idea." },
+      { property: "og:description", content: "29€ per attivare il pacchetto Team AI: 8 agenti, percorso personale e metodo operativo guidato al lavoro sulla tua idea." },
     ],
   }),
   component: PrezziPage,
@@ -30,7 +30,7 @@ const TEAM: { role: string; line: string; Icon: LucideIcon }[] = [
   { role: "Test Agent", line: "Controlla errori, punti deboli e passaggi da migliorare.", Icon: ShieldAlert },
   { role: "Launch Agent", line: "Ti aiuta a preparare la tua app per presentarla, venderla o lanciarla.", Icon: Rocket },
   { role: "Percorso personale", line: "Tieni sotto controllo l'avanzamento del tuo progetto.", Icon: LineChart },
-  { role: "Academy pratica", line: "Solo step operativi, prompt e checklist. Nessun video inutile.", Icon: GraduationCap },
+  { role: "Metodo operativo", line: "Prompt, roadmap e istruzioni operative guidate dal Team AI.", Icon: GraduationCap },
 ];
 
 const NOT_FOR: string[] = [
