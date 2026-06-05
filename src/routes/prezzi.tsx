@@ -179,16 +179,6 @@ function PrezziPage() {
           </div>
         </section>
 
-        {/* PERCHE 29 */}
-        <section className="mt-20 max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-            Perché partire da <span className="gradient-text">29€</span>
-          </h2>
-          <p className="text-muted-foreground mt-4">
-            Il prezzo è pensato per farti attivare il tuo Team AI senza grandi investimenti. Dai le prime direttive, lascia che gli agenti lavorino sull'idea e capisci subito quanto può diventare reale il tuo progetto.
-          </p>
-        </section>
-
         {/* CONFRONTO */}
         <section className="mt-20">
           <h2 className="text-2xl sm:text-3xl font-display font-semibold text-center">
