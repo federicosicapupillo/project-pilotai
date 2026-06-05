@@ -8,12 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
+import { BrandMark } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Accedi — Da Idea ad App" },
+      { title: "Accedi — IdeaPilot AI" },
       { name: "description", content: "Entra o crea il tuo account per iniziare un progetto." },
     ],
   }),
@@ -93,13 +93,15 @@ function AuthPage() {
     <div className="min-h-screen flex flex-col">
       <div className="flex-1 grid place-items-center px-6 py-16 hero-bg">
         <div className="w-full max-w-md glass-card rounded-2xl p-8">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="size-10 rounded-lg gradient-bg grid place-items-center glow-soft">
-              <Sparkles className="size-5 text-primary-foreground" />
+          <div className="flex items-center gap-3 mb-6">
+            <div className="size-11 rounded-xl gradient-bg grid place-items-center glow-soft">
+              <BrandMark size={24} />
             </div>
             <div>
-              <h1 className="font-display font-semibold text-xl">Entra nel metodo</h1>
-              <p className="text-xs text-muted-foreground">Trasforma idee in app con agenti AI</p>
+              <h1 className="font-display font-semibold text-xl">
+                IdeaPilot <span className="gradient-text">AI</span>
+              </h1>
+              <p className="text-xs text-muted-foreground">Dalla tua idea alla tua prima app</p>
             </div>
           </div>
 
