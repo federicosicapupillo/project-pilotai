@@ -2,13 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2 } from "lucide-react";
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
 import { useRoadmapProgress } from "@/lib/roadmap-progress";
 import { DashboardRoadmap } from "@/components/DashboardRoadmap";
 import { AgentPromptsSection } from "@/components/AgentPromptsSection";
+import { useActiveProject } from "@/hooks/use-active-project";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
@@ -26,6 +27,7 @@ function statusBadge(status: string) {
 
 function DashboardPage() {
   const { activate, hasAccess } = useActivateTeam();
+  const { activeId, setActiveId } = useActiveProject();
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
@@ -57,7 +59,11 @@ function DashboardPage() {
     },
   });
 
-  const primaryProject = projects?.[0];
+  // Active project: persisted via useActiveProject (localStorage). Falls back
+  // to the most recent project (handled inside useActiveProject).
+  const activeProject =
+    (activeId && projects?.find((p) => p.id === activeId)) || projects?.[0] || null;
+  const activeProjectId = activeProject?.id ?? null;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -76,7 +82,11 @@ function DashboardPage() {
       </div>
 
       {hasAccess ? (
-        <Link to="/project-manager" className="block mb-10">
+        <Link
+          to="/project-manager"
+          search={activeProjectId ? ({ projectId: activeProjectId } as never) : (undefined as never)}
+          className="block mb-10"
+        >
           <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 hover:border-primary/70 transition-all">
             <div className="size-12 rounded-full gradient-bg grid place-items-center shrink-0">
               <Bot className="size-6 text-primary-foreground" />
@@ -86,7 +96,9 @@ function DashboardPage() {
                 Parla con il tuo AI Project Manager
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Dagli una direttiva, chiedigli il prossimo passo o fagli coordinare il Team AI sul tuo progetto.
+                {activeProject
+                  ? `Stai lavorando su: ${activeProject.title}. Dagli una direttiva o fagli coordinare il Team AI.`
+                  : "Dagli una direttiva, chiedigli il prossimo passo o fagli coordinare il Team AI sul tuo progetto."}
               </p>
             </div>
             <Button variant="hero" size="lg" className="shrink-0">
@@ -113,12 +125,12 @@ function DashboardPage() {
         </div>
       )}
 
-      {primaryProject && (
+      {activeProject && (
         <div className="mb-10">
           <DashboardRoadmap
             hasAccess={hasAccess}
-            projectId={primaryProject.id}
-            onActivate={() => activate("dashboard_roadmap_cta", primaryProject.id)}
+            projectId={activeProject.id}
+            onActivate={() => activate("dashboard_roadmap_cta", activeProject.id)}
           />
         </div>
       )}
@@ -156,6 +168,8 @@ function DashboardPage() {
                 project={p}
                 roadmapItems={roadmaps?.get(p.id) ?? []}
                 hasAccess={hasAccess}
+                isActive={p.id === activeProjectId}
+                onSelect={() => setActiveId(p.id)}
               />
             ))}
           </div>
@@ -163,7 +177,7 @@ function DashboardPage() {
 
         <aside className="space-y-4">
           {hasAccess ? (
-            <AgentPromptsSection />
+            <AgentPromptsSection projectId={activeProjectId} />
           ) : (
             <div className="rounded-2xl p-6 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft">
               <h3 className="font-display font-semibold text-lg">
