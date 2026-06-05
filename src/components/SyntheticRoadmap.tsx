@@ -1,4 +1,4 @@
-import { Check, Loader2, Circle, MessageSquare, ArrowRight } from "lucide-react";
+import { Check, Play, Circle, MessageSquare, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useRoadmapProgress } from "@/lib/roadmap-progress";
@@ -43,7 +43,7 @@ function StatusIcon({ status }: { status: StepStatus }) {
   if (status === "in_progress") {
     return (
       <span className="size-8 rounded-full bg-accent/15 border border-accent/40 grid place-items-center text-accent shrink-0 glow-soft">
-        <Loader2 className="size-4 animate-spin" />
+        <Play className="size-3.5 fill-current" />
       </span>
     );
   }
