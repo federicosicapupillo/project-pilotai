@@ -55,7 +55,6 @@ export function GenerationProgressDialog({
         onEscapeKeyDown={(e) => {
           if (state === "running") e.preventDefault();
         }}
-        showCloseButton={state !== "running"}
       >
         <DialogHeader>
           <DialogTitle className="font-display text-2xl flex items-center gap-2">
