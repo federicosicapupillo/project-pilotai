@@ -404,6 +404,56 @@ function ProjectManagerPage() {
           </div>
         </section>
 
+        {/* OPERATIONAL PROMPT PANEL — fuori dalla chat */}
+        <section className="order-3 lg:col-span-2 glass-card rounded-2xl border border-border/60 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+                <Wrench className="size-3.5 text-primary" /> Prompt operativo generato
+              </div>
+              <h2 className="font-display font-semibold text-xl mt-1">
+                Prompt pronti da copiare nello strumento giusto
+              </h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                Quando l'analisi di uno step è confermata, l'agente competente genera qui un prompt operativo separato dalla chat.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="hero"
+              onClick={() => sendQuick("Genera prompt operativo")}
+              disabled={opGenMutation.isPending || !activeProject}
+            >
+              {opGenMutation.isPending ? (
+                <><Loader2 className="size-4 animate-spin" /> Sto generando…</>
+              ) : (
+                <><Sparkles className="size-4" /> Genera per: {currentStep.title}</>
+              )}
+            </Button>
+          </div>
+
+          {opGenMutation.isError && (
+            <p className="text-sm text-destructive mt-3">
+              {(opGenMutation.error as Error)?.message ?? "Errore nella generazione."}
+            </p>
+          )}
+
+          <div className="mt-5 space-y-4">
+            {(opPrompts?.prompts ?? []).length === 0 && !opGenMutation.isPending && (
+              <div className="text-sm text-muted-foreground border border-dashed border-border/60 rounded-xl p-6 text-center">
+                Nessun prompt operativo ancora generato. Clicca su "Genera per: {currentStep.title}" per crearne uno.
+              </div>
+            )}
+            {(opPrompts?.prompts ?? []).map((p) => (
+              <OperationalPromptCard
+                key={p.id}
+                prompt={p}
+                onCopied={(id) => copyMutation.mutate(id)}
+              />
+            ))}
+          </div>
+        </section>
+
         {/* SIDEBAR */}
         <aside className="order-1 lg:order-2 space-y-4">
           {activeProject ? (
