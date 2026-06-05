@@ -520,10 +520,14 @@ function ValueEstimateSection({
   potentialAmount,
   costAmount,
   onActivate,
+  isAuthed,
+  onGenerateProject,
 }: {
   potentialAmount: string;
   costAmount: string;
   onActivate: () => void;
+  isAuthed: boolean;
+  onGenerateProject: () => void;
 }) {
   const potential = { amount: potentialAmount };
   const cost = { amount: costAmount };
@@ -565,7 +569,7 @@ function ValueEstimateSection({
           </p>
         </div>
 
-        {/* CARD 2 — Costo senza AccentiAI */}
+        {/* CARD 2 — Costo senza Agenti AI */}
         <div
           className="relative rounded-2xl p-6 sm:p-7 overflow-hidden border border-primary/50"
           style={{
@@ -577,7 +581,7 @@ function ValueEstimateSection({
         >
           <div className="absolute -top-16 -left-12 size-40 rounded-full bg-primary/20 blur-3xl pointer-events-none" aria-hidden />
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
-            <Euro className="size-3.5 text-primary" /> Costo stimato senza AccentiAI
+            <Euro className="size-3.5 text-primary" /> Costo stimato senza Agenti AI
           </div>
           <div className="font-display font-semibold text-3xl sm:text-4xl gradient-text leading-tight">
             {cost.amount}
