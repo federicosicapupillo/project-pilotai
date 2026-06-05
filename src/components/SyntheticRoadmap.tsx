@@ -147,14 +147,9 @@ export function SyntheticRoadmapCompact({ projectId }: { projectId: string }) {
       <div className="mt-1.5 h-1 rounded-full bg-secondary overflow-hidden">
         <div className="h-full gradient-bg" style={{ width: `${pct}%` }} />
       </div>
-      <Link
-        to="/projects/$id"
-        params={{ id: projectId }}
-        hash="roadmap"
-        className="inline-flex items-center gap-1 text-xs text-primary mt-2 hover:underline"
-      >
+      <span className="inline-flex items-center gap-1 text-xs text-primary mt-2">
         Apri roadmap <ArrowRight className="size-3" />
-      </Link>
+      </span>
     </div>
   );
 }
