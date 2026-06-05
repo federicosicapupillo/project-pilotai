@@ -94,9 +94,7 @@ function AuthPage() {
       <div className="flex-1 grid place-items-center px-6 py-16 hero-bg">
         <div className="w-full max-w-md glass-card rounded-2xl p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="size-11 rounded-xl gradient-bg grid place-items-center glow-soft">
-              <BrandMark size={24} />
-            </div>
+            <BrandMark size={48} className="drop-shadow-[0_0_14px_rgba(168,85,247,0.5)]" />
             <div>
               <h1 className="font-display font-semibold text-xl">
                 IdeaPilot <span className="gradient-text">AI</span>
