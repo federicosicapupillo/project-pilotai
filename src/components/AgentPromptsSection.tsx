@@ -116,7 +116,7 @@ export function AgentPromptsSection() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-display font-semibold text-sm">
-                            {identity.displayName}
+                            {identity.name}
                           </span>
                           <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-primary/30 bg-primary/10 text-primary">
                             {items.length} prompt
@@ -195,7 +195,7 @@ export function AgentPromptsSection() {
                     <span className="min-w-0">
                       <span className="block font-display text-base">{viewing.title}</span>
                       <span className="block text-xs text-muted-foreground font-normal">
-                        {identity.displayName}
+                        {identity.name}
                       </span>
                     </span>
                   </DialogTitle>
