@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import iconAsset from "@/assets/ideapilot-icon.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
@@ -81,10 +82,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Da Idea ad App — Trasforma la tua idea in una prima app con agenti AI" },
-      { name: "description", content: "Il metodo per imprenditori e creator senza competenze tecniche: scheda progetto, agenti AI, prompt operativi e roadmap." },
-      { property: "og:title", content: "Da Idea ad App" },
-      { property: "og:description", content: "Diventa il regista di una squadra di agenti AI e porta la tua idea online." },
+      { title: "IdeaPilot AI — Dalla tua idea alla tua prima app" },
+      { name: "description", content: "IdeaPilot AI: il metodo per imprenditori e creator senza competenze tecniche. Scheda progetto, agenti AI, prompt operativi e roadmap." },
+      { property: "og:title", content: "IdeaPilot AI" },
+      { property: "og:description", content: "Dalla tua idea alla tua prima app, guidato passo dopo passo dal tuo team di agenti AI." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -94,6 +95,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "icon", type: "image/png", href: iconAsset.url },
+      { rel: "apple-touch-icon", href: iconAsset.url },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
