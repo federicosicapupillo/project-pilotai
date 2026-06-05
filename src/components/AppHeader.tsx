@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Sparkles, LogOut, ShieldCheck, Lock, MessageSquare } from "lucide-react";
+import { Sparkles, LogOut, ShieldCheck, Lock, MessageSquare, UserCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,36 @@ export function AppHeader() {
     await supabase.auth.signOut();
     navigate({ to: "/" });
   };
+
+  const [profileName, setProfileName] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) {
+      setProfileName(null);
+      return;
+    }
+    supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) setProfileName((data?.name ?? null) as string | null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
+  const metaName =
+    (typeof meta.full_name === "string" && meta.full_name) ||
+    (typeof meta.name === "string" && meta.name) ||
+    [meta.first_name, meta.last_name].filter((s) => typeof s === "string" && s).join(" ").trim() ||
+    null;
+  const emailLocal = user?.email ? user.email.split("@")[0].replace(/[._-]+/g, " ") : null;
+  const displayName = (profileName?.trim() || metaName || emailLocal || "Utente").trim();
+  const firstName = displayName.split(/\s+/)[0];
 
   return (
     <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/60">
@@ -96,9 +127,13 @@ export function AppHeader() {
                    <Lock className="size-3.5" /> Attiva Team AI - 29€
                 </Button>
               )}
-              <span className="hidden sm:block text-xs text-muted-foreground max-w-[160px] truncate">
-                {user.email}
-              </span>
+              <div className="flex items-center gap-2 px-2 py-1 rounded-full border border-border/50 bg-secondary/40 max-w-[200px]">
+                <UserCircle2 className="size-4 text-primary shrink-0" aria-label="Account" />
+                <span className="text-xs text-foreground/90 truncate">
+                  <span className="hidden sm:inline">{displayName}</span>
+                  <span className="sm:hidden">{firstName}</span>
+                </span>
+              </div>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="size-4" />
                 <span className="hidden sm:inline">Esci</span>
