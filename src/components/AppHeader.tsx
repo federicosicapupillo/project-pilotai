@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Sparkles, LogOut, Check, Lock, MessageSquare } from "lucide-react";
+import { Sparkles, LogOut, ShieldCheck, Lock, MessageSquare } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -75,10 +75,14 @@ export function AppHeader() {
                     <span className="hidden md:inline">Parla con il Project Manager</span>
                     <span className="md:hidden">Project Manager</span>
                   </Link>
-                  <Link to="/project-manager" title="Team AI attivo">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-primary/50 bg-primary/10 text-primary glow-soft">
-                      <Check className="size-3.5" /> Team AI attivo
-                    </span>
+                  <Link
+                    to="/dashboard"
+                    title="Il tuo Team AI è attivo"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide border border-primary/40 bg-primary/5 text-primary/90 hover:bg-primary/10 transition-colors"
+                  >
+                    <ShieldCheck className="size-3.5" />
+                    <span className="hidden sm:inline">Accesso attivo</span>
+                    <span className="sm:hidden">Attivo</span>
                   </Link>
                 </>
               ) : (
