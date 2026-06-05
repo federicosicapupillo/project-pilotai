@@ -71,32 +71,6 @@ function DashboardPage() {
   });
 
   const primaryProject = projects?.[0];
-  const { data: signals } = useQuery({
-    queryKey: ["dashboard-roadmap-signals", primaryProject?.id],
-    enabled: !!primaryProject,
-    queryFn: async () => {
-      const pid = primaryProject!.id;
-      const [{ data: analysis }, { count: promptsCount }] = await Promise.all([
-        supabase
-          .from("project_analysis")
-          .select("mvp_version, required_screens")
-          .eq("project_id", pid)
-          .maybeSingle(),
-        supabase
-          .from("prompts")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid),
-      ]);
-      const screens = analysis?.required_screens as unknown;
-      return {
-        hasProject: true,
-        hasAnalysis: !!analysis,
-        hasMvp: !!analysis?.mvp_version,
-        hasScreens: Array.isArray(screens) && screens.length > 0,
-        hasPrompts: (promptsCount ?? 0) > 0,
-      };
-    },
-  });
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -155,7 +129,6 @@ function DashboardPage() {
       {primaryProject && (
         <div className="mb-10">
           <DashboardRoadmap
-            signals={signals ?? { hasProject: true }}
             hasAccess={hasAccess}
             projectId={primaryProject.id}
             onActivate={() => activate("dashboard_roadmap_cta", primaryProject.id)}
