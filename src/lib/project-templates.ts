@@ -57,6 +57,7 @@ import { BUILDER_AGENT_SYSTEM_PROMPT } from "@/prompts/builderAgentSystemPrompt"
 import { SECURITY_AGENT_SYSTEM_PROMPT } from "@/prompts/securityAgentSystemPrompt";
 import { QA_AGENT_SYSTEM_PROMPT } from "@/prompts/qaAgentSystemPrompt";
 import { DEBUGGER_AGENT_SYSTEM_PROMPT } from "@/prompts/debuggerAgentSystemPrompt";
+import { LAUNCH_AGENT_SYSTEM_PROMPT } from "@/prompts/launchAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -135,6 +136,13 @@ export const AGENT_TEMPLATE = (idea: string) => [
     when_to_use: "Quando qualcosa non funziona, un fix precedente non ha tenuto, ci sono duplicati, dati appesi, errori dopo refresh/login o regressioni dopo una modifica.",
     expected_output: "Analisi strutturata in 11 sezioni con cause probabili, correzione strutturale, prevenzione ricorrenza, test obbligatori e brief debug per gli altri agenti.",
     prompt_text: `${DEBUGGER_AGENT_SYSTEM_PROMPT}\n\n---\nBUG / MALFUNZIONAMENTO DA ANALIZZARE:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta il debug e rispondi con il FORMATO RISPOSTA STANDARD (11 sezioni in markdown) chiudendo con il BRIEF DEBUG PER GLI ALTRI AGENTI. Usa etichette esplicite (BUG BLOCCANTE / CONTROLLO DATABASE NECESSARIO / CONTROLLO PERMESSI NECESSARIO / RISCHIO DUPLICATI / BUG VISIVO / CAUSA DA VERIFICARE) e, se l'utente chiede se il bug è risolto, dichiara BUG RISOLTO / NON RISOLTO / PARZIALMENTE RISOLTO / SERVE CONTROLLO DATABASE / PERMESSI / QUALITÀ / TEST MOBILE / RISCHIO REGRESSIONE.`,
+  },
+  {
+    name: "Agente di Lancio",
+    role: "Prepara il progetto al lancio: tipo di lancio, target, offerta, messaggio, canali, funnel, checklist e metriche.",
+    when_to_use: "Quando il progetto è vicino al pronto e vuoi decidere se e come lanciarlo (beta, soft launch, lancio pubblico) senza bruciare fiducia e budget.",
+    expected_output: "Analisi strutturata in 18 sezioni con piano 7/14/30 giorni, checklist tecnica/commerciale/marketing/operativa, metriche, rischi e decisione GO / NO GO.",
+    prompt_text: `${LAUNCH_AGENT_SYSTEM_PROMPT}\n\n---\nPROGETTO DA PREPARARE AL LANCIO:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta il piano di lancio e rispondi con il FORMATO RISPOSTA STANDARD (18 sezioni in markdown) chiudendo con il BRIEF LANCIO PER GLI ALTRI AGENTI. Usa etichette esplicite (SOFT LAUNCH O BETA CONSIGLIATA / PRIMA CONTROLLO QUALITÀ / PRIMA DEBUG / PRIMA CONTROLLO SICUREZZA / OFFERTA NON ANCORA PRONTA) e chiudi con decisione GO / GO CON RISERVE / SOFT LAUNCH CONSIGLIATO / SOLO BETA CHIUSA / NO GO TEMPORANEO / NON LANCIARE / PRIMA QA / PRIMA DEBUG / PRIMA SICUREZZA / PRIMA VALIDAZIONE OFFERTA, indicando motivo, rischio principale, cosa fare prima e quando rivalutare.`,
   },
   {
     name: "Agente Marketing",
