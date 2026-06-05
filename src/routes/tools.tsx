@@ -346,11 +346,6 @@ function ToolsPage() {
             <Button variant="hero" size="lg" onClick={handleActivate}>
               <Sparkles className="size-4" /> Attiva il mio Team AI - 29€
             </Button>
-            <Link to="/academy">
-              <Button variant="outline" size="lg">
-                Scopri da dove partire <ArrowRight className="size-4" />
-              </Button>
-            </Link>
           </div>
           {!hasAccess && (
             <p className="text-xs text-muted-foreground mt-3">Accesso immediato dopo il pagamento.</p>
