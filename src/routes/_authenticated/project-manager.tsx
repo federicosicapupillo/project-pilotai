@@ -72,11 +72,32 @@ const CORRECTION_LABELS = [
   "Voglio salvare questa idea nel backlog",
 ];
 
+const VALIDATION_CORRECTION_LABELS = [
+  "Manca dettaglio",
+  "Troppo generico",
+  "Voglio più rischi",
+  "Voglio più punti di forza",
+  "Voglio più criticità",
+  "Voglio una versione più pratica",
+  "Voglio una versione più tecnica",
+  "Rigenera prompt correttivo",
+];
+
+// Soglia per riconoscere una risposta incollata da una AI esterna
+// (es. ChatGPT, Lovable, Perplexity). Sopra questa lunghezza, e se per
+// lo step corrente esiste già un prompt operativo generato, trattiamo il
+// messaggio come "external_ai_response_pasted".
+const EXTERNAL_AI_RESPONSE_MIN_CHARS = 400;
+
 function ProjectManagerPage() {
   const navigate = useNavigate();
   const { projectId: searchProjectId } = Route.useSearch();
   const { hasAccess, activate } = useActivateTeam();
   const qc = useQueryClient();
+
+  // Step completati persistenti per progetto (avanzamento della roadmap sintetica).
+  // Non modifica la roadmap né la salta: marca solo gli step già chiusi.
+  const [completedSteps, setCompletedSteps] = useState<string[]>([]);
 
   // Resolve active project: search param > localStorage > most recent
   const { data: projects } = useQuery({
@@ -110,8 +131,34 @@ function ProjectManagerPage() {
 
   const activeProject = projects?.find((p) => p.id === activeId) ?? null;
 
-  const { pct, next: nextStep } = syntheticProgress();
-  const currentStep = SYNTHETIC_STEPS.find((s) => s.status === "in_progress") ?? SYNTHETIC_STEPS[0];
+  // Carica gli step completati dal localStorage quando cambia il progetto.
+  useEffect(() => {
+    if (typeof window === "undefined" || !activeId) return;
+    try {
+      const raw = localStorage.getItem(`pm_completed_steps:${activeId}`);
+      setCompletedSteps(raw ? (JSON.parse(raw) as string[]) : []);
+    } catch {
+      setCompletedSteps([]);
+    }
+  }, [activeId]);
+
+  // Calcola lo step corrente e l'avanzamento in base agli step completati
+  // dall'utente, senza modificare la roadmap sintetica originale.
+  const dynamicSteps = SYNTHETIC_STEPS.map((s) => {
+    if (completedSteps.includes(s.title)) return { ...s, status: "done" as const };
+    return s;
+  });
+  const firstOpenIdx = dynamicSteps.findIndex((s) => s.status !== "done");
+  const currentStep =
+    firstOpenIdx >= 0
+      ? { ...dynamicSteps[firstOpenIdx], status: "in_progress" as const }
+      : dynamicSteps[dynamicSteps.length - 1];
+  const nextStep =
+    firstOpenIdx >= 0
+      ? dynamicSteps.slice(firstOpenIdx + 1).find((s) => s.status !== "done") ?? null
+      : null;
+  const doneCount = dynamicSteps.filter((s) => s.status === "done").length;
+  const pct = Math.round((doneCount / dynamicSteps.length) * 100);
 
   const introContent = activeProject
     ? `Ciao, sono il tuo AI Project Manager.\n\nAbbiamo già impostato il progetto: ${activeProject.title}.\n\nIn questo momento siamo allo step: ${currentStep.title} — ${currentStep.description}\n\nIl prossimo passo consigliato è: ${nextStep?.title ?? "definire la prima versione"}.\n\nVuoi che andiamo avanti con questo step oppure preferisci prima migliorare l'idea o controllare se manca qualcosa?`
@@ -162,8 +209,17 @@ function ProjectManagerPage() {
   });
 
   const [input, setInput] = useState("");
-  // Flusso schema-step: 'idle' (chat normale) | 'schema-review' (mostra 3 tasti) | 'corrections' (mostra label di correzione)
-  const [reviewMode, setReviewMode] = useState<"idle" | "schema-review" | "corrections">("idle");
+  // Flusso decisionale:
+  // - 'idle': chat normale
+  // - 'schema-review': PM ha mostrato lo schema dello step, mostra "Approvo e genera il prompt" / "Non approvo"
+  // - 'corrections': l'utente ha rifiutato lo schema, mostra le label di correzione dello schema
+  // - 'validation-review': l'utente ha incollato una risposta AI esterna, PM l'ha validata, mostra "Approvo il risultato e passa allo step successivo" / "Non approvo"
+  // - 'validation-corrections': l'utente ha rifiutato la validazione, mostra le label di correzione del risultato AI esterno
+  const [reviewMode, setReviewMode] = useState<
+    "idle" | "schema-review" | "corrections" | "validation-review" | "validation-corrections"
+  >("idle");
+  // Flag: la prossima risposta del PM è una validazione di una risposta AI esterna.
+  const [pendingValidation, setPendingValidation] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const opPanelRef = useRef<HTMLElement>(null);
@@ -174,6 +230,10 @@ function ProjectManagerPage() {
       qc.invalidateQueries({ queryKey: ["pm-history", activeId] });
       qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
       setInput("");
+      if (pendingValidation) {
+        setReviewMode("validation-review");
+        setPendingValidation(false);
+      }
       requestAnimationFrame(() => inputRef.current?.focus());
     },
   });
@@ -247,6 +307,66 @@ REGOLE:
     );
   }
 
+  // L'utente approva il risultato dell'AI esterna: chiudi lo step corrente,
+  // aggiorna avanzamento, fai partire lo schema dello step successivo.
+  function approveExternalResult() {
+    if (mutation.isPending || !activeProject) return;
+    const closed = currentStep.title;
+    const next = nextStep?.title ?? null;
+    const newCompleted = completedSteps.includes(closed)
+      ? completedSteps
+      : [...completedSteps, closed];
+    setCompletedSteps(newCompleted);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        `pm_completed_steps:${activeProject.id}`,
+        JSON.stringify(newCompleted),
+      );
+    }
+    setReviewMode("schema-review");
+    if (!next) {
+      mutation.mutate(
+        `Ho approvato il risultato dell'AI esterna per lo step "${closed}". Segna lo step come completato. La roadmap è terminata: fammi un riepilogo finale del percorso.`,
+      );
+      return;
+    }
+    const command = `Ho approvato il risultato dell'AI esterna per lo step "${closed}". Segnalo come completato e passa ORA allo step successivo della roadmap: "${next}".
+
+Genera lo SCHEMA/ANALISI di questo nuovo step (NON il prompt operativo), strutturato così:
+
+Step corrente: ${next}
+
+Questo è lo schema che ti propongo per questo passaggio della roadmap.
+
+Poi elenca:
+- analisi dello step (punti chiave specifici per "${next}")
+- decisioni consigliate
+- elementi da tenere nella prima versione
+- elementi da rimandare al Backlog migliorie future
+- consiglio operativo per proseguire
+
+Concludi con: "Ti consiglio di approvare questo step e proseguire con la generazione del prompt operativo."
+
+REGOLE:
+- Non modificare la roadmap.
+- Non saltare step.
+- Non generare ancora il prompt operativo.
+- Non rigenerare il prompt dello step appena chiuso ("${closed}").`;
+    mutation.mutate(command);
+  }
+
+  function rejectExternalResult() {
+    setReviewMode("validation-corrections");
+  }
+
+  function applyValidationCorrection(label: string) {
+    if (mutation.isPending) return;
+    setReviewMode("idle");
+    mutation.mutate(
+      `Non approvo ancora il risultato dell'AI esterna per lo step "${currentStep.title}". Correzione richiesta: "${label}". Analizza di nuovo la risposta incollata in precedenza e dimmi cosa manca o cosa va corretto, senza chiudere lo step e senza modificare la roadmap.`,
+    );
+  }
+
   const messages = [INTRO, ...(history?.messages ?? [])];
 
   useEffect(() => {
@@ -263,6 +383,28 @@ REGOLE:
     e?.preventDefault();
     const text = input.trim();
     if (!text || mutation.isPending) return;
+    // Heuristica: testo lungo + esiste già un prompt operativo per lo step
+    // corrente => l'utente sta incollando una risposta di una AI esterna.
+    const hasOpPromptForStep = (opPrompts?.prompts ?? []).some(
+      (p) => p.step_title === currentStep.title,
+    );
+    const looksLikeExternalAi =
+      text.length >= EXTERNAL_AI_RESPONSE_MIN_CHARS && hasOpPromptForStep;
+    if (looksLikeExternalAi) {
+      setPendingValidation(true);
+      setReviewMode("idle");
+      const wrapped = `[external_ai_response_pasted]
+Ho incollato qui sotto la risposta generata da una AI esterna usando il prompt operativo dello step "${currentStep.title}".
+
+Valida questa risposta come Project Manager: dimmi se è coerente con il progetto e con lo step corrente, se contiene informazioni sufficienti, se ci sono criticità o parti da correggere, e se possiamo chiudere lo step. Concludi con una sintesi breve e una raccomandazione chiara (chiudere lo step e passare a "${nextStep?.title ?? "(fine roadmap)"}", oppure correggere).
+
+Non rigenerare un nuovo prompt operativo per lo stesso step. Non modificare la roadmap.
+
+RISPOSTA AI ESTERNA DA VALIDARE:
+${text}`;
+      mutation.mutate(wrapped);
+      return;
+    }
     mutation.mutate(text);
   }
 
