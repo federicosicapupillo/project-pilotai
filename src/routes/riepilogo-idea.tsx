@@ -490,20 +490,16 @@ function estimatePotentialRevenue(idea: string, target: string, projectType: str
 }
 
 function ValueEstimateSection({
-  idea,
-  target,
-  projectType,
-  difficulty,
+  potentialAmount,
+  costAmount,
   onActivate,
 }: {
-  idea: string;
-  target: string;
-  projectType: string;
-  difficulty: string;
+  potentialAmount: string;
+  costAmount: string;
   onActivate: () => void;
 }) {
-  const potential = estimatePotentialRevenue(idea, target, projectType);
-  const cost = estimateExternalCost(idea, projectType, difficulty);
+  const potential = { amount: potentialAmount };
+  const cost = { amount: costAmount };
 
   return (
     <section className="space-y-5">
