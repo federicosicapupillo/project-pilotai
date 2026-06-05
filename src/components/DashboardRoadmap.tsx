@@ -16,27 +16,18 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRoadmapProgress } from "@/lib/roadmap-progress";
 
-type Status = "done" | "current" | "todo";
-
-type Step = {
-  n: number;
-  title: string;
-  micro: string;
-  icon: LucideIcon;
-  status: Status;
+const STEP_ICONS: Record<number, LucideIcon> = {
+  1: Lightbulb,
+  2: Search,
+  3: Rocket,
+  4: LayoutGrid,
+  5: LayoutDashboard,
+  6: Database,
+  7: ClipboardCheck,
+  8: CheckCircle2,
 };
-
-const STEPS: Step[] = [
-  { n: 1, title: "Progetto definito", micro: "La tua idea è stata trasformata in un progetto chiaro e pronto per partire.", icon: Lightbulb, status: "done" },
-  { n: 2, title: "Punti di forza e criticità", micro: "Il Team AI sta analizzando cosa funziona, cosa migliorare e quali rischi evitare.", icon: Search, status: "current" },
-  { n: 3, title: "MVP / prima versione", micro: "Definiremo solo le funzioni essenziali per creare una prima versione semplice.", icon: Rocket, status: "todo" },
-  { n: 4, title: "Schermate principali", micro: "Creeremo la struttura delle schermate principali dell'app.", icon: LayoutGrid, status: "todo" },
-  { n: 5, title: "Dashboard e area utente", micro: "Costruiremo l'area dove l'utente potrà vedere e gestire le informazioni.", icon: LayoutDashboard, status: "todo" },
-  { n: 6, title: "Backend e dati", micro: "Organizzeremo salvataggi, login, database e dati del progetto.", icon: Database, status: "todo" },
-  { n: 7, title: "Test e correzioni", micro: "Controlleremo errori, blocchi, flussi deboli e miglioramenti.", icon: ClipboardCheck, status: "todo" },
-  { n: 8, title: "Prima versione pronta", micro: "Prepareremo la prima versione da testare, mostrare o migliorare.", icon: CheckCircle2, status: "todo" },
-];
 
 export function DashboardRoadmap({
   hasAccess,
@@ -47,10 +38,23 @@ export function DashboardRoadmap({
   projectId?: string;
   onActivate?: () => void;
 }) {
-  const doneCount = STEPS.filter((s) => s.status === "done").length;
-  const total = STEPS.length;
-  const pct = Math.round((doneCount / total) * 100);
-  const current = STEPS.find((s) => s.status === "current") ?? null;
+  const { steps: roadmapSteps, done: doneCount, total, pct, currentStep } =
+    useRoadmapProgress(projectId);
+  const STEPS = roadmapSteps.map((s) => ({
+    n: s.n,
+    title: s.title,
+    micro: s.description,
+    icon: STEP_ICONS[s.n] ?? Lightbulb,
+    status:
+      s.status === "done"
+        ? ("done" as const)
+        : s.status === "in_progress"
+          ? ("current" as const)
+          : ("todo" as const),
+  }));
+  const current =
+    STEPS.find((s) => s.status === "current") ??
+    (currentStep ? { title: currentStep.title, micro: currentStep.description } : null);
 
   return (
     <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.07] via-background to-accent/[0.07] p-6 sm:p-8 glow-soft">
