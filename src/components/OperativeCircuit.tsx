@@ -197,7 +197,7 @@ export function OperativeCircuit({
 
       {/* TIMELINE */}
       <div className="relative">
-        <div className="flex items-stretch gap-0 overflow-x-auto pb-3 snap-x snap-mandatory -mx-1 px-1 scrollbar-thin">
+        <div className="flex items-stretch gap-0 overflow-x-auto pb-3 snap-x snap-mandatory -mx-1 px-1 no-scrollbar">
           {STEPS.map((s, i) => {
             const isActive = active === i;
             const Icon = s.icon;
