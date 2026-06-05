@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-react";
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
+import { SyntheticRoadmapCompact, syntheticProgress } from "@/components/SyntheticRoadmap";
 import { DashboardRoadmap } from "@/components/DashboardRoadmap";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -186,14 +186,19 @@ function DashboardPage() {
                   const items = roadmaps?.get(p.id) ?? [];
                    const pr = computeProgress(items);
                    const phase = currentPhase(items);
+                  const sp = syntheticProgress();
+                  const displayPct = hasAccess ? sp.pct : pr.pct;
+                  const displayDone = hasAccess ? sp.done : pr.completed;
+                  const displayTotal = hasAccess ? sp.total : pr.total;
+                  const displayPhase = hasAccess ? "Progetto definito" : phase;
                   return (
                     <>
                       <div className="mt-4 flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">App {pr.pct}% · {pr.completed}/{pr.total}</span>
-                        {phase && <span className="text-muted-foreground">{phase}</span>}
+                        <span className="text-muted-foreground">App {displayPct}% · {displayDone}/{displayTotal}</span>
+                        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
                       </div>
                       <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
-                        <div className="h-full gradient-bg transition-all" style={{ width: `${pr.pct}%` }} />
+                        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
                       </div>
                       {hasAccess ? (
                         <SyntheticRoadmapCompact projectId={p.id} />
