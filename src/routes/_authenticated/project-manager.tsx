@@ -19,6 +19,7 @@ import { writeCompletedSteps } from "@/lib/roadmap-progress";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { ToolIcon } from "@/components/ToolIcon";
 import { resolveAgentIdentity } from "@/lib/agent-identity";
+import { TeamAtWork } from "@/components/TeamAtWork";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
   head: () => ({ meta: [{ title: "Il tuo AI Project Manager" }] }),
