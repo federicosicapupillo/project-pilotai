@@ -14,11 +14,19 @@ export const Route = createFileRoute("/_authenticated/checkout-agente")({
 function CheckoutAgentePage() {
   const [idea, setIdea] = useState<string>("");
   const [returnUrl, setReturnUrl] = useState<string>("");
+  const [projectId, setProjectId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const params = loadIdeaParams();
     setIdea(params?.idea ?? "");
-    setReturnUrl(`${window.location.origin}/pagamento-successo?session_id={CHECKOUT_SESSION_ID}`);
+    let pid: string | undefined;
+    try {
+      const stored = localStorage.getItem("pending_project_id") ?? undefined;
+      if (stored && /^[0-9a-fA-F-]{36}$/.test(stored)) pid = stored;
+    } catch { /* noop */ }
+    setProjectId(pid);
+    const pidParam = pid ? `&projectId=${pid}` : "";
+    setReturnUrl(`${window.location.origin}/pagamento-successo?session_id={CHECKOUT_SESSION_ID}${pidParam}`);
   }, []);
 
   return (
@@ -89,7 +97,7 @@ function CheckoutAgentePage() {
           {/* Embedded checkout */}
           <div>
             {returnUrl ? (
-              <StripeAgentCheckout idea={idea} returnUrl={returnUrl} />
+              <StripeAgentCheckout idea={idea} returnUrl={returnUrl} projectId={projectId} />
             ) : (
               <div className="glass-card rounded-2xl p-10 text-center text-sm text-muted-foreground">
                 Caricamento pagamento…
