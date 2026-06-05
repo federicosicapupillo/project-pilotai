@@ -64,12 +64,7 @@ export function AppHeader() {
     "";
   const cleanProfileName = profileName && !isEmailLike(profileName.trim()) ? profileName.trim() : "";
   const displayName = (metaName || cleanProfileName || "Utente").trim();
-  const parts = displayName.split(/\s+/);
-  const firstName = parts[0];
-  const initials =
-    parts.length >= 2
-      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-      : (parts[0]?.slice(0, 2) || "U").toUpperCase();
+  const firstName = displayName.split(/\s+/)[0];
 
   return (
     <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/60">
