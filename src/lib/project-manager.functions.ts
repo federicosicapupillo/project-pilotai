@@ -2,7 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
-import { PROJECT_MANAGER_SYSTEM_PROMPT } from "@/prompts/projectManagerSystemPrompt";
+import {
+  PROJECT_MANAGER_SYSTEM_PROMPT,
+  PROJECT_MANAGER_EXTRA_RULES,
+} from "@/prompts/projectManagerSystemPrompt";
 
 // Mask common secret-like patterns before persisting log content.
 function redactSecrets(input: string | null | undefined): string | null {
@@ -232,6 +235,7 @@ export const sendPmMessage = createServerFn({ method: "POST" })
 
     const messages = [
       { role: "system" as const, content: PROJECT_MANAGER_SYSTEM_PROMPT },
+      { role: "system" as const, content: PROJECT_MANAGER_EXTRA_RULES },
       { role: "system" as const, content: buildContext(ctx) },
       ...history.map((h) => ({
         role: h.role as "user" | "assistant",

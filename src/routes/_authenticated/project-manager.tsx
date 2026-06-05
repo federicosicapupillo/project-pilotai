@@ -373,6 +373,29 @@ REGOLE:
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* MAIN COLUMN: chat + operational prompt panel, stacked tight */}
         <div className="order-2 lg:order-1 space-y-4 min-w-0">
+        {currentStep.title === "Punti di forza e criticità" && (
+          <div className="glass-card rounded-2xl border border-primary/40 bg-primary/5 p-4 sm:p-5">
+            <div className="text-[10px] uppercase tracking-wider text-primary font-semibold">
+              A cosa serve questo step
+            </div>
+            <h2 className="font-display font-semibold mt-1">Punti di forza e criticità</h2>
+            <p className="text-sm text-foreground/90 mt-2 leading-relaxed">
+              Questo passaggio serve per capire meglio come sviluppare l'app nel
+              modo corretto. Analizzare punti di forza e criticità permette di
+              individuare cosa valorizzare, cosa semplificare, quali rischi
+              evitare e quali aspetti devono essere chiariti prima di passare
+              alla costruzione vera e propria. Non è una fase teorica: serve a
+              prendere decisioni migliori sullo sviluppo dell'app.
+            </p>
+            <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+              Ti consiglio di approvare questo passaggio solo quando i punti di
+              forza e le criticità ti sembrano chiari. Questo ci aiuterà a
+              costruire l'app in modo più ordinato, evitando funzioni inutili,
+              errori di priorità o problemi che potrebbero rallentare lo
+              sviluppo.
+            </p>
+          </div>
+        )}
         <section className="flex flex-col glass-card rounded-2xl border border-border/60 overflow-hidden">
           <div
             ref={scrollerRef}
@@ -794,6 +817,19 @@ function OperationalPromptCard({
         )}
       </div>
       <p className="text-xs text-muted-foreground mt-3">{prompt.instructions}</p>
+      <div className="mt-3 rounded-lg border border-primary/30 bg-primary/10 p-3">
+        <div className="text-[10px] uppercase tracking-wider text-primary font-semibold">
+          Cosa fare dopo
+        </div>
+        <p className="text-xs text-foreground/90 mt-1 leading-relaxed">
+          Dopo aver copiato questo prompt e averlo incollato in{" "}
+          <span className="font-medium">{prompt.recommended_tool}</span>, copia la
+          risposta generata da quella AI e incollala qui nella chat del Project
+          Manager. In questo modo il Project Manager potrà validare il risultato,
+          capire se è coerente con la roadmap e decidere se possiamo proseguire
+          allo step successivo oppure se serve correggere qualcosa.
+        </p>
+      </div>
       <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-relaxed bg-background/60 border border-border/50 rounded-lg p-3 text-foreground/90">
         {prompt.prompt_text}
       </pre>
