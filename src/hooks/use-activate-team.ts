@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { getAgentAccess } from "@/lib/payments.functions";
 import { trackEvent } from "@/lib/tracking";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Single source of truth for any "Attiva Team AI" CTA across the app.
@@ -22,6 +23,10 @@ export function useActivateTeam() {
     queryKey: ["agent-access"],
     queryFn: async () => {
       try {
+        const { data: s } = await supabase.auth.getSession();
+        if (!s.session?.access_token) {
+          return { hasAccess: false, status: null, idea: null, paidAt: null };
+        }
         return await fetchAccess();
       } catch {
         return { hasAccess: false, status: null, idea: null, paidAt: null };
