@@ -80,6 +80,25 @@ export function tierCost(tier: IdeaTier): { amount: string } {
   }
 }
 
+// Numeric ceiling (in EUR) for the traditional cost estimate.
+export function tierCostMax(tier: IdeaTier): number {
+  switch (tier) {
+    case "marketplace": return 30000;
+    case "avanzata":    return 15000;
+    case "media":       return 8000;
+    case "semplice":    return 3000;
+  }
+}
+
+// Launch price for the IdeaPilot AI Team (one-off).
+export const TEAM_AI_LAUNCH_PRICE_EUR = 29;
+
+export function tierSavings(tier: IdeaTier): { amount: string; raw: number } {
+  const raw = tierCostMax(tier) - TEAM_AI_LAUNCH_PRICE_EUR;
+  const formatted = raw.toLocaleString("it-IT");
+  return { amount: `Fino a ${formatted}€ risparmiati`, raw };
+}
+
 export function tierHours(tier: IdeaTier): string {
   switch (tier) {
     case "marketplace": return "25 - 40 ore guidate";

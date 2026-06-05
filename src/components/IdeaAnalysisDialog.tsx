@@ -44,6 +44,8 @@ import {
   loadCachedSummary,
   saveCachedSummary,
   type IdeaTier,
+  tierSavings,
+  TEAM_AI_LAUNCH_PRICE_EUR,
 } from "@/lib/idea-deterministic";
 
 export function IdeaAnalysisDialog({
@@ -103,6 +105,7 @@ export function IdeaAnalysisDialog({
 
   const stablePotential = useMemo(() => tierPotential(tier), [tier]);
   const stableCost = useMemo(() => tierCost(tier), [tier]);
+  const stableSavings = useMemo(() => tierSavings(tier), [tier]);
   const stableHours = useMemo(() => tierHours(tier), [tier]);
   const stableDifficulty = useMemo(() => tierDifficultyLabel(tier), [tier]);
   const stableDifficultyReason = useMemo(() => tierDifficultyReason(tier), [tier]);
@@ -227,17 +230,43 @@ export function IdeaAnalysisDialog({
                   </div>
                 </Section>
 
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <MiniStat
+                <div className="grid md:grid-cols-3 gap-3">
+                  <ImpactStat
                     icon={TrendingUp}
-                    label="Potenziale economico stimato"
+                    label="Quanto potrebbe fruttare"
                     value={stablePotential.amount}
+                    description="Se trasformata in una prima versione funzionante e proposta al pubblico giusto, questa app potrebbe generare entrate ricorrenti."
+                    microcopy="Stima indicativa, non garantita, basata su una prima ipotesi di mercato."
+                    tone="potential"
                   />
-                  <MiniStat
+                  <ImpactStat
                     icon={Euro}
-                    label="Costo stimato senza Agenti AI"
+                    label="Quanto avresti potuto spendere"
                     value={stableCost.amount}
+                    description="Per far progettare e sviluppare questa prima versione da freelance, agenzia o sviluppatori esterni, il costo avrebbe potuto arrivare a questa cifra."
+                    tone="cost"
                   />
+                  <ImpactStat
+                    icon={Sparkles}
+                    label="Risparmio stimato con il Team AI"
+                    value={stableSavings.amount}
+                    description={`Con IdeaPilot AI non parti da preventivi costosi: inizi subito con una guida operativa, agenti specializzati, roadmap e prompt pronti da usare. Calcolo: ${stableCost.amount.replace("Fino a ", "")} − ${TEAM_AI_LAUNCH_PRICE_EUR}€ prezzo lancio.`}
+                    tone="savings"
+                    highlight
+                  />
+                </div>
+
+                <div
+                  className="rounded-2xl border border-primary/40 px-4 sm:px-5 py-4 text-sm leading-relaxed text-foreground/90"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+                  }}
+                >
+                  Prima di spendere migliaia di euro per sviluppare tutto da zero, puoi
+                  validare e costruire la prima versione guidata con il tuo Team AI.
+                  Questa non è solo una stima: è il confronto tra lasciare l'idea ferma
+                  e iniziare oggi a trasformarla in un progetto reale.
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-3">
@@ -363,13 +392,23 @@ export function IdeaAnalysisDialog({
                   : "Attiva il tuo Team AI per costruire la prima versione guidata."}
               </div>
               {isAuthed ? (
-                <Button variant="hero" size="lg" onClick={generateProjectFromIdea}>
-                  Genera questo progetto <ArrowRight className="size-4" />
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                  <Button variant="hero" size="lg" onClick={generateProjectFromIdea}>
+                    Genera questo progetto <ArrowRight className="size-4" />
+                  </Button>
+                  <span className="text-[11px] text-muted-foreground">
+                    Trasforma questa analisi in un progetto operativo nella tua dashboard.
+                  </span>
+                </div>
               ) : (
-                <Button variant="hero" size="lg" onClick={goToRoadmap}>
-                  Attiva il Team AI - 29€ <ArrowRight className="size-4" />
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                  <Button variant="hero" size="lg" onClick={goToRoadmap}>
+                    Attiva il Team AI a 29€ <ArrowRight className="size-4" />
+                  </Button>
+                  <span className="text-[11px] text-muted-foreground">
+                    Prezzo lancio una tantum. Nessun abbonamento automatico.
+                  </span>
+                </div>
               )}
             </div>
           )}
@@ -466,6 +505,69 @@ function MiniStat({
       <div className="font-display font-semibold text-2xl sm:text-3xl gradient-text leading-tight">
         {value}
       </div>
+    </div>
+  );
+}
+
+function ImpactStat({
+  icon: Icon,
+  label,
+  value,
+  description,
+  microcopy,
+  tone,
+  highlight,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  description: string;
+  microcopy?: string;
+  tone: "potential" | "cost" | "savings";
+  highlight?: boolean;
+}) {
+  const accent =
+    tone === "savings"
+      ? "var(--primary)"
+      : tone === "potential"
+        ? "var(--accent)"
+        : "var(--muted-foreground)";
+  return (
+    <div
+      className="relative rounded-2xl p-5 overflow-hidden border flex flex-col gap-3"
+      style={{
+        borderColor: `color-mix(in oklab, ${accent} ${highlight ? 70 : 45}%, transparent)`,
+        background: highlight
+          ? "linear-gradient(140deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 12%, transparent))"
+          : "linear-gradient(140deg, color-mix(in oklab, var(--primary) 8%, transparent), color-mix(in oklab, var(--accent) 5%, transparent))",
+        boxShadow: highlight
+          ? "0 0 0 1px color-mix(in oklab, var(--primary) 55%, transparent), 0 18px 50px -20px color-mix(in oklab, var(--primary) 65%, transparent)"
+          : "0 10px 30px -20px color-mix(in oklab, var(--primary) 35%, transparent)",
+      }}
+    >
+      <div
+        className="inline-flex items-center gap-2 size-9 rounded-xl justify-center"
+        style={{
+          background: `color-mix(in oklab, ${accent} 18%, transparent)`,
+          border: `1px solid color-mix(in oklab, ${accent} 45%, transparent)`,
+        }}
+      >
+        <Icon className="size-4 text-primary" />
+      </div>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
+      </div>
+      <div className="font-display font-bold text-3xl sm:text-[2rem] leading-[1.05] gradient-text">
+        {value}
+      </div>
+      <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
+        {description}
+      </p>
+      {microcopy && (
+        <p className="text-[10px] text-muted-foreground/80 mt-auto pt-1 border-t border-border/40">
+          {microcopy}
+        </p>
+      )}
     </div>
   );
 }
