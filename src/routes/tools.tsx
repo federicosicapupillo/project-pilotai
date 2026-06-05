@@ -6,6 +6,7 @@ import { ToolIcon } from "@/components/ToolIcon";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { Button } from "@/components/ui/button";
 import { useAcademyAccess } from "@/components/AcademyLock";
+import { useActivateTeam } from "@/hooks/use-activate-team";
 
 const AGENT_OVERRIDES: Record<string, { role: string; when: string }> = {
   Idea:        { role: "Lo stratega che dà forma all'idea grezza",          when: "Entra in gioco appena hai un'intuizione" },
@@ -48,6 +49,8 @@ const CATEGORY_ORDER = [
 
 function ToolsPage() {
   const { hasAccess } = useAcademyAccess();
+  const { activate } = useActivateTeam();
+  const handleActivate = () => void activate("tools");
   const { data, isLoading } = useQuery({
     queryKey: ["tool-library"],
     queryFn: async () => {
