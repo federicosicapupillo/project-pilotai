@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LogOut, ShieldCheck, Lock, MessageSquare, UserCircle2 } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLogo";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -28,25 +28,23 @@ export function AppHeader() {
     navigate({ to: "/" });
   };
 
-  const [profileName, setProfileName] = useState<string | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    if (!user) {
-      setProfileName(null);
-      return;
-    }
-    supabase
-      .from("profiles")
-      .select("name")
-      .eq("id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!cancelled) setProfileName((data?.name ?? null) as string | null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
+  // Cached profile lookup — avoids refetching on every header re-render /
+  // navigation. Stays fresh for 5 minutes; mutations to the profile can
+  // invalidate ["profile", userId] explicitly.
+  const { data: profileName } = useQuery({
+    queryKey: ["profile-name", user?.id ?? "anon"],
+    enabled: !!user,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("name")
+        .eq("id", user.id)
+        .maybeSingle();
+      return (data?.name ?? null) as string | null;
+    },
+  });
 
   const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
   const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
