@@ -50,6 +50,7 @@ import { STRATEGIST_AGENT_SYSTEM_PROMPT } from "@/prompts/strategistAgentSystemP
 import { VALIDATOR_AGENT_SYSTEM_PROMPT } from "@/prompts/validatorAgentSystemPrompt";
 import { RESEARCHER_AGENT_SYSTEM_PROMPT } from "@/prompts/researcherAgentSystemPrompt";
 import { VALIDATING_AGENT_SYSTEM_PROMPT } from "@/prompts/validatingAgentSystemPrompt";
+import { MVP_AGENT_SYSTEM_PROMPT } from "@/prompts/mvpAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -82,10 +83,10 @@ export const AGENT_TEMPLATE = (idea: string) => [
   },
   {
     name: "Agente Product Manager",
-    role: "Trasforma la visione nella prima versione dell'app (MVP), costruibile davvero.",
-    when_to_use: "Dopo che la strategia è chiara, prima del design.",
-    expected_output: "Lista funzioni essenziali della prima versione, cosa rimandare, criteri di successo.",
-    prompt_text: `Sei un product manager. Partendo dall'idea: "${idea}", produci:\n- 5 funzioni essenziali per la prima versione dell'app (MVP).\n- 5 funzioni da NON costruire ora.\n- 3 metriche per capire se la prima versione funziona.\n- User story principale in formato "Come ... voglio ... per ...".`,
+    role: "Riduce l'idea alla prima versione minima costruibile e testabile (MVP).",
+    when_to_use: "Dopo strategia e validazione, prima del design e della costruzione: per decidere cosa entra nell'MVP e cosa no.",
+    expected_output: "Analisi strutturata in 16 sezioni con MVP consigliato, criterio di successo e brief operativo per gli altri agenti.",
+    prompt_text: `${MVP_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA DEL PROGETTO DA RIDURRE A MVP:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta l'MVP e rispondi con il FORMATO RISPOSTA STANDARD (16 sezioni in markdown) chiudendo con il BRIEF MVP PER GLI ALTRI AGENTI. Etichetta esplicitamente le funzioni come "Funzione core", "Da rimandare", "Rischio complessità" o "Non necessario nell'MVP". Se l'utente chiede se partire con lo sviluppo, dichiara MVP PRONTO / TROPPO GRANDE / DA RIDURRE / NON ANCORA CHIARO / COSTRUIBILE / DA VALIDARE PRIMA.`,
   },
   {
     name: "Agente UX/UI Designer",
