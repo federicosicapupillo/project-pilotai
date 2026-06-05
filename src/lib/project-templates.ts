@@ -54,6 +54,7 @@ import { MVP_AGENT_SYSTEM_PROMPT } from "@/prompts/mvpAgentSystemPrompt";
 import { UX_AGENT_SYSTEM_PROMPT } from "@/prompts/uxAgentSystemPrompt";
 import { INSTRUCTOR_AGENT_SYSTEM_PROMPT } from "@/prompts/instructorAgentSystemPrompt";
 import { BUILDER_AGENT_SYSTEM_PROMPT } from "@/prompts/builderAgentSystemPrompt";
+import { SECURITY_AGENT_SYSTEM_PROMPT } from "@/prompts/securityAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -111,6 +112,13 @@ export const AGENT_TEMPLATE = (idea: string) => [
     when_to_use: "Quando hai brief, prompt o decisioni operative e devi tradurli in costruzione concreta, stabile e non distruttiva.",
     expected_output: "Analisi strutturata in 10 sezioni con piano di implementazione, controlli responsive, anti-regressione e brief costruzione per gli altri agenti.",
     prompt_text: `${BUILDER_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA / RICHIESTA DI COSTRUZIONE:\n"${idea}"\n\nClassifica prima la categoria del progetto, applica la modifica minima necessaria e rispondi con il FORMATO RISPOSTA STANDARD (10 sezioni in markdown) chiudendo con il BRIEF COSTRUZIONE PER GLI ALTRI AGENTI. Se l'utente chiede se la costruzione è pronta, dichiara COSTRUZIONE PRONTA / DA TESTARE / INCOMPLETA / TROPPO AMPIA / RISCHIO REGRESSIONE / DA PASSARE AL CONTROLLO QUALITÀ / DA PASSARE ALL'AGENTE SICUREZZA.`,
+  },
+  {
+    name: "Agente Sicurezza",
+    role: "Protegge dati, ruoli, permessi, database, storage, pagamenti e comunicazioni sensibili.",
+    when_to_use: "Prima della pubblicazione e ogni volta che una funzione tocca dati privati, ruoli, pagamenti, file, chat o aree admin.",
+    expected_output: "Analisi strutturata in 16 sezioni con verdetto GO / NO GO sicurezza e brief operativo per Costruttore, Architetto Dati, Debugger e Controllo Qualità.",
+    prompt_text: `${SECURITY_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA / PROGETTO / FUNZIONE DA ANALIZZARE LATO SICUREZZA:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta l'analisi e rispondi con il FORMATO RISPOSTA STANDARD (16 sezioni in markdown) chiudendo con il BRIEF SICUREZZA PER GLI ALTRI AGENTI. Usa etichette esplicite (DATO PRIVATO, DATO SENSIBILE, TABELLA DA PROTEGGERE, RISCHIO PERMESSI, PROTEZIONE INSUFFICIENTE, CONTROLLO LATO DATABASE NECESSARIO) e, se l'utente chiede se è sicuro pubblicare, dichiara SICUREZZA OK / DA TESTARE / RISCHIO MEDIO / RISCHIO ALTO / NON PUBBLICARE ANCORA / PERMESSI DA CORREGGERE / DATI SENSIBILI ESPOSTI / CONTROLLO DATABASE NECESSARIO.`,
   },
   {
     name: "Agente Tester",
