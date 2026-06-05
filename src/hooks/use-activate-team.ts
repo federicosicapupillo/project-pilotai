@@ -20,9 +20,16 @@ export function useActivateTeam() {
 
   const { data: access } = useQuery({
     queryKey: ["agent-access"],
-    queryFn: () => fetchAccess(),
+    queryFn: async () => {
+      try {
+        return await fetchAccess();
+      } catch {
+        return { hasAccess: false, status: null, idea: null, paidAt: null };
+      }
+    },
     enabled: !!user,
     staleTime: 15_000,
+    retry: false,
   });
 
   const hasAccess = !!access?.hasAccess;
