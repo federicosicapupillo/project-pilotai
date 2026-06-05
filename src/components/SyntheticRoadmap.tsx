@@ -110,6 +110,9 @@ export function SyntheticRoadmap({ projectId }: { projectId: string }) {
                 <StatusBadge status={s.status} />
               </div>
               <p className="text-sm text-muted-foreground mt-1">{s.description}</p>
+              {s.status === "in_progress" && (
+                <p className="text-[11px] uppercase tracking-wider text-accent mt-1 font-medium">Step attuale</p>
+              )}
             </div>
           </li>
         ))}
