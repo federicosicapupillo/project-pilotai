@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Bot, ClipboardCopy, Lock, Sparkles, ArrowRight, CheckCircle2, Users } from "lucide-react";
+import { Bot, ClipboardCopy, Lock, Sparkles, ArrowRight, CheckCircle2, Users, Crown, MessageSquare } from "lucide-react";
 import { AgentIcon } from "@/components/AgentIcon";
 import { ToolBadge } from "@/components/ToolBadge";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ type AgentProfile = {
   pitch: string;
   collaboration: string;
   locked: string;
+  lockedTitle?: string;
 };
 
 const AGENT_PROFILES: Array<{ match: RegExp; profile: AgentProfile }> = [
@@ -38,14 +39,15 @@ const AGENT_PROFILES: Array<{ match: RegExp; profile: AgentProfile }> = [
   {
     match: /product\s*manager|pm\b/i,
     profile: {
-      hello: "Ciao, sono il tuo Product Manager",
-      role: "Decido cosa costruire e in che ordine",
+      hello: "Ciao, sono il tuo AI Project Manager",
+      role: "Coordino il Team AI e trasformo le tue direttive in azioni",
       pitch:
-        "Prendo la direzione definita dallo Stratega e la trasformo in un piano operativo. Scelgo le funzioni essenziali, elimino quelle inutili e organizzo la prima versione.",
+        "Il mio compito è prendere la tua idea, capirla, ordinarla e trasformarla in un piano operativo. Non devi parlare con ogni agente separatamente: tu dai le direttive a me, io assegno i compiti al team, raccolgo i risultati e ti mostro cosa approvare.",
       collaboration:
-        "Collaboro con lo Stratega, con l'UX Agent per le schermate e con il Build Agent per preparare la costruzione.",
+        "Coordino lo Stratega per la direzione, il Validatore per controllare l'idea, il Ricercatore per cercare conferme, l'UX Agent per le schermate, il Database Planner per i dati, il Prompt Engineer per le istruzioni, il Build Agent per la costruzione, il Test Agent per i controlli e il Launch Agent per il lancio.",
+      lockedTitle: "Cabina di regia bloccata",
       locked:
-        "Dopo l'attivazione vedrai roadmap, priorità, funzioni MVP e prompt operativi per costruire la prima versione.",
+        "Dopo l'attivazione, questo agente diventerà il tuo punto di contatto principale. Tu gli darai le direttive e lui coordinerà il lavoro degli altri agenti sulla tua idea.",
     },
   },
   {
@@ -182,6 +184,11 @@ function profileFor(name: string, role: string | null | undefined): AgentProfile
   };
 }
 
+function isProjectManager(name: string, role: string | null | undefined) {
+  const re = /product\s*manager|project\s*manager|\bpm\b/i;
+  return re.test(name) || (role ? re.test(role) : false);
+}
+
 function AgentsPage() {
   const { hasAccess } = useAcademyAccess();
   const { data, isLoading } = useQuery({
@@ -203,7 +210,7 @@ function AgentsPage() {
           La tua squadra di <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">agenti AI</span>
         </h1>
         <p className="text-muted-foreground mt-2 max-w-3xl">
-          Ogni agente ha un ruolo preciso, ma non lavora da solo. Stratega, Product Manager, Validatore, Ricercatore, UX, Database, Prompt, Build, Supabase, Test e Lancio collaborano tra loro per trasformare la tua idea in un progetto operativo.
+          Tu non devi parlare con tutti. Il tuo AI Project Manager coordina il team per te: ascolta le tue direttive, assegna i compiti agli agenti e ti mostra cosa approvare o correggere.
         </p>
         <p className="text-sm text-foreground/70 mt-2 max-w-3xl">
           Puoi conoscere il team. Per vedere tool, prompt e istruzioni operative devi attivare il Team AI.
@@ -217,6 +224,25 @@ function AgentsPage() {
             <Lock className="size-3.5" /> Puoi conoscere il team. Per metterlo al lavoro, attiva il Team AI.
           </div>
         )}
+      </div>
+
+      <div
+        className="mb-6 rounded-2xl border border-primary/40 p-6 sm:p-8 relative overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+          boxShadow: "0 0 40px -10px color-mix(in oklab, var(--primary) 40%, transparent)",
+        }}
+      >
+        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-primary font-semibold mb-3">
+          <Crown className="size-4" /> Parli con un solo agente. Lui coordina tutti gli altri.
+        </div>
+        <p className="text-sm sm:text-base text-foreground/90 leading-relaxed max-w-3xl">
+          Il Team AI lavora come una squadra, ma tu non devi gestirlo manualmente. Il tuo AI Project Manager riceve le tue direttive, assegna i compiti agli agenti giusti e ti presenta il lavoro da approvare.
+        </p>
+        <p className="mt-4 text-base sm:text-lg font-display font-semibold bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+          Tu dai l'ok. Il Project Manager coordina. Gli agenti eseguono.
+        </p>
       </div>
 
       <div
@@ -240,21 +266,59 @@ function AgentsPage() {
       {isLoading && <div className="text-muted-foreground">Caricamento…</div>}
 
       <div className="grid md:grid-cols-2 gap-4">
-        {data?.map((a) => {
+        {[...(data ?? [])]
+          .sort((a, b) => {
+            const ap = isProjectManager(a.name, a.role) ? 0 : 1;
+            const bp = isProjectManager(b.name, b.role) ? 0 : 1;
+            return ap - bp;
+          })
+          .map((a) => {
           const p = profileFor(a.name, a.role);
+          const isPM = isProjectManager(a.name, a.role);
           return (
-          <div key={a.id} className="glass-card rounded-xl p-6 relative">
+          <div
+            key={a.id}
+            className={
+              isPM
+                ? "glass-card rounded-xl p-6 relative md:col-span-2 border-primary/50"
+                : "glass-card rounded-xl p-6 relative"
+            }
+            style={
+              isPM
+                ? {
+                    background:
+                      "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 8%, transparent))",
+                    boxShadow:
+                      "0 0 36px -10px color-mix(in oklab, var(--primary) 55%, transparent)",
+                  }
+                : undefined
+            }
+          >
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-start gap-3 min-w-0">
                 <div className="relative shrink-0">
-                  <div className="absolute inset-0 rounded-full bg-primary/30 blur-md" aria-hidden />
-                  <div className="relative size-14 rounded-full bg-gradient-to-br from-primary via-violet-500 to-fuchsia-500 grid place-items-center text-primary-foreground ring-2 ring-primary/40 shadow-[0_0_24px_-4px_color-mix(in_oklab,var(--primary)_70%,transparent)]">
-                    <AgentIcon name={a.icon} size={24} />
+                  <div className={isPM ? "absolute inset-0 rounded-full bg-primary/50 blur-lg" : "absolute inset-0 rounded-full bg-primary/30 blur-md"} aria-hidden />
+                  <div className={
+                    isPM
+                      ? "relative size-16 rounded-full bg-gradient-to-br from-primary via-violet-500 to-fuchsia-500 grid place-items-center text-primary-foreground ring-2 ring-primary/60 shadow-[0_0_32px_-4px_color-mix(in_oklab,var(--primary)_80%,transparent)]"
+                      : "relative size-14 rounded-full bg-gradient-to-br from-primary via-violet-500 to-fuchsia-500 grid place-items-center text-primary-foreground ring-2 ring-primary/40 shadow-[0_0_24px_-4px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
+                  }>
+                    <AgentIcon name={a.icon} size={isPM ? 28 : 24} />
                   </div>
+                  {isPM && (
+                    <div className="absolute -top-1 -right-1 size-6 rounded-full bg-amber-400 grid place-items-center text-amber-950 ring-2 ring-background shadow">
+                      <Crown className="size-3.5" />
+                    </div>
+                  )}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-display font-semibold text-lg leading-tight">{p.hello}</h3>
+                  <h3 className={isPM ? "font-display font-semibold text-xl leading-tight" : "font-display font-semibold text-lg leading-tight"}>{p.hello}</h3>
                   <p className="text-sm text-muted-foreground mt-0.5">{p.role}</p>
+                  {isPM && (
+                    <span className="mt-2 inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300">
+                      <Crown className="size-3" /> Coordinatore del Team
+                    </span>
+                  )}
                 </div>
               </div>
               {hasAccess ? (
@@ -272,6 +336,14 @@ function AgentsPage() {
               {p.pitch}
             </p>
 
+            {isPM && (
+              <div className="mb-3 rounded-lg border border-primary/40 bg-background/40 px-4 py-3">
+                <p className="text-sm sm:text-base font-display font-semibold bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                  Tu parli con me. Io coordino tutto il Team AI.
+                </p>
+              </div>
+            )}
+
             {!hasAccess && (
               <div className="mt-2 mb-3 rounded-lg border border-border/60 bg-background/40 p-3">
                 <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
@@ -283,6 +355,15 @@ function AgentsPage() {
 
             {hasAccess ? (
               <>
+                {isPM && (
+                  <div className="mb-4">
+                    <Button variant="hero" size="lg" asChild>
+                      <Link to="/agente-ai">
+                        <MessageSquare className="size-4" /> Parla con il Project Manager <ArrowRight className="size-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                )}
                 <dl className="space-y-2 text-sm">
               {a.when_to_use && (<>
                 <dt className="text-xs uppercase tracking-wider text-muted-foreground mt-3">Quando usarlo</dt>
@@ -329,7 +410,7 @@ function AgentsPage() {
                 }}
               >
                 <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-primary/90 font-semibold">
-                  <Lock className="size-3.5" /> Area operativa bloccata
+                  <Lock className="size-3.5" /> {p.lockedTitle ?? "Area operativa bloccata"}
                 </div>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                   {p.locked}
