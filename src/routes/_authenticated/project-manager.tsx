@@ -222,14 +222,14 @@ REGOLE:
   }
 
   function approveSchema() {
-    if (mutation.isPending) return;
+    if (mutation.isPending || opGenMutation.isPending) return;
+    if (!activeProject) return;
     setReviewMode("idle");
-    if (activeProject && typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       localStorage.setItem(`pm_step_approved:${activeProject.id}:${currentStep.title}`, "1");
     }
-    mutation.mutate(
-      `Approvo lo schema dello step "${currentStep.title}". Confermami che lo step è approvato internamente (senza modificare la roadmap) e ricordami che ora posso cliccare "Genera il prompt operativo da copiare". Non proporre ancora il passaggio allo step successivo finché non avrò generato il prompt operativo.`,
-    );
+    // Flusso unificato: approva lo schema E genera subito il prompt operativo.
+    opGenMutation.mutate(currentStep.title);
   }
 
   function rejectSchema() {
@@ -408,21 +408,6 @@ REGOLE:
                 content={m.content}
               />
             ))}
-            {/* Quick actions under the intro, before the user has sent anything */}
-            {messages.length === 1 && !mutation.isPending && (
-              <div className="flex flex-wrap gap-2 pl-11">
-                {QUICK_ACTIONS.map((a) => (
-                  <button
-                    key={a}
-                    type="button"
-                    onClick={() => sendQuick(a)}
-                    className="text-xs px-3 py-1.5 rounded-full border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/60 text-foreground/90 transition-colors"
-                  >
-                    {a}
-                  </button>
-                ))}
-              </div>
-            )}
             {/* Follow-up actions after the latest assistant reply */}
             {messages.length > 1 &&
               messages[messages.length - 1].role === "assistant" &&
@@ -446,11 +431,10 @@ REGOLE:
                         ))}
                         <button
                           type="button"
-                          onClick={() => sendQuick("Genera prompt operativo")}
-                          disabled={opGenMutation.isPending}
-                          className="text-xs px-3 py-1.5 rounded-full border border-primary/40 bg-primary/5 hover:bg-primary/10 text-foreground inline-flex items-center gap-1.5 disabled:opacity-50"
+                          onClick={() => setReviewMode("schema-review")}
+                          className="text-xs px-3 py-1.5 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
                         >
-                          <Sparkles className="size-3.5" /> Genera il prompt operativo da copiare
+                          Annulla
                         </button>
                       </div>
                     </>
@@ -459,41 +443,26 @@ REGOLE:
                       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
                         Cosa vuoi fare con questa risposta?
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <button
                           type="button"
                           onClick={approveSchema}
-                          className="text-xs px-3 py-2 rounded-lg border border-primary/50 bg-primary/10 hover:bg-primary/20 text-foreground inline-flex items-center justify-center gap-1.5"
+                          disabled={opGenMutation.isPending}
+                          className="text-xs px-3 py-2 rounded-lg border border-primary/50 bg-primary/10 hover:bg-primary/20 text-foreground inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
                         >
-                          <ThumbsUp className="size-3.5" /> Approvo le modifiche
+                          {opGenMutation.isPending ? (
+                            <><Loader2 className="size-3.5 animate-spin" /> Sto generando il prompt…</>
+                          ) : (
+                            <><ThumbsUp className="size-3.5" /> Approvo e genera il prompt</>
+                          )}
                         </button>
                         <button
                           type="button"
                           onClick={rejectSchema}
                           className="text-xs px-3 py-2 rounded-lg border border-border/60 hover:border-destructive/60 hover:text-foreground text-muted-foreground inline-flex items-center justify-center gap-1.5"
                         >
-                          <ThumbsDown className="size-3.5" /> Non approvo
+                          <ThumbsDown className="size-3.5" /> Non approvo / voglio modificare
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => sendQuick("Genera prompt operativo")}
-                          disabled={opGenMutation.isPending}
-                          className="text-xs px-3 py-2 rounded-lg border border-primary/40 bg-primary/5 hover:bg-primary/10 text-foreground inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
-                        >
-                          <Sparkles className="size-3.5" /> Genera il prompt operativo da copiare
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {FOLLOWUP_ACTIONS.filter((a) => a !== "Genera prompt operativo" && a !== "Approvo, vai avanti").map((a) => (
-                          <button
-                            key={a}
-                            type="button"
-                            onClick={() => sendQuick(a)}
-                            className="text-[11px] px-2.5 py-1 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
-                          >
-                            {a}
-                          </button>
-                        ))}
                       </div>
                     </>
                   )}
@@ -528,19 +497,6 @@ REGOLE:
               className="w-full resize-none rounded-lg bg-secondary/40 border border-border/50 px-3 py-2 text-sm focus:outline-none focus:border-primary/60"
               disabled={mutation.isPending}
             />
-            <div className="flex flex-wrap gap-2">
-              {QUICK_ACTIONS.slice(0, 4).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => sendQuick(s)}
-                  className="text-xs px-2.5 py-1 rounded-full border border-border/60 hover:border-primary/60 hover:text-foreground text-muted-foreground transition-colors"
-                  disabled={mutation.isPending}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
             <div className="flex justify-end">
               <Button type="submit" variant="hero" disabled={mutation.isPending || !input.trim()}>
                 {mutation.isPending ? (
