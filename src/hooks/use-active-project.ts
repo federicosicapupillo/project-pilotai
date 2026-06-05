@@ -30,6 +30,7 @@ export function useActiveProject() {
       const { data, error } = await supabase
         .from("projects")
         .select("id, title, idea_description, target, problem, solution, product_type, experience_level, existing_tools")
+        .is("deleted_at", null)
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as ActiveProject[];
