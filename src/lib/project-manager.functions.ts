@@ -120,7 +120,10 @@ export const sendPmMessage = createServerFn({ method: "POST" })
   .inputValidator((d: { projectId?: string | null; message: string }) => {
     const message = String(d.message ?? "").trim();
     if (!message) throw new Error("Empty message");
-    if (message.length > 4000) throw new Error("Message too long");
+    if (message.length > 100000)
+      throw new Error(
+        "Il testo incollato è molto lungo. Puoi inviarlo in più parti, oppure incollare solo la parte più importante della risposta generata dall'AI.",
+      );
     return {
       projectId:
         typeof d.projectId === "string" && /^[0-9a-fA-F-]{36}$/.test(d.projectId)
