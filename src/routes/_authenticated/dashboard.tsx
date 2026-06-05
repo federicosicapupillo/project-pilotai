@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-react";
-import { computeProgress, currentPhase, nextActionableStep, type RoadmapItem } from "@/lib/app-roadmap";
+import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
 
