@@ -1,8 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2 } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2, Trash2, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
@@ -28,12 +40,14 @@ function statusBadge(status: string) {
 function DashboardPage() {
   const { activate, hasAccess } = useActivateTeam();
   const { activeId, setActiveId } = useActiveProject();
+  const queryClient = useQueryClient();
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
         .select("id, title, idea_description, status, product_type, updated_at")
+        .is("deleted_at", null)
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -170,6 +184,18 @@ function DashboardPage() {
                 hasAccess={hasAccess}
                 isActive={p.id === activeProjectId}
                 onSelect={() => setActiveId(p.id)}
+                onDeleted={(deletedId) => {
+                  if (activeId === deletedId) {
+                    const next = (projects ?? []).find((x) => x.id !== deletedId);
+                    if (next) setActiveId(next.id);
+                    else if (typeof window !== "undefined")
+                      localStorage.removeItem("active_project_id");
+                  }
+                  queryClient.invalidateQueries({ queryKey: ["projects"] });
+                  queryClient.invalidateQueries({ queryKey: ["my-projects"] });
+                  queryClient.invalidateQueries({ queryKey: ["pm-projects"] });
+                  queryClient.invalidateQueries({ queryKey: ["projects-progress"] });
+                }}
               />
             ))}
           </div>
@@ -220,12 +246,14 @@ function ProjectCard({
   hasAccess,
   isActive,
   onSelect,
+  onDeleted,
 }: {
   project: ProjectRow;
   roadmapItems: RoadmapItem[];
   hasAccess: boolean;
   isActive: boolean;
   onSelect: () => void;
+  onDeleted: (id: string) => void;
 }) {
   const pr = computeProgress(roadmapItems);
   const phase = currentPhase(roadmapItems);
@@ -234,6 +262,25 @@ function ProjectCard({
   const displayDone = hasAccess ? rm.done : pr.completed;
   const displayTotal = hasAccess ? rm.total : pr.total;
   const displayPhase = hasAccess ? (rm.currentStep?.title ?? "Roadmap") : phase;
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("projects")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", p.id)
+        .is("deleted_at", null);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Progetto eliminato correttamente.");
+      setConfirmOpen(false);
+      onDeleted(p.id);
+    },
+    onError: () => {
+      toast.error("Non è stato possibile eliminare il progetto. Riprova tra poco.");
+    },
+  });
   return (
     <div
       role="button"
@@ -252,11 +299,23 @@ function ProjectCard({
           : "hover:border-primary/50",
       ].join(" ")}
     >
+      <button
+        type="button"
+        aria-label="Elimina progetto"
+        title="Elimina progetto"
+        onClick={(e) => {
+          e.stopPropagation();
+          setConfirmOpen(true);
+        }}
+        className="absolute top-3 right-3 z-10 inline-flex items-center justify-center size-8 rounded-md border border-border/60 bg-background/60 text-muted-foreground hover:text-destructive hover:border-destructive/60 hover:bg-destructive/10 transition-colors"
+      >
+        <Trash2 className="size-4" />
+      </button>
       <div className="flex items-start justify-between gap-2">
         <div className="size-10 rounded-lg bg-secondary grid place-items-center">
           <Folder className="size-5 text-primary" />
         </div>
-        <div className="flex items-center gap-2 flex-wrap justify-end">
+        <div className="flex items-center gap-2 flex-wrap justify-end pr-10">
           {isActive && (
             <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-primary/15 border border-primary/40 text-primary font-semibold">
               <CheckCircle2 className="size-3" /> Progetto attivo
@@ -292,6 +351,16 @@ function ProjectCard({
           {p.product_type ?? "Progetto"}
         </span>
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setConfirmOpen(true);
+            }}
+            className="text-xs text-muted-foreground hover:text-destructive transition-colors inline-flex items-center gap-1"
+          >
+            <Trash2 className="size-3" /> Elimina
+          </button>
           <Link
             to="/projects/$id"
             params={{ id: p.id }}
@@ -313,6 +382,33 @@ function ProjectCard({
           </Link>
         </div>
       </div>
+      <AlertDialog open={confirmOpen} onOpenChange={(o) => !deleteMutation.isPending && setConfirmOpen(o)}>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminare questo progetto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Questa azione rimuoverà il progetto <span className="font-medium text-foreground">"{p.title}"</span> dalla tua dashboard insieme alla roadmap, ai prompt generati e allo storico collegato. L'operazione non può essere annullata.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>Annulla</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                deleteMutation.mutate();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive"
+            >
+              {deleteMutation.isPending ? (
+                <><Loader2 className="size-4 animate-spin" /> Eliminazione…</>
+              ) : (
+                <>Sì, elimina progetto</>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
