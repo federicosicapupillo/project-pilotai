@@ -156,6 +156,27 @@ export type Database = {
           },
         ]
       }
+      ai_rate_limits: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          ip_hash: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          ip_hash: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       conversion_events: {
         Row: {
           created_at: string
