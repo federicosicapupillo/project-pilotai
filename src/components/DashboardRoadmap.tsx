@@ -142,7 +142,7 @@ export function DashboardRoadmap({
                   isDone
                     ? "border-primary/50 bg-primary/10 text-foreground"
                     : isCurrent
-                      ? "border-accent/60 bg-accent/10 text-foreground shadow-[0_0_24px_oklch(0.75_0.18_300/0.35)] animate-pulse-slow"
+                      ? "border-accent/60 bg-accent/10 text-foreground shadow-[0_0_24px_oklch(0.75_0.18_300/0.35)]"
                       : "border-border/50 bg-background/40 text-muted-foreground opacity-70",
                 ].join(" ")}
               >
