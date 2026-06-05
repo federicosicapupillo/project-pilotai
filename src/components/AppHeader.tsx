@@ -86,7 +86,7 @@ export function AppHeader() {
               {hasAccess ? (
                 <Link to="/agente-ai" title="Accesso sbloccato">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-primary/50 bg-primary/10 text-primary glow-soft">
-                    <Check className="size-3.5" /> Agente AI attivo
+                    <Check className="size-3.5" /> Team AI attivo
                   </span>
                 </Link>
               ) : (
@@ -97,7 +97,7 @@ export function AppHeader() {
                   title="Sblocca il tuo agente personale"
                   className="hidden sm:inline-flex"
                 >
-                  <Lock className="size-3.5" /> Attiva agente AI - 29€
+                  <Lock className="size-3.5" /> Attiva team AI - 29€
                 </Button>
               )}
               <span className="hidden sm:block text-xs text-muted-foreground max-w-[160px] truncate">
@@ -128,7 +128,7 @@ export function AppHeader() {
       {user && !hasAccess && (
         <div className="sm:hidden border-t border-border/40 px-6 py-2 flex justify-center">
           <Button variant="hero" size="sm" onClick={handleActivate} className="w-full">
-            <Lock className="size-3.5" /> Attiva agente AI - 29€
+            <Lock className="size-3.5" /> Attiva team AI - 29€
           </Button>
         </div>
       )}
