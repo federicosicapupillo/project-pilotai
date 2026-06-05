@@ -467,6 +467,60 @@ export type Database = {
           },
         ]
       }
+      project_manager_logs: {
+        Row: {
+          action_type: string
+          backlog_item_id: string | null
+          created_at: string
+          decision: string | null
+          id: string
+          metadata: Json | null
+          next_step_title: string | null
+          operation_id: string | null
+          project_id: string | null
+          project_manager_prompt: string | null
+          project_manager_response: string | null
+          roadmap_step_id: string | null
+          step_title: string | null
+          user_id: string
+          user_message: string | null
+        }
+        Insert: {
+          action_type: string
+          backlog_item_id?: string | null
+          created_at?: string
+          decision?: string | null
+          id?: string
+          metadata?: Json | null
+          next_step_title?: string | null
+          operation_id?: string | null
+          project_id?: string | null
+          project_manager_prompt?: string | null
+          project_manager_response?: string | null
+          roadmap_step_id?: string | null
+          step_title?: string | null
+          user_id: string
+          user_message?: string | null
+        }
+        Update: {
+          action_type?: string
+          backlog_item_id?: string | null
+          created_at?: string
+          decision?: string | null
+          id?: string
+          metadata?: Json | null
+          next_step_title?: string | null
+          operation_id?: string | null
+          project_id?: string | null
+          project_manager_prompt?: string | null
+          project_manager_response?: string | null
+          roadmap_step_id?: string | null
+          step_title?: string | null
+          user_id?: string
+          user_message?: string | null
+        }
+        Relationships: []
+      }
       project_workbook: {
         Row: {
           agents_used: Json | null
