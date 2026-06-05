@@ -8,7 +8,7 @@ import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitB
 import {
   ArrowRight, Sparkles, Clock, Activity, Layers, Users, AlertCircle,
   Lightbulb, Wrench, Bot, ListChecks, Info, Loader2,
-  Monitor, Plug, Wand2, TrendingUp,
+  Monitor, Plug, Wand2, TrendingUp, Euro,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import {
@@ -242,6 +242,14 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
               </Section>
             </div>
 
+            {/* Costo stimato senza AccentiAI */}
+            <CostWithoutAccentiAI
+              idea={params.idea}
+              projectType={summary.project_type}
+              difficulty={summary.difficulty}
+              onActivate={goToRoadmap}
+            />
+
             {/* Potenziale massimo stimato */}
             {summary.max_revenue && (
               <section
@@ -409,5 +417,122 @@ function DifficultyBadge({ level }: { level: string }) {
     >
       <Activity className="size-3.5" /> {level}
     </span>
+  );
+}
+
+function estimateExternalCost(idea: string, projectType: string, difficulty: string): {
+  amount: string;
+  tier: "semplice" | "media" | "avanzata" | "marketplace";
+} {
+  const t = `${idea} ${projectType}`.toLowerCase();
+  const marketplaceKw = [
+    "marketplace", "piattaforma", "annunci", "annuncio", "candidatur",
+    "due tipologie", "due tipi di utent", "venditori e compratori",
+    "host e ospiti", "professionist", "freelance", "recensioni",
+    "chat tra utent", "admin", "matching",
+  ];
+  const advancedKw = [
+    "pagament", "stripe", "abbonament", "notifich", "whatsapp",
+    "telegram", "calendario", "prenotazion", "api ester",
+    "ruoli utent", "ai integrat", "intelligenza artificiale",
+    "automazion", "openai", "machine learning",
+  ];
+  if (marketplaceKw.some((k) => t.includes(k))) {
+    return { amount: "Fino a 30.000€", tier: "marketplace" };
+  }
+  if (advancedKw.some((k) => t.includes(k))) {
+    return { amount: "Fino a 15.000€", tier: "avanzata" };
+  }
+  if (difficulty === "Facile") return { amount: "Fino a 3.000€", tier: "semplice" };
+  if (difficulty === "Medio") return { amount: "Fino a 8.000€", tier: "media" };
+  return { amount: "Fino a 15.000€", tier: "avanzata" };
+}
+
+function CostWithoutAccentiAI({
+  idea,
+  projectType,
+  difficulty,
+  onActivate,
+}: {
+  idea: string;
+  projectType: string;
+  difficulty: string;
+  onActivate: () => void;
+}) {
+  const { amount, tier } = estimateExternalCost(idea, projectType, difficulty);
+  const tierLabel =
+    tier === "semplice"
+      ? "App semplice"
+      : tier === "media"
+        ? "App media"
+        : tier === "avanzata"
+          ? "App avanzata"
+          : "Marketplace / piattaforma complessa";
+
+  return (
+    <section
+      className="relative rounded-2xl p-6 sm:p-8 overflow-hidden border border-primary/50"
+      style={{
+        background:
+          "linear-gradient(135deg, color-mix(in oklab, var(--primary) 10%, transparent), color-mix(in oklab, var(--accent) 8%, transparent))",
+        boxShadow:
+          "0 0 0 1px color-mix(in oklab, var(--primary) 30%, transparent), 0 10px 40px -10px color-mix(in oklab, var(--primary) 40%, transparent)",
+      }}
+    >
+      <div
+        className="absolute -top-16 -left-12 size-40 rounded-full bg-primary/20 blur-3xl pointer-events-none"
+        aria-hidden
+      />
+
+      <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+        <Euro className="size-3.5 text-primary" /> Costo stimato senza AccentiAI
+      </div>
+
+      <div className="font-display font-semibold text-4xl sm:text-5xl gradient-text leading-tight">
+        {amount}
+      </div>
+      <p className="text-xs text-muted-foreground mt-3 max-w-xl">
+        Stima indicativa per creare una prima versione tramite freelance, agenzia o sviluppatore esterno.
+        Riferimento: <strong className="text-foreground/80">{tierLabel}</strong>.
+      </p>
+
+      {/* Confronto */}
+      <div className="mt-6 grid sm:grid-cols-2 gap-3">
+        <div className="rounded-xl border border-border/60 bg-background/40 p-4">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Senza AccentiAI</div>
+          <div className="font-display font-semibold text-2xl mt-1">{amount}</div>
+          <div className="text-[11px] text-muted-foreground mt-1">
+            Analisi, progettazione, sviluppo e test esterni.
+          </div>
+        </div>
+        <div className="rounded-xl border border-primary/50 ring-1 ring-primary/20 p-4 bg-background/40">
+          <div className="text-[10px] uppercase tracking-wider text-primary">Con AccentiAI</div>
+          <div className="font-display font-semibold text-2xl mt-1 gradient-text">Da 29€</div>
+          <div className="text-[11px] text-muted-foreground mt-1">
+            Tu porti l'idea. Il team AI prepara struttura, funzioni, schermate, prompt e passaggi operativi.
+          </div>
+        </div>
+      </div>
+
+      <p className="text-[11px] text-muted-foreground mt-4 italic">
+        Il valore può variare in base a funzioni, integrazioni e complessità. AccentiAI non sostituisce
+        completamente uno sviluppatore: ti permette di partire, chiarire l'idea e costruire una prima
+        versione riducendo drasticamente i costi iniziali.
+      </p>
+
+      <div className="mt-6 rounded-xl border border-primary/40 p-4 sm:p-5 bg-background/30">
+        <p className="font-display font-semibold text-base sm:text-lg">
+          Prima di pagare uno sviluppatore, fai lavorare il tuo <span className="gradient-text">Team AI</span> sulla tua idea.
+        </p>
+        <p className="text-xs text-muted-foreground mt-2">
+          Riduci il costo di partenza e valida la tua idea prima di investire nello sviluppo completo.
+        </p>
+        <div className="mt-4">
+          <Button variant="hero" size="lg" onClick={onActivate}>
+            Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+          </Button>
+        </div>
+      </div>
+    </section>
   );
 }
