@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Folder, ArrowRight, Sparkles, Activity, Bot, Lock } from "lucide-react";
 import { computeProgress, currentPhase, nextActionableStep, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
@@ -183,11 +184,7 @@ function DashboardPage() {
                         <div className="h-full gradient-bg transition-all" style={{ width: `${pr.pct}%` }} />
                       </div>
                       {hasAccess ? (
-                        next && (
-                          <p className="text-xs text-muted-foreground line-clamp-1 mt-2">
-                            Prossimo: {next.title}
-                          </p>
-                        )
+                        <SyntheticRoadmapCompact projectId={p.id} />
                       ) : (
                         <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
                           Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
