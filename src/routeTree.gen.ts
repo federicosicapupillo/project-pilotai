@@ -25,7 +25,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRoadmapSuccessRouteImport } from './routes/_authenticated/roadmap-success'
 import { Route as AuthenticatedProjectManagerRouteImport } from './routes/_authenticated/project-manager'
 import { Route as AuthenticatedNewProjectRouteImport } from './routes/_authenticated/new-project'
-import { Route as AuthenticatedMyPathRouteImport } from './routes/_authenticated/my-path'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutAgenteRouteImport } from './routes/_authenticated/checkout-agente'
@@ -117,11 +116,6 @@ const AuthenticatedNewProjectRoute = AuthenticatedNewProjectRouteImport.update({
   path: '/new-project',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMyPathRoute = AuthenticatedMyPathRouteImport.update({
-  id: '/my-path',
-  path: '/my-path',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -190,7 +184,6 @@ export interface FileRoutesByFullPath {
   '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
-  '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/project-manager': typeof AuthenticatedProjectManagerRoute
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
@@ -217,7 +210,6 @@ export interface FileRoutesByTo {
   '/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
-  '/my-path': typeof AuthenticatedMyPathRoute
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/project-manager': typeof AuthenticatedProjectManagerRoute
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
@@ -246,7 +238,6 @@ export interface FileRoutesById {
   '/_authenticated/checkout-agente': typeof AuthenticatedCheckoutAgenteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
-  '/_authenticated/my-path': typeof AuthenticatedMyPathRoute
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
   '/_authenticated/project-manager': typeof AuthenticatedProjectManagerRoute
   '/_authenticated/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
@@ -275,7 +266,6 @@ export interface FileRouteTypes {
     | '/checkout-agente'
     | '/dashboard'
     | '/library'
-    | '/my-path'
     | '/new-project'
     | '/project-manager'
     | '/roadmap-success'
@@ -302,7 +292,6 @@ export interface FileRouteTypes {
     | '/checkout-agente'
     | '/dashboard'
     | '/library'
-    | '/my-path'
     | '/new-project'
     | '/project-manager'
     | '/roadmap-success'
@@ -330,7 +319,6 @@ export interface FileRouteTypes {
     | '/_authenticated/checkout-agente'
     | '/_authenticated/dashboard'
     | '/_authenticated/library'
-    | '/_authenticated/my-path'
     | '/_authenticated/new-project'
     | '/_authenticated/project-manager'
     | '/_authenticated/roadmap-success'
@@ -472,13 +460,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNewProjectRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/my-path': {
-      id: '/_authenticated/my-path'
-      path: '/my-path'
-      fullPath: '/my-path'
-      preLoaderRoute: typeof AuthenticatedMyPathRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/library': {
       id: '/_authenticated/library'
       path: '/library'
@@ -550,7 +531,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCheckoutAgenteRoute: typeof AuthenticatedCheckoutAgenteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
-  AuthenticatedMyPathRoute: typeof AuthenticatedMyPathRoute
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
   AuthenticatedProjectManagerRoute: typeof AuthenticatedProjectManagerRoute
   AuthenticatedRoadmapSuccessRoute: typeof AuthenticatedRoadmapSuccessRoute
@@ -565,7 +545,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCheckoutAgenteRoute: AuthenticatedCheckoutAgenteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
-  AuthenticatedMyPathRoute: AuthenticatedMyPathRoute,
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
   AuthenticatedProjectManagerRoute: AuthenticatedProjectManagerRoute,
   AuthenticatedRoadmapSuccessRoute: AuthenticatedRoadmapSuccessRoute,
