@@ -158,19 +158,21 @@ function ToolsPage() {
             ))}
           </ul>
 
-          <div className="mt-8 pt-6 border-t border-border/40">
-            <h3 className="font-display font-semibold text-xl sm:text-2xl">
-              Vuoi mettere al lavoro i tuoi agenti AI?
-            </h3>
-            <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
-              Porta la tua idea. Guarda cosa preparano. Approva solo ciò che ti convince.
-            </p>
-            <div className="mt-5">
-              <Button variant="hero" size="lg" onClick={handleActivate}>
-                Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-              </Button>
+          {!hasAccess && (
+            <div className="mt-8 pt-6 border-t border-border/40">
+              <h3 className="font-display font-semibold text-xl sm:text-2xl">
+                Vuoi mettere al lavoro i tuoi agenti AI?
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
+                Porta la tua idea. Guarda cosa preparano. Approva solo ciò che ti convince.
+              </p>
+              <div className="mt-5">
+                <Button variant="hero" size="lg" onClick={handleActivate}>
+                  Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -334,18 +336,26 @@ function ToolsPage() {
         <div className="relative">
           <h2 className="text-3xl sm:text-4xl font-display font-semibold">
             {hasAccess
-              ? "Adesso hai il tuo team. Vuoi iniziare a usarlo?"
+              ? "Il tuo Team AI è attivo"
               : "Vuoi sbloccare gli strumenti del tuo Team AI?"}
           </h2>
           <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
             {hasAccess
-              ? "Attiva il tuo agente AI personale e inizia a costruire la tua app con il supporto della squadra giusta."
+              ? "Ora puoi usare strumenti, prompt e roadmap per portare avanti il progetto."
               : "Ora vedi il metodo. Dopo l'attivazione vedrai anche gli strumenti reali, l'ordine operativo completo e come usarli nel tuo progetto."}
           </p>
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button variant="hero" size="lg" onClick={handleActivate}>
-              <Sparkles className="size-4" /> Attiva il mio Team AI - 29€
-            </Button>
+            {hasAccess ? (
+              <Button variant="hero" size="lg" asChild>
+                <Link to="/dashboard">
+                  <Sparkles className="size-4" /> Vai alla dashboard <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="hero" size="lg" onClick={handleActivate}>
+                <Sparkles className="size-4" /> Attiva il mio Team AI - 29€
+              </Button>
+            )}
           </div>
           {!hasAccess && (
             <p className="text-xs text-muted-foreground mt-3">Accesso immediato dopo il pagamento.</p>
