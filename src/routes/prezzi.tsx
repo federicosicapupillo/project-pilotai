@@ -88,8 +88,8 @@ function PrezziPage() {
           <p className="text-muted-foreground mt-4 max-w-3xl mx-auto">
             Tu porti l'idea. Il tuo team di agenti AI la organizza, la struttura e prepara il lavoro per trasformarla nella prima versione della tua app.
           </p>
-          <p className="text-sm gradient-text font-medium mt-4 max-w-2xl mx-auto">
-            Niente corso tradizionale. Niente video lunghi. Attivi una squadra AI pronta a lavorare sul tuo progetto.
+          <p className="text-base sm:text-lg gradient-text font-semibold mt-6 max-w-2xl mx-auto">
+            Attivi una squadra AI pronta a lavorare sul tuo progetto.
           </p>
         </section>
 
@@ -125,7 +125,7 @@ function PrezziPage() {
               </div>
 
               <p className="text-sm text-muted-foreground mt-7 max-w-2xl mx-auto text-center">
-                Non devi sapere programmare, progettare schermate o capire tutti gli strumenti. Tu racconti cosa vuoi creare e dai le direttive. Il tuo team AI organizza il progetto, definisce le funzioni, prepara i prompt e ti accompagna fino alla prima versione della tua app.
+                Non devi sapere programmare, progettare schermate o capire tutti gli strumenti. Tu racconti cosa vuoi creare e dai le direttive. Il tuo team AI organizza il progetto, definisce le funzioni e lavorerà per te per la creazione della tua app.
               </p>
 
               {/* AGENT GRID */}
@@ -169,20 +169,13 @@ function PrezziPage() {
 
         {/* COSA SIGNIFICA DAVVERO */}
         <section className="mt-20 max-w-3xl mx-auto">
-          <div className="glass-card rounded-2xl p-6 sm:p-8 border border-border/60">
-            <h2 className="text-xl sm:text-2xl font-display font-semibold">
-              Cosa significa davvero
+          <div className="glass-card rounded-2xl p-6 sm:p-8 border-primary/40 ring-1 ring-primary/20 text-center">
+            <h2 className="text-2xl sm:text-3xl font-display font-semibold">
+              Un sistema operativo pronto a <span className="gradient-text">lavorare sulla tua idea</span>
             </h2>
-            <p className="text-muted-foreground mt-3">
-              Non stai acquistando un'app completa già pronta. Stai attivando un sistema operativo di agenti AI che prende la tua idea e la trasforma in un progetto concreto: analisi, struttura, schermate, funzioni, prompt e primi passaggi di costruzione.
+            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+              Stai attivando un sistema operativo di agenti AI che prende la tua idea e la trasforma in un progetto concreto. <span className="text-foreground font-medium">Pronto a partire?</span>
             </p>
-            <ul className="mt-5 space-y-2 text-sm">
-              {NOT_FOR.map((f) => (
-                <li key={f} className="flex items-start gap-2 text-muted-foreground">
-                  <span className="size-1.5 rounded-full bg-primary mt-2 shrink-0" /> {f}
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 
