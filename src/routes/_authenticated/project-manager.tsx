@@ -106,6 +106,9 @@ function ProjectManagerPage() {
   const fetchHistory = useServerFn(getPmHistory);
   const send = useServerFn(sendPmMessage);
   const fetchLogs = useServerFn(getPmLogs);
+  const genOpPrompt = useServerFn(generateOperationalPrompt);
+  const listOpPrompts = useServerFn(listOperationalPrompts);
+  const markCopied = useServerFn(markOperationalPromptCopied);
 
   const { data: history } = useQuery({
     queryKey: ["pm-history", activeId],
@@ -117,6 +120,26 @@ function ProjectManagerPage() {
     queryKey: ["pm-logs", activeId],
     enabled: !!hasAccess && !!activeId,
     queryFn: () => fetchLogs({ data: { projectId: activeId, limit: 30 } }),
+  });
+
+  const { data: opPrompts } = useQuery({
+    queryKey: ["pm-op-prompts", activeId],
+    enabled: !!hasAccess && !!activeId,
+    queryFn: () => listOpPrompts({ data: { projectId: activeId } }),
+  });
+
+  const opGenMutation = useMutation({
+    mutationFn: (stepTitle: string) =>
+      genOpPrompt({ data: { projectId: activeId, stepTitle } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["pm-op-prompts", activeId] });
+      qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
+    },
+  });
+
+  const copyMutation = useMutation({
+    mutationFn: (id: string) => markCopied({ data: { id } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["pm-op-prompts", activeId] }),
   });
 
   const [input, setInput] = useState("");
@@ -135,6 +158,11 @@ function ProjectManagerPage() {
 
   function sendQuick(text: string) {
     if (mutation.isPending) return;
+    if (text === "Genera prompt operativo") {
+      if (!activeProject || opGenMutation.isPending) return;
+      opGenMutation.mutate(currentStep.title);
+      return;
+    }
     mutation.mutate(text);
   }
 
