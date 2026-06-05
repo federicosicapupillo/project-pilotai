@@ -147,6 +147,9 @@ function ProjectManagerPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["pm-op-prompts", activeId] });
       qc.invalidateQueries({ queryKey: ["pm-logs", activeId] });
+      requestAnimationFrame(() => {
+        opPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     },
   });
 
@@ -160,6 +163,7 @@ function ProjectManagerPage() {
   const [reviewMode, setReviewMode] = useState<"idle" | "schema-review" | "corrections">("idle");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const opPanelRef = useRef<HTMLElement>(null);
 
   const mutation = useMutation({
     mutationFn: (message: string) => send({ data: { projectId: activeId, message } }),
