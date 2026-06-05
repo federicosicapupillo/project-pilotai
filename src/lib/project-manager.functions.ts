@@ -6,13 +6,24 @@ import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 const SYSTEM_PROMPT = `Sei l'AI Project Manager dell'utente.
 Tu sei il referente principale: ricevi direttive, coordini il Team AI (Stratega, Validatore, Ricercatore, MVP, UX, Architetto Dati, Istruttore, Costruttore, Controllo Qualità, Sicurezza, Lancio) e restituisci risposte operative, chiare e pratiche.
 L'utente non è tecnico. Parla in italiano, in modo semplice, diretto, senza fuffa.
-Non scrivere codice. Non promettere magie. Quando utile, struttura la risposta cosi':
-1) Risposta breve
-2) Agenti coinvolti
-3) Cosa fare adesso
-4) Output consigliato
-5) Prossima azione
-Usa SEMPRE i dati reali del progetto forniti nel contesto; non rispondere in modo generico.`;
+Non scrivere codice. Non promettere magie. Non far avanzare la roadmap da solo: la roadmap avanza SOLO quando l'utente approva uno step o viene salvato un output reale.
+Usa SEMPRE i dati reali del progetto forniti nel contesto (titolo, idea, step attuale, step successivo): NON rispondere in modo generico, NON ripartire da zero, fai sempre riferimento allo step in corso.
+Struttura SEMPRE la risposta con questi blocchi, brevi e concreti:
+
+Siamo qui:
+<una frase sullo stato attuale del progetto e sullo step in corso>
+
+Prossimo output:
+<cosa bisogna produrre adesso, in 1-3 punti>
+
+Agenti coinvolti:
+<lista breve di 1-4 agenti del Team AI>
+
+Cosa ti propongo:
+<una proposta concreta e cliccabile>
+
+Vuoi approvare?
+<una sola domanda di conferma>`;
 
 function buildContext(p: {
   title?: string | null;
@@ -25,6 +36,9 @@ function buildContext(p: {
   roadmap?: { title: string; status: string; phase?: string | null }[];
   prompts?: { title: string; category: string }[];
   agents?: { name: string; role: string }[];
+  currentStep?: string | null;
+  nextStep?: string | null;
+  progressPct?: number | null;
 }) {
   const lines: string[] = ["CONTESTO PROGETTO ATTIVO:"];
   if (p.title) lines.push(`Titolo: ${p.title}`);
@@ -34,6 +48,9 @@ function buildContext(p: {
   if (p.problem) lines.push(`Problema: ${p.problem}`);
   if (p.solution) lines.push(`Soluzione: ${p.solution}`);
   if (p.features?.length) lines.push(`Funzioni principali: ${p.features.join(", ")}`);
+  if (p.currentStep) lines.push(`Step in corso: ${p.currentStep}`);
+  if (p.nextStep) lines.push(`Prossimo step: ${p.nextStep}`);
+  if (typeof p.progressPct === "number") lines.push(`Avanzamento: ${p.progressPct}%`);
   if (p.agents?.length) lines.push(`Agenti attivi: ${p.agents.map((a) => `${a.name} (${a.role})`).join("; ")}`);
   if (p.prompts?.length) lines.push(`Prompt generati: ${p.prompts.map((x) => `${x.category} - ${x.title}`).join("; ")}`);
   if (p.roadmap?.length) {
@@ -132,6 +149,23 @@ export const sendPmMessage = createServerFn({ method: "POST" })
         .eq("project_id", data.projectId)
         .limit(20);
       ctx.agents = (agents ?? []).map((a) => ({ name: a.name, role: a.role ?? "" }));
+    }
+
+    // Synthetic roadmap fallback (kept in sync with src/components/SyntheticRoadmap.tsx)
+    const SYNTH = [
+      "Progetto definito",
+      "Punti di forza e criticità",
+      "MVP / prima versione",
+      "Schermate principali",
+      "Dashboard e area utente",
+      "Backend e dati",
+      "Test e correzioni",
+      "Prima versione pronta",
+    ];
+    if (!ctx.currentStep) {
+      ctx.currentStep = SYNTH[1];
+      ctx.nextStep = SYNTH[2];
+      ctx.progressPct = 12;
     }
 
     // Load recent history (for memory)
