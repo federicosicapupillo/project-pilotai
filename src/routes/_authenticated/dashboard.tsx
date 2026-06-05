@@ -152,6 +152,17 @@ function DashboardPage() {
         </div>
       )}
 
+      {primaryProject && (
+        <div className="mb-10">
+          <DashboardRoadmap
+            signals={signals ?? { hasProject: true }}
+            hasAccess={hasAccess}
+            projectId={primaryProject.id}
+            onActivate={() => activate("dashboard_roadmap_cta", primaryProject.id)}
+          />
+        </div>
+      )}
+
       <div className="grid lg:grid-cols-3 gap-6">
         <section className="lg:col-span-2 space-y-4">
           <h2 className="text-sm uppercase tracking-wider text-muted-foreground font-semibold">
