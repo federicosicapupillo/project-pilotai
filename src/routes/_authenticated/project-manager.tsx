@@ -586,6 +586,22 @@ ${text}`;
           </div>
         )}
         <section className="flex flex-col glass-card rounded-2xl border border-border/60 overflow-hidden">
+          <header className="flex items-center gap-3 px-4 sm:px-5 py-3 border-b border-border/60 bg-background/40">
+            <div className="size-8 rounded-lg grid place-items-center bg-primary/15 border border-primary/30 text-primary shrink-0">
+              <Bot className="size-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-display font-semibold text-sm leading-tight">
+                Chat del Project Manager
+              </div>
+              <div className="text-[11px] text-muted-foreground leading-tight">
+                Conversazione operativa sullo step corrente
+              </div>
+            </div>
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-primary font-medium px-2 py-1 rounded-full bg-primary/10 border border-primary/30 shrink-0">
+              <span className="size-1.5 rounded-full bg-primary animate-pulse" /> Online
+            </span>
+          </header>
           <div
             ref={scrollerRef}
             className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-4 max-h-[48vh] min-h-[260px]"
