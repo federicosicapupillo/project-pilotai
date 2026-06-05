@@ -2,6 +2,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Check, Loader2, AlertTriangle, Sparkles, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export type GenState = "idle" | "running" | "done" | "error";
 
@@ -36,15 +48,29 @@ export function GenerationProgressDialog({
   const progressValue = done
     ? 100
     : Math.round((Math.min(phase, total - 1) / total) * 100);
+  const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
+
+  const requestClose = () => {
+    if (state === "running") {
+      setConfirmCloseOpen(true);
+      return;
+    }
+    onClose();
+  };
+
+  const confirmCloseInBackground = () => {
+    setConfirmCloseOpen(false);
+    toast.success("Creazione progetto in corso. Ti avviseremo quando sarà pronto.");
+    onClose();
+  };
 
   return (
+    <>
     <Dialog
       open={open}
       onOpenChange={(o) => {
         if (o) return;
-        // Block closing while generation is running
-        if (state === "running") return;
-        onClose();
+        requestClose();
       }}
     >
       <DialogContent
@@ -153,5 +179,22 @@ export function GenerationProgressDialog({
         </div>
       </DialogContent>
     </Dialog>
+      <AlertDialog open={confirmCloseOpen} onOpenChange={setConfirmCloseOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Chiudere questa finestra?</AlertDialogTitle>
+            <AlertDialogDescription>
+              La creazione del progetto continuerà in background. Potrai vedere il progetto nella dashboard appena sarà pronto.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCloseInBackground}>
+              Chiudi e continua in background
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
