@@ -341,11 +341,6 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
                 <Button variant="hero" size="xl" onClick={goToRoadmap}>
                   Attiva il mio agente AI - 29€ <ArrowRight className="size-4" />
                 </Button>
-                <Link to="/method">
-                  <Button variant="glass" size="xl">
-                    Voglio prima vedere il metodo
-                  </Button>
-                </Link>
               </div>
               <p className="text-xs text-foreground/70 mt-4">Pagamento sicuro. Accesso immediato dopo l'acquisto.</p>
             </div>
