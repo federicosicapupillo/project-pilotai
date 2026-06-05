@@ -70,7 +70,7 @@ export function IdeaAnalysisDialog({
     [params],
   );
   const tier: IdeaTier = useMemo(
-    () => (params ? classifyIdeaTier(params.idea, params.target) : "utility"),
+    () => (params ? classifyIdeaTier(params.idea, params.target) : "semplice"),
     [params],
   );
 
