@@ -9,6 +9,8 @@ import { ToolBadge } from "@/components/ToolBadge";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { AppRoadmap, useAppRoadmap } from "@/components/AppRoadmap";
 import { computeProgress, currentPhase, nextActionableStep } from "@/lib/app-roadmap";
+import { useActivateTeam } from "@/hooks/use-activate-team";
+import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/projects/$id")({
   head: () => ({ meta: [{ title: "Progetto — Da Idea ad App" }] }),
@@ -53,6 +55,7 @@ function ProjectPage() {
   });
 
   const { data: roadmap = [] } = useAppRoadmap(id);
+  const { activate, hasAccess } = useActivateTeam();
 
   const copy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -107,12 +110,12 @@ function ProjectPage() {
         <div className="mt-4 h-2 rounded-full bg-secondary overflow-hidden">
           <div className="h-full gradient-bg transition-all" style={{ width: `${progress.pct}%` }} />
         </div>
-        {nextStep && (
-          <p className="mt-3 text-sm text-muted-foreground">
-            <span className="text-foreground/90 font-medium">Prossimo step:</span> {nextStep.title}
-            {nextStep.recommended_tool && <> · <span className="text-foreground/90">{nextStep.recommended_tool}</span></>}
-          </p>
-        )}
+        <p className="mt-3 text-sm text-muted-foreground">
+          <span className="text-foreground/90 font-medium">Prossimo step:</span>{" "}
+          {hasAccess
+            ? "segui la roadmap e inizia a lavorare con il tuo Team AI."
+            : "attiva il Team AI e fai partire il lavoro sulla tua idea."}
+        </p>
       </div>
 
       <Tabs defaultValue="scheda">
@@ -240,6 +243,29 @@ function ProjectPage() {
           <AppRoadmap projectId={id} />
         </TabsContent>
       </Tabs>
+
+      {!hasAccess && (
+        <div className="mt-12 rounded-2xl p-8 sm:p-10 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft text-center">
+          <h2 className="text-2xl sm:text-3xl font-display font-semibold">
+            Vuoi iniziare davvero a costruire questa app?
+          </h2>
+          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+            Il progetto è pronto. Ora devi solo attivare il tuo Team AI per mettere al lavoro gli agenti, sbloccare prompt, strumenti e roadmap operative.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Button
+              size="lg"
+              variant="hero"
+              onClick={() => activate("project_detail_cta")}
+            >
+              <Lock className="size-4" /> Attiva il mio Team AI - 29€
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Pagamento sicuro. Accesso immediato dopo l'attivazione.
+          </p>
+        </div>
+      )}
 
       <div className="mt-10 text-center">
         <Link to="/library" className="text-sm text-primary hover:underline">
