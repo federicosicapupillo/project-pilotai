@@ -2,11 +2,18 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle } from "lucide-react";
+import { Bot, Lock, Send, Loader2, ArrowRight, Sparkles, User, Check, Circle, Copy, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivateTeam } from "@/hooks/use-activate-team";
-import { getPmHistory, sendPmMessage, getPmLogs } from "@/lib/project-manager.functions";
+import {
+  getPmHistory,
+  sendPmMessage,
+  getPmLogs,
+  generateOperationalPrompt,
+  listOperationalPrompts,
+  markOperationalPromptCopied,
+} from "@/lib/project-manager.functions";
 import { SYNTHETIC_STEPS, syntheticProgress } from "@/components/SyntheticRoadmap";
 
 export const Route = createFileRoute("/_authenticated/project-manager")({
