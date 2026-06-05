@@ -55,6 +55,7 @@ import { UX_AGENT_SYSTEM_PROMPT } from "@/prompts/uxAgentSystemPrompt";
 import { INSTRUCTOR_AGENT_SYSTEM_PROMPT } from "@/prompts/instructorAgentSystemPrompt";
 import { BUILDER_AGENT_SYSTEM_PROMPT } from "@/prompts/builderAgentSystemPrompt";
 import { SECURITY_AGENT_SYSTEM_PROMPT } from "@/prompts/securityAgentSystemPrompt";
+import { QA_AGENT_SYSTEM_PROMPT } from "@/prompts/qaAgentSystemPrompt";
 
 export const AGENT_TEMPLATE = (idea: string) => [
   {
@@ -122,10 +123,11 @@ export const AGENT_TEMPLATE = (idea: string) => [
   },
   {
     name: "Agente Tester",
-    role: "Verifica che la prima versione dell'app faccia davvero quello che promette.",
-    when_to_use: "Dopo la generazione della prima versione.",
-    expected_output: "Checklist di test + lista bug prioritari.",
-    prompt_text: `Sei un QA tester. Data l'app "${idea}", scrivi:\n- 10 test funzionali su flussi reali.\n- 5 test su casi limite.\n- Una checklist di accessibilità e responsive.\n- Formato bug: [Gravità] [Schermata] Descrizione - passi per riprodurre.`,
+    name: "Agente Controllo Qualità",
+    role: "Controlla che funzioni, modifiche e bug fix siano davvero pronti: funzionali, responsive, sicuri, senza regressioni.",
+    when_to_use: "Dopo ogni costruzione o bug fix e prima di passare allo step successivo o al lancio.",
+    expected_output: "Analisi strutturata in 12 sezioni con classificazione problemi, decisione finale QA e brief operativo per Debugger, Costruttore e Agente Sicurezza.",
+    prompt_text: `${QA_AGENT_SYSTEM_PROMPT}\n\n---\nIDEA / FUNZIONE / MODIFICA DA CONTROLLARE:\n"${idea}"\n\nClassifica prima la categoria del progetto, poi adatta i controlli e rispondi con il FORMATO RISPOSTA STANDARD (12 sezioni in markdown) chiudendo con il BRIEF CONTROLLO QUALITÀ PER GLI ALTRI AGENTI. Classifica ogni problema come BLOCCANTE / ALTO / MEDIO / BASSO / MIGLIORIA e chiudi con una decisione esplicita: APPROVATO / APPROVATO CON RISERVE / DA CORREGGERE / DA PASSARE AL DEBUGGER / DA PASSARE ALL'AGENTE SICUREZZA / NON PRONTO / BLOCCATO.`,
   },
   {
     name: "Agente Marketing",
