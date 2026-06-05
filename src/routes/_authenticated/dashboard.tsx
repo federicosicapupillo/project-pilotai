@@ -2,13 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2 } from "lucide-react";
 import { computeProgress, currentPhase, type RoadmapItem } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { SyntheticRoadmapCompact } from "@/components/SyntheticRoadmap";
 import { useRoadmapProgress } from "@/lib/roadmap-progress";
 import { DashboardRoadmap } from "@/components/DashboardRoadmap";
 import { AgentPromptsSection } from "@/components/AgentPromptsSection";
+import { useActiveProject } from "@/hooks/use-active-project";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Da Idea ad App" }] }),
@@ -26,6 +27,7 @@ function statusBadge(status: string) {
 
 function DashboardPage() {
   const { activate, hasAccess } = useActivateTeam();
+  const { activeId, setActiveId } = useActiveProject();
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
@@ -57,7 +59,11 @@ function DashboardPage() {
     },
   });
 
-  const primaryProject = projects?.[0];
+  // Active project: persisted via useActiveProject (localStorage). Falls back
+  // to the most recent project (handled inside useActiveProject).
+  const activeProject =
+    (activeId && projects?.find((p) => p.id === activeId)) || projects?.[0] || null;
+  const activeProjectId = activeProject?.id ?? null;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -76,7 +82,11 @@ function DashboardPage() {
       </div>
 
       {hasAccess ? (
-        <Link to="/project-manager" className="block mb-10">
+        <Link
+          to="/project-manager"
+          search={activeProjectId ? ({ projectId: activeProjectId } as never) : (undefined as never)}
+          className="block mb-10"
+        >
           <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 hover:border-primary/70 transition-all">
             <div className="size-12 rounded-full gradient-bg grid place-items-center shrink-0">
               <Bot className="size-6 text-primary-foreground" />
@@ -86,7 +96,9 @@ function DashboardPage() {
                 Parla con il tuo AI Project Manager
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Dagli una direttiva, chiedigli il prossimo passo o fagli coordinare il Team AI sul tuo progetto.
+                {activeProject
+                  ? `Stai lavorando su: ${activeProject.title}. Dagli una direttiva o fagli coordinare il Team AI.`
+                  : "Dagli una direttiva, chiedigli il prossimo passo o fagli coordinare il Team AI sul tuo progetto."}
               </p>
             </div>
             <Button variant="hero" size="lg" className="shrink-0">
@@ -113,12 +125,12 @@ function DashboardPage() {
         </div>
       )}
 
-      {primaryProject && (
+      {activeProject && (
         <div className="mb-10">
           <DashboardRoadmap
             hasAccess={hasAccess}
-            projectId={primaryProject.id}
-            onActivate={() => activate("dashboard_roadmap_cta", primaryProject.id)}
+            projectId={activeProject.id}
+            onActivate={() => activate("dashboard_roadmap_cta", activeProject.id)}
           />
         </div>
       )}
@@ -156,6 +168,8 @@ function DashboardPage() {
                 project={p}
                 roadmapItems={roadmaps?.get(p.id) ?? []}
                 hasAccess={hasAccess}
+                isActive={p.id === activeProjectId}
+                onSelect={() => setActiveId(p.id)}
               />
             ))}
           </div>
@@ -163,7 +177,7 @@ function DashboardPage() {
 
         <aside className="space-y-4">
           {hasAccess ? (
-            <AgentPromptsSection />
+            <AgentPromptsSection projectId={activeProjectId} />
           ) : (
             <div className="rounded-2xl p-6 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft">
               <h3 className="font-display font-semibold text-lg">
@@ -204,10 +218,14 @@ function ProjectCard({
   project: p,
   roadmapItems,
   hasAccess,
+  isActive,
+  onSelect,
 }: {
   project: ProjectRow;
   roadmapItems: RoadmapItem[];
   hasAccess: boolean;
+  isActive: boolean;
+  onSelect: () => void;
 }) {
   const pr = computeProgress(roadmapItems);
   const phase = currentPhase(roadmapItems);
@@ -217,43 +235,84 @@ function ProjectCard({
   const displayTotal = hasAccess ? rm.total : pr.total;
   const displayPhase = hasAccess ? (rm.currentStep?.title ?? "Roadmap") : phase;
   return (
-    <Link
-      to="/projects/$id"
-      params={{ id: p.id }}
-      className="glass-card rounded-xl p-5 hover:border-primary/50 transition-all group"
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
+      className={[
+        "glass-card rounded-xl p-5 transition-all group cursor-pointer relative text-left",
+        isActive
+          ? "border-primary/70 shadow-[0_0_28px_-12px_oklch(0.7_0.18_280/0.7)] ring-1 ring-primary/40"
+          : "hover:border-primary/50",
+      ].join(" ")}
     >
-                <div className="flex items-start justify-between">
-                  <div className="size-10 rounded-lg bg-secondary grid place-items-center">
-                    <Folder className="size-5 text-primary" />
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-secondary text-muted-foreground">
-                    {statusBadge(p.status)}
-                  </span>
-                </div>
-                <h3 className="font-display font-semibold mt-4 line-clamp-1">{p.title}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
-                  {p.idea_description ?? "—"}
-                </p>
-                      <div className="mt-4 flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">App {displayPct}% · {displayDone}/{displayTotal}</span>
-                        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
-                      </div>
-                      <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
-                        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
-                      </div>
-                      {hasAccess ? (
-                        <SyntheticRoadmapCompact projectId={p.id} />
-                      ) : (
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
-                          Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
-                        <span>{p.product_type ?? "Progetto"}</span>
-                        <span className="flex items-center gap-1 text-primary group-hover:translate-x-1 transition-transform">
-                          Continua costruzione <ArrowRight className="size-3" />
-                        </span>
-                      </div>
-    </Link>
+      <div className="flex items-start justify-between gap-2">
+        <div className="size-10 rounded-lg bg-secondary grid place-items-center">
+          <Folder className="size-5 text-primary" />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          {isActive && (
+            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-primary/15 border border-primary/40 text-primary font-semibold">
+              <CheckCircle2 className="size-3" /> Progetto attivo
+            </span>
+          )}
+          <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-secondary text-muted-foreground">
+            {statusBadge(p.status)}
+          </span>
+        </div>
+      </div>
+      <h3 className="font-display font-semibold mt-4 line-clamp-1">{p.title}</h3>
+      <p className="text-sm text-muted-foreground line-clamp-2 mt-1 min-h-[2.5rem]">
+        {p.idea_description ?? "—"}
+      </p>
+      <div className="mt-4 flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">
+          App {displayPct}% · {displayDone}/{displayTotal}
+        </span>
+        {displayPhase && <span className="text-muted-foreground">{displayPhase}</span>}
+      </div>
+      <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
+        <div className="h-full gradient-bg transition-all" style={{ width: `${displayPct}%` }} />
+      </div>
+      {hasAccess ? (
+        <SyntheticRoadmapCompact projectId={p.id} />
+      ) : (
+        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
+          Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
+        </p>
+      )}
+      <div className="flex items-center justify-between mt-3 gap-2">
+        <span className="text-xs text-muted-foreground truncate">
+          {p.product_type ?? "Progetto"}
+        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            to="/projects/$id"
+            params={{ id: p.id }}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Dettagli
+          </Link>
+          <Link
+            to="/project-manager"
+            search={{ projectId: p.id } as never}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-primary/40 bg-primary/10 hover:bg-primary/20 text-foreground font-medium transition-colors"
+          >
+            Continua costruzione <ArrowRight className="size-3" />
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }

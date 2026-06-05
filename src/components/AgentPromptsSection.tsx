@@ -43,15 +43,18 @@ function formatDateTime(iso: string) {
   return `${dd}/${mm}/${yyyy} - ${hh}:${mi}`;
 }
 
-export function AgentPromptsSection() {
+export function AgentPromptsSection({ projectId }: { projectId?: string | null }) {
   const { data: prompts, isLoading } = useQuery({
-    queryKey: ["agent-prompts"],
+    queryKey: ["agent-prompts", projectId ?? "none"],
+    enabled: !!projectId,
     queryFn: async () => {
+      if (!projectId) return [] as OpPrompt[];
       const { data, error } = await supabase
         .from("operational_prompts")
         .select(
           "id, project_id, step_title, agent_name, recommended_tool, instructions, title, prompt_text, created_at",
         )
+        .eq("project_id", projectId)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as OpPrompt[];
@@ -96,12 +99,16 @@ export function AgentPromptsSection() {
         step roadmap e strumento consigliato.
       </p>
       <div className="glass-card rounded-xl p-4">
-        {isLoading ? (
+        {!projectId ? (
+          <p className="text-sm text-muted-foreground p-4 text-center">
+            Seleziona un progetto per vedere i prompt generati dagli agenti.
+          </p>
+        ) : isLoading ? (
           <p className="text-sm text-muted-foreground p-4 text-center">Caricamento…</p>
         ) : grouped.length === 0 ? (
           <p className="text-sm text-muted-foreground p-4 text-center">
-            Nessun prompt generato. Quando il Project Manager creerà prompt operativi
-            con gli agenti, li troverai qui divisi per agente.
+            Nessun prompt generato per questo progetto. Quando il Project Manager
+            coordinerà gli agenti, i prompt appariranno qui.
           </p>
         ) : (
           <Accordion type="multiple" className="w-full">
