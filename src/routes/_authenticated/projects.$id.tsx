@@ -228,7 +228,7 @@ function ProjectPage() {
                 Ora vedi il metodo. Dopo l'attivazione vedrai anche gli strumenti reali, l'ordine operativo completo e come usarli nel tuo progetto.
               </p>
               <div className="mt-5 flex justify-center">
-                <Button size="lg" variant="hero" onClick={() => activate("project_stack_cta")}>
+                <Button size="lg" variant="hero" onClick={() => activate("project_stack_cta", id)}>
                   <Lock className="size-4" /> Attiva il mio Team AI - 29€
                 </Button>
               </div>
@@ -279,7 +279,7 @@ function ProjectPage() {
             <Button
               size="lg"
               variant="hero"
-              onClick={() => activate("project_detail_cta")}
+              onClick={() => activate("project_detail_cta", id)}
             >
               <Lock className="size-4" /> Attiva il mio Team AI - 29€
             </Button>
