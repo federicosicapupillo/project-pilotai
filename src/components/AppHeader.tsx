@@ -7,7 +7,6 @@ import { useActivateTeam } from "@/hooks/use-activate-team";
 
 const links: { to: string; label: string; auth?: boolean }[] = [
   { to: "/", label: "Home" },
-  { to: "/academy", label: "Academy" },
   { to: "/tools", label: "Strumenti" },
   { to: "/agents", label: "Agenti" },
   { to: "/prezzi", label: "Prezzi" },
