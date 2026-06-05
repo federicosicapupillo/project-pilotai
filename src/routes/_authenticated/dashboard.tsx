@@ -171,9 +171,8 @@ function DashboardPage() {
                 </p>
                 {(() => {
                   const items = roadmaps?.get(p.id) ?? [];
-                  const pr = computeProgress(items);
-                  const phase = currentPhase(items);
-                  const next = nextActionableStep(items);
+                   const pr = computeProgress(items);
+                   const phase = currentPhase(items);
                   return (
                     <>
                       <div className="mt-4 flex items-center justify-between text-xs">
