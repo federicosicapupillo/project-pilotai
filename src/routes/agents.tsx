@@ -153,11 +153,29 @@ function AgentsPage() {
     },
   });
 
-  const agents = [...(data ?? [])].sort((a, b) => {
+  // Dedup by resolved identity id: più righe del DB possono mappare allo stesso
+  // agente canonico (es. "UI Designer" + "UX/UI Designer" → Agente UX). Teniamo
+  // la prima occorrenza che abbia base_prompt/tool, così non perdiamo contenuto.
+  const sorted = [...(data ?? [])].sort((a, b) => {
     const ap = isProjectManager(a.name, a.role) ? 0 : 1;
     const bp = isProjectManager(b.name, b.role) ? 0 : 1;
-    return ap - bp;
+    if (ap !== bp) return ap - bp;
+    return (a.sort_order ?? 0) - (b.sort_order ?? 0);
   });
+  const seen = new Map<string, (typeof sorted)[number]>();
+  for (const row of sorted) {
+    const id = resolveAgentIdentity(row.name, row.role).id;
+    const existing = seen.get(id);
+    if (!existing) {
+      seen.set(id, row);
+      continue;
+    }
+    // Preferisci la riga con più contenuto utile (prompt + tool).
+    const score = (r: typeof row) =>
+      (r.base_prompt ? 2 : 0) + (Array.isArray(r.recommended_tools) && r.recommended_tools.length > 0 ? 1 : 0);
+    if (score(row) > score(existing)) seen.set(id, row);
+  }
+  const agents = Array.from(seen.values());
   const pm = agents.find((a) => isProjectManager(a.name, a.role));
   const others = agents.filter((a) => !isProjectManager(a.name, a.role));
 
