@@ -84,11 +84,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "IdeaPilot AI — Dalla tua idea alla tua prima app" },
       { name: "description", content: "IdeaPilot AI: il metodo per imprenditori e creator senza competenze tecniche. Scheda progetto, agenti AI, prompt operativi e roadmap." },
-      { property: "og:title", content: "IdeaPilot AI" },
-      { property: "og:description", content: "Dalla tua idea alla tua prima app, guidato passo dopo passo dal tuo team di agenti AI." },
+      { property: "og:title", content: "IdeaPilot AI — Dalla tua idea alla tua prima app" },
+      { property: "og:description", content: "IdeaPilot AI: il metodo per imprenditori e creator senza competenze tecniche. Scheda progetto, agenti AI, prompt operativi e roadmap." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "IdeaPilot AI — Dalla tua idea alla tua prima app" },
+      { name: "twitter:description", content: "IdeaPilot AI: il metodo per imprenditori e creator senza competenze tecniche. Scheda progetto, agenti AI, prompt operativi e roadmap." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/30ddb202-9067-4b6a-83cc-191cc7faea9a/id-preview-d35bf12d--b3a7a2a2-f2e9-453f-91df-a9741d019cd6.lovable.app-1780679064974.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/30ddb202-9067-4b6a-83cc-191cc7faea9a/id-preview-d35bf12d--b3a7a2a2-f2e9-453f-91df-a9741d019cd6.lovable.app-1780679064974.png" },
     ],
     links: [
       {
