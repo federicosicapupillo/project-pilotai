@@ -182,9 +182,15 @@ function DashboardPage() {
                       <div className="mt-1.5 h-1.5 rounded-full bg-secondary overflow-hidden">
                         <div className="h-full gradient-bg transition-all" style={{ width: `${pr.pct}%` }} />
                       </div>
-                      {next && (
-                        <p className="text-xs text-muted-foreground line-clamp-1 mt-2">
-                          Prossimo: {next.title}
+                      {hasAccess ? (
+                        next && (
+                          <p className="text-xs text-muted-foreground line-clamp-1 mt-2">
+                            Prossimo: {next.title}
+                          </p>
+                        )
+                      ) : (
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
+                          Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
                         </p>
                       )}
                       <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
