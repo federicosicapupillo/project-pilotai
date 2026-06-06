@@ -65,7 +65,7 @@ FORMATO OUTPUT (JSON, tutti i campi obbligatori):
   Linee guida:
   • Utility semplice per utenti privati: 300€ - 1.000€/mese
   • Tool per professionisti o piccole attività: 1.000€ - 3.000€/mese
-  • App che risolve un problema operativo per aziende, ristoranti, consulenti, agenti immobiliari, artigiani o studi professionali: 2.000€ - 5.000€/mese
+  • App che risolve un problema operativo per aziende, consulenti, freelance, artigiani o studi professionali: 2.000€ - 5.000€/mese
   • Gestionale, automazione AI o strumento B2B con abbonamento: 3.000€ - 8.000€/mese
   • Marketplace con domanda e offerta chiare: 5.000€ - 10.000€/mese
   Scegli UN singolo importo realistico nella fascia giusta e restituiscilo come "Fino a X€/mese" (es. "Fino a 2.500€/mese").`;

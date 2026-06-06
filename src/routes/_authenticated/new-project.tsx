@@ -284,7 +284,7 @@ function NewProjectPage() {
 
         <div className="grid sm:grid-cols-2 gap-6">
           <Field label="A chi serve?">
-            <Input value={form.target} onChange={(e) => set("target", e.target.value)} placeholder="Es. ristoratori indipendenti" />
+            <Input value={form.target} onChange={(e) => set("target", e.target.value)} placeholder="Es. freelance e piccoli team" />
           </Field>
           <Field label="Che problema risolve?">
             <Input value={form.problem} onChange={(e) => set("problem", e.target.value)} placeholder="Es. perdono prenotazioni" />

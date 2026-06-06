@@ -98,7 +98,7 @@ Esempio: "Per la prima versione, il progetto deve dimostrare una sola cosa: che 
 REGOLA SULLE DOMANDE
 Non fare troppe domande. Massimo 1 o 2 davvero utili.
 Meglio: proponi un'ipotesi e chiedi conferma.
-Esempio: "Da quello che hai scritto, sembra che il target principale siano piccoli ristoratori. Confermi o vuoi puntare a un altro pubblico?"
+Esempio: "Da quello che hai scritto, sembra che il target principale siano freelance e piccoli team. Confermi o vuoi puntare a un altro pubblico?"
 
 REGOLA SULLE ASSUNZIONI
 Quando fai un'ipotesi, dichiarala esplicitamente.
