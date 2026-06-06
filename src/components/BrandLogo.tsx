@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import markAsset from "@/assets/ideapilot-mark.png.asset.json";
+import { useT } from "@/lib/i18n";
 
 type Size = "sm" | "md" | "lg";
 
@@ -36,15 +37,17 @@ export function BrandLockup({
 }) {
   const s = sizeMap[size];
   const iconPx = size === "lg" ? 44 : size === "sm" ? 26 : 34;
+  const { t } = useT();
+  const aiSuffix = t("brand.ai");
   const inner = (
     <div className={"flex items-center gap-2 group " + className}>
       <BrandMark size={iconPx} className="shrink-0 drop-shadow-[0_0_12px_rgba(168,85,247,0.45)]" />
       <div className="flex flex-col leading-tight">
         <span className={`font-display font-semibold tracking-tight ${s.text}`}>
-          IdeaPilot <span className="gradient-text">AI</span>
+          IdeaPilot <span className="gradient-text">{aiSuffix}</span>
         </span>
         {showTagline && (
-          <span className={`text-muted-foreground ${s.sub}`}>Dalla tua idea alla tua prima app</span>
+          <span className={`text-muted-foreground ${s.sub}`}>{t("brand.tagline")}</span>
         )}
       </div>
     </div>
