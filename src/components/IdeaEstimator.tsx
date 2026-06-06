@@ -13,6 +13,7 @@ import {
   Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb, Eye,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
+import { useT } from "@/lib/i18n";
 import {
   classify, getBudget, fmt, BUDGET_OPTIONS,
   saveIdeaParams,
@@ -54,6 +55,7 @@ const REDIRECT_KEY = "post_auth_redirect";
 export type IdeaEstimatorProps = { embed?: boolean };
 
 export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
+  const { t } = useT();
   const [idea, setIdea] = useState("");
   const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
@@ -110,14 +112,14 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
       {!embed && (
         <>
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-            <Gauge className="size-3.5 text-primary" /> Calcolatore intelligente
+            <Gauge className="size-3.5 text-primary" /> {t("est.eyebrow")}
           </div>
           <h2 className="font-display font-semibold text-2xl sm:text-3xl mt-2">
-            Hai un'idea per un'app?{" "}
-            <span className="gradient-text">Scopri ore, costi e budget consigliato.</span>
+            {t("est.title.a")}
+            <span className="gradient-text">{t("est.title.b")}</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-2">
-            Scrivi la tua idea, inserisci il budget che vuoi dedicare al progetto e scopri quante ore servono, quanto potrebbe costare e quale potenziale economico potrebbe avere.
+            {t("est.desc")}
           </p>
         </>
       )}
@@ -126,7 +128,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="text-xs uppercase tracking-[0.18em] font-semibold text-foreground/90">
-              ✍️ Raccontami la tua idea
+              {t("est.label.idea")}
             </label>
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
               {idea.length}/2000
@@ -145,14 +147,14 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             <Textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              placeholder="Esempio: voglio creare un'app per aiutare ristoratori a trovare personale extra per weekend e turni serali…"
+              placeholder={t("est.placeholder.idea")}
               rows={6}
               maxLength={2000}
               className="text-base sm:text-[17px] leading-relaxed text-foreground placeholder:text-muted-foreground/70 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 sm:p-5 min-h-[160px]"
             />
           </div>
           <p className="text-xs text-muted-foreground/80 mt-2 pl-1">
-            💡 Più sei chiaro, più la stima sarà utile.
+            {t("est.hint.idea")}
           </p>
         </div>
 
@@ -181,10 +183,10 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               <Euro className="size-6 text-white" strokeWidth={2.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-display font-semibold text-lg sm:text-xl tracking-tight">Inserisci il tuo budget</div>
+              <div className="font-display font-semibold text-lg sm:text-xl tracking-tight">{t("est.budget.title")}</div>
               <div className="mt-1.5 h-px w-12 bg-gradient-to-r from-primary/60 to-transparent" aria-hidden />
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                Indica il budget operativo per la prima versione funzionante. <strong className="text-foreground/95 font-medium">Non includere il costo del corso.</strong>
+                {t("est.budget.desc")}
               </p>
             </div>
           </div>
@@ -263,11 +265,11 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             >
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1.5L6.5 5L3 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </span>
-            <span>Aggiungi dettagli facoltativi per una stima più precisa</span>
+            <span>{t("est.optional.toggle")}</span>
           </summary>
           <div className="grid sm:grid-cols-3 gap-3 p-3 pt-1">
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-muted-foreground">A chi vuoi venderla?</label>
+              <label className="text-[11px] uppercase tracking-wider text-muted-foreground">{t("est.optional.target")}</label>
               <select
                 value={targetChoice}
                 onChange={(e) => {
@@ -314,7 +316,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               )}
             </div>
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Come pensi di guadagnarci?</label>
+              <label className="text-[11px] uppercase tracking-wider text-muted-foreground">{t("est.optional.revenue")}</label>
               <select
                 value={revenue}
                 onChange={(e) => setRevenue(e.target.value as RevenueModel)}
@@ -326,7 +328,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               </select>
             </div>
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Quanto vorresti far pagare?</label>
+              <label className="text-[11px] uppercase tracking-wider text-muted-foreground">{t("est.optional.price")}</label>
               <select
                 value={price}
                 onChange={(e) => setPrice(e.target.value as PriceBand)}
@@ -348,7 +350,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             disabled={idea.trim().length < 8 || analysisOpen}
           >
             <Wand2 className="size-4" />
-            {analysisOpen ? "Analisi in corso…" : "Calcola ore, costi e budget consigliato"}
+            {analysisOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
           </Button>
           {analysisParams && !analysisOpen && (
             <Button
@@ -356,11 +358,11 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               size="lg"
               onClick={() => setAnalysisOpen(true)}
             >
-              <Eye className="size-4" /> Rivedi analisi
+              <Eye className="size-4" /> {t("est.btn.review")}
             </Button>
           )}
           <p className="text-xs text-muted-foreground">
-            Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.
+            {t("est.btn.note")}
           </p>
         </div>
 

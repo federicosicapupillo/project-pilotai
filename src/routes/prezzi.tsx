@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/prezzi")({
   head: () => ({
@@ -82,18 +83,19 @@ const WITH_AGENT: string[] = [
 function PrezziPage() {
   const navigate = useNavigate();
   const { activate, hasAccess } = useActivateTeam();
+  const { t } = useT();
   const handleActivate = () => void activate("prezzi");
 
   const goToDashboard = () => navigate({ to: "/dashboard" });
 
-  const PrimaryCta = ({ label = "Parti ora con il Team AI - 29€" }: { label?: string }) =>
+  const PrimaryCta = ({ label }: { label?: string }) =>
     hasAccess ? (
       <Button variant="hero" size="lg" className="w-full" onClick={goToDashboard}>
-        Vai alla dashboard <ArrowRight className="size-4" />
+        {t("pricing.cta.dashboard")} <ArrowRight className="size-4" />
       </Button>
     ) : (
       <Button variant="hero" size="lg" className="w-full" onClick={handleActivate}>
-        <Lock className="size-4" /> {label}
+        <Lock className="size-4" /> {label ?? t("pricing.cta.primary")}
       </Button>
     );
 
@@ -103,13 +105,13 @@ function PrezziPage() {
         {/* HERO */}
         <section className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
-            <Sparkles className="size-3 text-primary" /> Pacchetto Team AI Operativo
+            <Sparkles className="size-3 text-primary" /> {t("pricing.badge")}
           </div>
           <h1 className="text-4xl sm:text-5xl font-display font-semibold mt-4">
-            Attiva il tuo <span className="gradient-text">Team AI operativo</span>
+            {t("pricing.title")}
           </h1>
           <p className="text-muted-foreground mt-4 max-w-3xl mx-auto">
-            Tu porti l'idea. Il tuo team di agenti AI la organizza, la struttura e prepara il lavoro per trasformarla nella prima versione della tua app.
+            {t("pricing.subtitle")}
           </p>
           <p className="text-base sm:text-lg gradient-text font-semibold mt-6 max-w-2xl mx-auto">
             Attivi una squadra AI pronta a lavorare sul tuo progetto.
