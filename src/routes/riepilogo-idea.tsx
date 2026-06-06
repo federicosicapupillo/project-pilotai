@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { useT } from "@/lib/i18n";
 import {
   classify, loadIdeaParams,
   type Estimate, type IdeaParams,
@@ -44,6 +45,7 @@ function RiepilogoIdeaPage() {
   const navigate = useNavigate();
   const [params, setParams] = useState<IdeaParams | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const { t } = useT();
 
   useEffect(() => {
     setParams(loadIdeaParams());
@@ -68,17 +70,17 @@ function RiepilogoIdeaPage() {
       <div className="min-h-screen flex flex-col">
         <main className="max-w-2xl mx-auto px-6 py-20 w-full text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
-            <Sparkles className="size-3 text-primary" /> Analisi gratuita
+            <Sparkles className="size-3 text-primary" /> {t("rie.empty.badge")}
           </div>
           <h1 className="text-3xl sm:text-4xl font-display font-semibold mt-4">
-            Non abbiamo ancora un'<span className="gradient-text">idea</span> da analizzare.
+            {t("rie.empty.title.a")}<span className="gradient-text">{t("rie.empty.title.b")}</span>{t("rie.empty.title.c")}
           </h1>
           <p className="text-muted-foreground mt-3">
-            Torna alla home e scrivi la tua idea: il tuo agente AI la trasformerà in un primo piano operativo.
+            {t("rie.empty.desc")}
           </p>
           <div className="mt-8">
             <Button variant="hero" size="lg" onClick={() => navigate({ to: "/analizza-idea" })}>
-              Scrivi la mia idea <ArrowRight className="size-4" />
+              {t("rie.empty.cta")} <ArrowRight className="size-4" />
             </Button>
           </div>
         </main>
@@ -92,6 +94,7 @@ function RiepilogoIdeaPage() {
 function RiepilogoContent({ params, result }: { params: IdeaParams; result: Estimate }) {
   const navigate = useNavigate();
   const generate = useServerFn(generateIdeaSummary);
+  const { t } = useT();
 
   // Deterministic per-idea key + tier (stable across refresh / re-submit of same idea).
   const ideaHash = useMemo(() => hashIdea(params.idea), [params.idea]);
@@ -160,28 +163,28 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
         {/* HERO */}
         <div className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
-            <Sparkles className="size-3 text-primary" /> Analisi generata dal tuo agente AI
+            <Sparkles className="size-3 text-primary" /> {t("rie.hero.badge")}
           </div>
           <h1 className="text-3xl sm:text-5xl font-display font-semibold mt-4 leading-[1.1]">
-            Ecco l'analisi della tua <span className="gradient-text">idea</span>
+            {t("rie.hero.title.a")}<span className="gradient-text">{t("rie.hero.title.b")}</span>
           </h1>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto text-base sm:text-lg">
-            Il tuo agente AI ha trasformato la tua idea in un primo piano operativo per capire cosa creare, da dove partire e quanto tempo può servire.
+            {t("rie.hero.desc")}
           </p>
         </div>
 
         {/* LOADING */}
-        {isLoading && <LoadingState />}
+        {isLoading && <LoadingState t={t} />}
 
         {/* ERROR */}
         {isError && !isLoading && (
           <div className="mt-10 glass-card rounded-2xl p-6 border border-rose-500/30 text-center">
             <AlertCircle className="size-6 text-rose-400 mx-auto" />
             <p className="mt-3 text-sm">
-              Non siamo riusciti a generare l'analisi della tua idea. Riprova tra qualche secondo.
+              {t("iad.error")}
             </p>
             <Button variant="glass" className="mt-4" onClick={() => refetch()} disabled={isFetching}>
-              Riprova
+              {t("iad.retry")}
             </Button>
           </div>
         )}
@@ -397,16 +400,16 @@ function RiepilogoContent({ params, result }: { params: IdeaParams; result: Esti
   );
 }
 
-function LoadingState() {
+function LoadingState({ t }: { t: (k: string) => string }) {
   return (
     <div className="mt-10 space-y-5">
       <div className="glass-card rounded-2xl p-8 border border-border/60 text-center">
         <div className="inline-flex items-center gap-2 text-primary">
           <Loader2 className="size-5 animate-spin" />
-          <span className="text-sm font-medium">Il tuo agente AI sta analizzando l'idea…</span>
+          <span className="text-sm font-medium">{t("rie.loading.title")}</span>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Stiamo trasformando la tua idea in target, problema, soluzione, funzioni e schermate.
+          {t("rie.loading.sub")}
         </p>
       </div>
       {[0, 1, 2, 3].map((i) => (

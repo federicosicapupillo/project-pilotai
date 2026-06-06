@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { useT } from "@/lib/i18n";
 import {
   classify,
   type Estimate, type IdeaParams,
@@ -61,6 +62,7 @@ export function IdeaAnalysisDialog({
   const generate = useServerFn(generateIdeaSummary);
   const { activate, isAuthed } = useActivateTeam();
   const [confirmClose, setConfirmClose] = useState(false);
+  const { t } = useT();
 
   const result = useMemo<Estimate | null>(() => {
     if (!params || params.idea.trim().length < 8) return null;
@@ -180,19 +182,19 @@ export function IdeaAnalysisDialog({
             }}
           >
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full glass-card text-[11px]">
-              <Sparkles className="size-3 text-primary" /> Analisi generata dal tuo agente AI
+              <Sparkles className="size-3 text-primary" /> {t("iad.badge")}
             </div>
             <DialogTitle className="font-display font-semibold text-2xl sm:text-3xl mt-3 leading-tight">
-              Ecco l'analisi della tua <span className="gradient-text">idea</span>
+              {t("iad.title.a")}<span className="gradient-text">{t("iad.title.b")}</span>
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground mt-2 max-w-2xl">
-              Il tuo agente AI sta trasformando la tua idea in un primo piano operativo.
+              {t("iad.subtitle")}
             </DialogDescription>
 
             <button
               type="button"
               onClick={() => handleRequestClose(false)}
-              aria-label="Chiudi"
+              aria-label={t("iad.close")}
               className="absolute top-3 right-3 size-8 grid place-items-center rounded-full bg-background/70 hover:bg-background border border-border/70 text-foreground/80 hover:text-foreground transition-colors"
             >
               <X className="size-4" />
@@ -201,16 +203,16 @@ export function IdeaAnalysisDialog({
 
           {/* Body */}
           <div className="overflow-y-auto px-5 sm:px-7 py-5 sm:py-6 space-y-4">
-            {isLoading && <LoadingState />}
+            {isLoading && <LoadingState t={t} />}
 
             {isError && !isLoading && !summary && (
               <div className="glass-card rounded-2xl p-6 border border-rose-500/30 text-center">
                 <AlertCircle className="size-6 text-rose-400 mx-auto" />
                 <p className="mt-3 text-sm">
-                  Non siamo riusciti a generare l'analisi. Riprova tra qualche secondo.
+                  {t("iad.error")}
                 </p>
                 <Button variant="glass" className="mt-4" onClick={() => refetch()} disabled={isFetching}>
-                  Riprova
+                  {t("iad.retry")}
                 </Button>
               </div>
             )}
@@ -219,10 +221,10 @@ export function IdeaAnalysisDialog({
               <div className="space-y-4">
                 {summary.degraded && (
                   <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-100">
-                    Analisi generata in modalità rapida. Alcuni dati sono indicativi: puoi rigenerarla tra qualche minuto per la versione completa.
+                    {t("iad.degraded")}
                   </div>
                 )}
-                <Section icon={Lightbulb} title="Idea analizzata">
+                <Section icon={Lightbulb} title={t("iad.sect.idea")}>
                   <div className="font-display font-semibold text-lg sm:text-xl leading-snug">
                     {summary.title}
                   </div>
@@ -230,7 +232,7 @@ export function IdeaAnalysisDialog({
                     {summary.short_description}
                   </p>
                   <div className="mt-3 inline-flex items-center gap-2 text-[11px] px-2.5 py-1 rounded-full bg-background/40 border border-border/60">
-                    <Layers className="size-3 text-primary" /> Tipo progetto:{" "}
+                    <Layers className="size-3 text-primary" /> {t("iad.sect.projectType")}:{" "}
                     <strong className="text-foreground">{summary.project_type}</strong>
                   </div>
                 </Section>
@@ -238,24 +240,24 @@ export function IdeaAnalysisDialog({
                 <div className="grid md:grid-cols-3 gap-3">
                   <ImpactStat
                     icon={TrendingUp}
-                    label="Quanto potrebbe fruttare"
+                    label={t("iad.impact.potential")}
                     value={stablePotential.amount}
-                    description="Se trasformata in una prima versione funzionante e proposta al pubblico giusto, questa app potrebbe generare entrate ricorrenti."
-                    microcopy="Stima indicativa, non garantita, basata su una prima ipotesi di mercato."
+                    description={t("iad.impact.potentialDesc")}
+                    microcopy={t("iad.impact.potentialMicro")}
                     tone="potential"
                   />
                   <ImpactStat
                     icon={Euro}
-                    label="Quanto avresti potuto spendere"
+                    label={t("iad.impact.cost")}
                     value={stableCost.amount}
-                    description="Per far progettare e sviluppare questa prima versione da freelance, agenzia o sviluppatori esterni, il costo avrebbe potuto arrivare a questa cifra."
+                    description={t("iad.impact.costDesc")}
                     tone="cost"
                   />
                   <ImpactStat
                     icon={Sparkles}
-                    label="Risparmio stimato con il Team AI"
+                    label={t("iad.impact.savings")}
                     value={stableSavings.amount}
-                    description={`Con IdeaPilot AI non parti da preventivi costosi: inizi subito con una guida operativa, agenti specializzati, roadmap e prompt pronti da usare. Calcolo: ${stableCost.amount.replace("Fino a ", "")} − ${TEAM_AI_LAUNCH_PRICE_EUR}€ prezzo lancio.`}
+                    description={`${stableCost.amount.replace("Fino a ", "")} − ${TEAM_AI_LAUNCH_PRICE_EUR}€`}
                     tone="savings"
                     highlight
                   />
@@ -268,30 +270,27 @@ export function IdeaAnalysisDialog({
                       "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
                   }}
                 >
-                  Prima di spendere migliaia di euro per sviluppare tutto da zero, puoi
-                  validare e costruire la prima versione guidata con il tuo Team AI.
-                  Questa non è solo una stima: è il confronto tra lasciare l'idea ferma
-                  e iniziare oggi a trasformarla in un progetto reale.
+                  {t("iad.compareLine")}
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <Section icon={Users} title="Target">
+                  <Section icon={Users} title={t("iad.sect.target")}>
                     <p className="text-sm text-foreground/90 leading-relaxed">{summary.target}</p>
                   </Section>
-                  <Section icon={AlertCircle} title="Problema risolto">
+                  <Section icon={AlertCircle} title={t("iad.sect.problem")}>
                     <p className="text-sm text-foreground/90 leading-relaxed">{summary.problem}</p>
                   </Section>
                 </div>
 
-                <Section icon={Sparkles} title="Soluzione proposta">
+                <Section icon={Sparkles} title={t("iad.sect.solution")}>
                   <p className="text-sm text-foreground/90 leading-relaxed">{summary.solution}</p>
                 </Section>
 
-                <Section icon={ListChecks} title="Prima versione consigliata">
+                <Section icon={ListChecks} title={t("iad.sect.firstVersion")}>
                   <p className="text-sm text-foreground/90 leading-relaxed">{summary.first_version}</p>
                 </Section>
 
-                <Section icon={Wand2} title="Funzioni principali">
+                <Section icon={Wand2} title={t("iad.sect.features")}>
                   <ul className="grid sm:grid-cols-2 gap-2">
                     {summary.essential_features.map((f, i) => (
                       <li
@@ -307,7 +306,7 @@ export function IdeaAnalysisDialog({
                   </ul>
                 </Section>
 
-                <Section icon={Monitor} title="Schermate consigliate">
+                <Section icon={Monitor} title={t("iad.sect.screens")}>
                   <ul className="grid sm:grid-cols-2 gap-2">
                     {summary.screens.map((s) => (
                       <li
@@ -321,7 +320,7 @@ export function IdeaAnalysisDialog({
                 </Section>
 
                 {summary.integrations && summary.integrations.length > 0 && (
-                  <Section icon={Plug} title="Integrazioni richieste">
+                  <Section icon={Plug} title={t("iad.sect.integrations")}>
                     <div className="flex flex-wrap gap-2">
                       {summary.integrations.map((i) => (
                         <span
@@ -336,15 +335,15 @@ export function IdeaAnalysisDialog({
                 )}
 
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <Section icon={Clock} title="Ore stimate">
+                  <Section icon={Clock} title={t("iad.sect.hours")}>
                     <div className="font-display font-semibold text-xl gradient-text">
                       {stableHours}
                     </div>
                     <p className="text-[11px] text-muted-foreground mt-1">
-                      Per la prima versione funzionante.
+                      {t("iad.sect.hoursNote")}
                     </p>
                   </Section>
-                  <Section icon={Activity} title="Livello complessità">
+                  <Section icon={Activity} title={t("iad.sect.complexity")}>
                     <DifficultyBadge level={stableDifficulty} />
                     <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
                       {stableDifficultyReason}
@@ -352,28 +351,26 @@ export function IdeaAnalysisDialog({
                   </Section>
                 </div>
 
-                <Section icon={Wrench} title="Strumenti consigliati">
+                <Section icon={Wrench} title={t("iad.sect.tools")}>
                   <div className="flex flex-wrap gap-2">
-                    {result.tools.map((t) => (
+                    {result.tools.map((tool) => (
                       <span
-                        key={t}
+                        key={tool}
                         className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-background/40 border border-border/60 text-xs"
                       >
-                        <ToolIcon name={t} size={14} />
-                        <span>{t}</span>
+                        <ToolIcon name={tool} size={14} />
+                        <span>{tool}</span>
                         <span className="text-[9px] uppercase tracking-wider text-primary/90 border border-primary/30 bg-primary/10 rounded-full px-1.5 py-0.5">
-                          {getReuseBadge(t)}
+                          {getReuseBadge(tool)}
                         </span>
                       </span>
                     ))}
                   </div>
                 </Section>
 
-                <Section icon={Bot} title="Consiglio operativo">
+                <Section icon={Bot} title={t("iad.sect.advice")}>
                   <p className="text-sm text-foreground/90 leading-relaxed">
-                    Parti dalla prima versione funzionante: lascia che il tuo Team AI prepari struttura,
-                    funzioni, schermate e prompt. Valida l'idea con i primi utenti prima di investire in
-                    funzioni avanzate o sviluppo esterno.
+                    {t("iad.sect.adviceBody")}
                   </p>
                 </Section>
 
@@ -392,26 +389,24 @@ export function IdeaAnalysisDialog({
               }}
             >
               <div className="text-xs text-muted-foreground sm:max-w-xs">
-                {isAuthed
-                  ? "Sei già registrato: trasforma subito questa analisi in un nuovo progetto."
-                  : "Attiva il tuo Team AI per costruire la prima versione guidata."}
+                {isAuthed ? t("iad.footer.authed") : t("iad.footer.guest")}
               </div>
               {isAuthed ? (
                 <div className="flex flex-col items-end gap-1">
                   <Button variant="hero" size="lg" onClick={generateProjectFromIdea}>
-                    Genera questo progetto <ArrowRight className="size-4" />
+                    {t("iad.cta.generate")} <ArrowRight className="size-4" />
                   </Button>
                   <span className="text-[11px] text-muted-foreground">
-                    Trasforma questa analisi in un progetto operativo nella tua dashboard.
+                    {t("iad.cta.generateHint")}
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col items-end gap-1">
                   <Button variant="hero" size="lg" onClick={goToRoadmap}>
-                    Attiva il Team AI a 29€ <ArrowRight className="size-4" />
+                    {t("iad.cta.activate")} <ArrowRight className="size-4" />
                   </Button>
                   <span className="text-[11px] text-muted-foreground">
-                    Prezzo lancio una tantum. Nessun abbonamento automatico.
+                    {t("iad.cta.activateHint")}
                   </span>
                 </div>
               )}
@@ -423,20 +418,20 @@ export function IdeaAnalysisDialog({
       <AlertDialog open={confirmClose} onOpenChange={setConfirmClose}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Chiudere l'analisi?</AlertDialogTitle>
+            <AlertDialogTitle>{t("iad.confirm.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              L'analisi è ancora in corso. Se chiudi ora potresti dover rilanciare il calcolo.
+              {t("iad.confirm.desc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogCancel>{t("iad.confirm.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 setConfirmClose(false);
                 onOpenChange(false);
               }}
             >
-              Chiudi
+              {t("iad.confirm.ok")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -445,16 +440,16 @@ export function IdeaAnalysisDialog({
   );
 }
 
-function LoadingState() {
+function LoadingState({ t }: { t: (k: string) => string }) {
   return (
     <div className="space-y-4">
       <div className="glass-card rounded-2xl p-6 border border-border/60 text-center">
         <div className="inline-flex items-center gap-2 text-primary">
           <Loader2 className="size-5 animate-spin" />
-          <span className="text-sm font-medium">Il tuo agente AI sta analizzando l'idea…</span>
+          <span className="text-sm font-medium">{t("iad.loading.title")}</span>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Stiamo trasformando la tua idea in target, problema, soluzione, funzioni e schermate.
+          {t("iad.loading.sub")}
         </p>
       </div>
       {[0, 1, 2].map((i) => (
