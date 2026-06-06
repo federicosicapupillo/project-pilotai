@@ -123,6 +123,8 @@ const it: Dict = {
     "La tua idea viene usata solo per generare la tua analisi. Non pubblichiamo né condividiamo il tuo progetto senza il tuo permesso.",
 };
 
+// (IT extra strings appended below)
+
 const en: Dict = {
   // Brand
   "brand.full": "IdeaPilot AI",
