@@ -283,8 +283,6 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               >
                 {[
                   "Non lo so ancora",
-                  "Ristoratori",
-                  "Agenti immobiliari",
                   "Freelance",
                   "Aziende / B2B",
                   "Negozi / Retail",
