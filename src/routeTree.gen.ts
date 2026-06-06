@@ -30,6 +30,7 @@ import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutAgenteRouteImport } from './routes/_authenticated/checkout-agente'
 import { Route as AuthenticatedAgenteAiRouteImport } from './routes/_authenticated/agente-ai'
+import { Route as ApiPublicTestErrorEmailRouteImport } from './routes/api/public/test-error-email'
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -143,6 +144,11 @@ const AuthenticatedAgenteAiRoute = AuthenticatedAgenteAiRouteImport.update({
   path: '/agente-ai',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicTestErrorEmailRoute = ApiPublicTestErrorEmailRouteImport.update({
+  id: '/api/public/test-error-email',
+  path: '/api/public/test-error-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedWorkbookProjectIdRoute =
   AuthenticatedWorkbookProjectIdRouteImport.update({
     id: '/workbook/$projectId',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
+  '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
+  '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -252,6 +260,7 @@ export interface FileRoutesById {
   '/_authenticated/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
+  '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
+    | '/api/public/test-error-email'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
     | '/api/public/payments/webhook'
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/roadmap-success'
     | '/projects/$id'
     | '/workbook/$projectId'
+    | '/api/public/test-error-email'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
     | '/api/public/payments/webhook'
@@ -336,6 +347,7 @@ export interface FileRouteTypes {
     | '/_authenticated/roadmap-success'
     | '/_authenticated/projects/$id'
     | '/_authenticated/workbook/$projectId'
+    | '/api/public/test-error-email'
     | '/_authenticated/academy/lessons/$id'
     | '/_authenticated/academy/modules/$id'
     | '/api/public/payments/webhook'
@@ -356,6 +368,7 @@ export interface RootRouteChildren {
   RiepilogoIdeaRoute: typeof RiepilogoIdeaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ToolsRoute: typeof ToolsRoute
+  ApiPublicTestErrorEmailRoute: typeof ApiPublicTestErrorEmailRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgenteAiRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/test-error-email': {
+      id: '/api/public/test-error-email'
+      path: '/api/public/test-error-email'
+      fullPath: '/api/public/test-error-email'
+      preLoaderRoute: typeof ApiPublicTestErrorEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/workbook/$projectId': {
       id: '/_authenticated/workbook/$projectId'
       path: '/workbook/$projectId'
@@ -592,8 +612,19 @@ const rootRouteChildren: RootRouteChildren = {
   RiepilogoIdeaRoute: RiepilogoIdeaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ToolsRoute: ToolsRoute,
+  ApiPublicTestErrorEmailRoute: ApiPublicTestErrorEmailRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
