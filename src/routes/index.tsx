@@ -63,13 +63,13 @@ function Index() {
         <IdeaEstimator />
 
         {/* STEPS — 4 card subito sotto la hero */}
-        <Section title="Dall'idea alla prima versione dell'app in 4 passi" eyebrow="Come funziona">
+        <Section title={t("home.steps.title")} eyebrow={t("home.steps.eyebrow")}>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: PenLine, title: "1. Inserisci la tua idea", desc: "Rispondi a poche domande guidate: cosa fai, per chi, quale problema risolvi." },
-              { icon: FileText, title: "2. Ottieni il progetto strutturato", desc: "Una scheda chiara: target, prima versione dell'app (MVP), schermate, dati, rischi e cosa non costruire." },
-              { icon: Wand2, title: "3. Agenti AI e prompt pronti", desc: "Una squadra di agenti AI consigliati e prompt operativi da copiare e usare." },
-              { icon: Hammer, title: "4. Costruisci la prima versione della tua app", desc: "Segui la roadmap passo passo e realizza la prima versione funzionante con strumenti no-code." },
+              { icon: PenLine, title: t("home.steps.1.title"), desc: t("home.steps.1.desc") },
+              { icon: FileText, title: t("home.steps.2.title"), desc: t("home.steps.2.desc") },
+              { icon: Wand2, title: t("home.steps.3.title"), desc: t("home.steps.3.desc") },
+              { icon: Hammer, title: t("home.steps.4.title"), desc: t("home.steps.4.desc") },
             ].map((s) => (
               <div key={s.title} className="glass-card rounded-xl p-6">
                 <div className="size-10 rounded-lg gradient-bg grid place-items-center glow-soft">
@@ -83,12 +83,12 @@ function Index() {
         </Section>
 
         {/* METODO */}
-        <Section title="Il metodo in dettaglio" eyebrow="Il metodo">
+        <Section title={t("home.method.title")} eyebrow={t("home.method.eyebrow")}>
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { icon: Lightbulb, title: "1. Descrivi l'idea", desc: "Rispondi a un form guidato: cosa fai, per chi, quale problema risolvi." },
-              { icon: Layers, title: "2. Ricevi una scheda chiara", desc: "Target, soluzione, funzioni essenziali della prima versione, schermate, dati, rischi, cosa NON costruire." },
-              { icon: Wand2, title: "3. Squadra agenti + prompt", desc: "7 agenti AI consigliati, ognuno con prompt pronti da copiare nei tuoi strumenti." },
+              { icon: Lightbulb, title: t("home.method.1.title"), desc: t("home.method.1.desc") },
+              { icon: Layers, title: t("home.method.2.title"), desc: t("home.method.2.desc") },
+              { icon: Wand2, title: t("home.method.3.title"), desc: t("home.method.3.desc") },
             ].map((s) => (
               <div key={s.title} className="glass-card rounded-xl p-6">
                 <div className="size-10 rounded-lg gradient-bg grid place-items-center glow-soft">
@@ -102,13 +102,13 @@ function Index() {
         </Section>
 
         {/* VANTAGGI */}
-        <Section title="Perché funziona" eyebrow="Vantaggi">
+        <Section title={t("home.adv.title")} eyebrow={t("home.adv.eyebrow")}>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: Target, title: "Focus chiaro", desc: "Prima versione dell'app definita, niente progetti infiniti." },
-              { icon: Zap, title: "Veloce", desc: "Dal foglio bianco alla scheda in 5 minuti." },
-              { icon: ShieldCheck, title: "Niente codice", desc: "Pensato per chi non programma." },
-              { icon: Rocket, title: "Pronto a costruire", desc: "Prompt e roadmap operativa inclusi." },
+              { icon: Target, title: t("home.adv.1.title"), desc: t("home.adv.1.desc") },
+              { icon: Zap, title: t("home.adv.2.title"), desc: t("home.adv.2.desc") },
+              { icon: ShieldCheck, title: t("home.adv.3.title"), desc: t("home.adv.3.desc") },
+              { icon: Rocket, title: t("home.adv.4.title"), desc: t("home.adv.4.desc") },
             ].map((v) => (
               <div key={v.title} className="glass-card rounded-xl p-5">
                 <v.icon className="size-5 text-primary" />
@@ -120,15 +120,15 @@ function Index() {
         </Section>
 
         {/* ESEMPI */}
-        <Section title="Esempi di progetti realizzabili" eyebrow="Casi reali">
+        <Section title={t("home.ex.title")} eyebrow={t("home.ex.eyebrow")}>
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { t: "Prenotazioni per ristorante", d: "Una web app semplice per ricevere prenotazioni senza più perdere chiamate." },
-              { t: "CRM mini per consulenti", d: "Schede cliente, note, follow-up. Solo l'essenziale." },
-              { t: "Landing per lanciare un servizio", d: "Pagina che spiega l'offerta e raccoglie contatti qualificati." },
-              { t: "Gestionale per agente immobiliare", d: "Annunci, clienti interessati, appuntamenti in un posto solo." },
-              { t: "App interna per il team", d: "Strumento su misura per un processo specifico del tuo studio." },
-              { t: "Marketplace di nicchia", d: "Una prima versione dell'app (MVP) per validare l'idea con utenti reali." },
+              { t: t("home.ex.1.t"), d: t("home.ex.1.d") },
+              { t: t("home.ex.2.t"), d: t("home.ex.2.d") },
+              { t: t("home.ex.3.t"), d: t("home.ex.3.d") },
+              { t: t("home.ex.4.t"), d: t("home.ex.4.d") },
+              { t: t("home.ex.5.t"), d: t("home.ex.5.d") },
+              { t: t("home.ex.6.t"), d: t("home.ex.6.d") },
             ].map((e) => (
               <div key={e.t} className="glass-card rounded-xl p-5">
                 <h3 className="font-display font-semibold">{e.t}</h3>
@@ -139,18 +139,17 @@ function Index() {
         </Section>
 
         {/* PER CHI */}
-        <Section title="Per chi è" eyebrow="Target">
+        <Section title={t("home.target.title")} eyebrow={t("home.target.eyebrow")}>
           <div className="glass-card rounded-2xl p-8 grid md:grid-cols-2 gap-6">
             <div>
               <Users className="size-6 text-primary" />
-              <h3 className="font-display font-semibold text-xl mt-3">Imprenditori, consulenti, creator</h3>
+              <h3 className="font-display font-semibold text-xl mt-3">{t("home.target.role")}</h3>
               <p className="text-muted-foreground mt-2">
-                Hai un'intuizione, un servizio o un processo che vorresti digitalizzare ma non sai da dove iniziare.
-                Tu resti il regista: gli agenti AI ti aiutano passo passo con struttura, prompt e roadmap per partire davvero.
+                {t("home.target.desc")}
               </p>
             </div>
             <ul className="space-y-2 text-sm">
-              {["Ristoratori e attività locali", "Agenti immobiliari", "Freelance e studi professionali", "Coach e formatori", "Founder alla prima versione dell'app"].map((x) => (
+              {[t("home.target.list.1"), t("home.target.list.2"), t("home.target.list.3"), t("home.target.list.4"), t("home.target.list.5")].map((x) => (
                 <li key={x} className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-primary" /> {x}</li>
               ))}
             </ul>
@@ -158,13 +157,13 @@ function Index() {
         </Section>
 
         {/* COSA OTTIENI */}
-        <Section title="Cosa ottieni" eyebrow="Deliverable">
+        <Section title={t("home.deliv.title")} eyebrow={t("home.deliv.eyebrow")}>
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { icon: Layers, t: "Scheda progetto strutturata", d: "Target, prima versione dell'app (MVP), schermate, dati, rischi, cosa NON costruire." },
-              { icon: Users, t: "Squadra di 7 agenti AI", d: "Stratega, PM, UX, Prompt Engineer, Tester, Marketing, Documentazione." },
-              { icon: BookOpen, t: "Libreria di prompt pronti", d: "Per ogni fase: strategia, ricerca, design, debug, marketing, lancio." },
-              { icon: ListChecks, t: "Roadmap operativa", d: "10 step con stato Da fare / In corso / Completato." },
+              { icon: Layers, t: t("home.deliv.1.t"), d: t("home.deliv.1.d") },
+              { icon: Users, t: t("home.deliv.2.t"), d: t("home.deliv.2.d") },
+              { icon: BookOpen, t: t("home.deliv.3.t"), d: t("home.deliv.3.d") },
+              { icon: ListChecks, t: t("home.deliv.4.t"), d: t("home.deliv.4.d") },
             ].map((c) => (
               <div key={c.t} className="glass-card rounded-xl p-5 flex gap-4">
                 <div className="size-10 rounded-lg bg-secondary grid place-items-center shrink-0">
@@ -182,19 +181,19 @@ function Index() {
         {/* CTA */}
         <section className="max-w-5xl mx-auto px-6 py-20">
           <div className="mb-16">
-            <p className="text-xs uppercase tracking-wider text-primary font-semibold">La tua infrastruttura</p>
+            <p className="text-xs uppercase tracking-wider text-primary font-semibold">{t("home.kit.eyebrow")}</p>
             <h2 className="text-3xl sm:text-4xl font-display font-semibold mt-2 mb-3">
-              La tua <span className="gradient-text">cassetta degli attrezzi AI</span>
+              {t("home.kit.title.a")}<span className="gradient-text">{t("home.kit.title.b")}</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mb-8">
-              Una volta imparato il metodo, gli strumenti che attivi non servono solo per completare questo percorso. Puoi usarli per validare nuove idee, creare prototipi, costruire app, preparare demo, generare contenuti e migliorare progetti già esistenti.
+              {t("home.kit.desc")}
             </p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { icon: Boxes, t: "Crea più app", d: "Usa lo stesso metodo per trasformare nuove idee in prime versioni funzionanti." },
-                { icon: TrendingDown, t: "Riduci il costo per progetto", d: "Più usi gli strumenti, più ogni singolo progetto pesa meno sul costo mensile." },
-                { icon: GraduationCap, t: "Costruisci competenza", d: "Non impari solo a usare un tool: impari un processo replicabile." },
-                { icon: Recycle, t: "Riutilizza prompt e agenti", d: "Gli agenti, i prompt e le roadmap che crei diventano patrimonio riutilizzabile." },
+                { icon: Boxes, t: t("home.kit.1.t"), d: t("home.kit.1.d") },
+                { icon: TrendingDown, t: t("home.kit.2.t"), d: t("home.kit.2.d") },
+                { icon: GraduationCap, t: t("home.kit.3.t"), d: t("home.kit.3.d") },
+                { icon: Recycle, t: t("home.kit.4.t"), d: t("home.kit.4.d") },
               ].map((c) => (
                 <div key={c.t} className="glass-card rounded-xl p-5">
                   <div className="size-9 rounded-lg gradient-bg grid place-items-center glow-soft">
@@ -206,7 +205,7 @@ function Index() {
               ))}
             </div>
             <p className="text-sm text-foreground/85 mt-6 italic">
-              Non stai pagando strumenti per una sola idea. Stai costruendo il tuo laboratorio personale per trasformare più idee in progetti reali.
+              {t("home.kit.note")}
             </p>
           </div>
 
@@ -214,20 +213,20 @@ function Index() {
             <div className="absolute inset-0 hero-bg opacity-60 pointer-events-none" />
             <div className="relative">
               <h2 className="text-3xl sm:text-5xl font-display font-semibold">
-                La tua idea merita una <span className="gradient-text">prima versione</span>
+                {t("home.final.title.a")}<span className="gradient-text">{t("home.final.title.b")}</span>
               </h2>
               <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                Tu guidi la visione, gli agenti AI ti accompagnano passo passo: scheda progetto, prompt e roadmap personalizzata in pochi minuti.
+                {t("home.final.desc")}
               </p>
               <Link to="/prezzi" className="inline-block mt-8">
-                <Button variant="hero" size="xl">Inizia il tuo progetto <ArrowRight className="size-4" /></Button>
+                <Button variant="hero" size="xl">{t("home.final.cta")} <ArrowRight className="size-4" /></Button>
               </Link>
             </div>
           </div>
         </section>
 
         <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} IdeaPilot AI — metodo, agenti, prompt.
+          © {new Date().getFullYear()} IdeaPilot {t("brand.ai")} {t("footer.copy")}
         </footer>
       </main>
     </div>
