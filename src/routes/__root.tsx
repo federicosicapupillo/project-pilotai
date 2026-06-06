@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import iconAsset from "@/assets/ideapilot-mark.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { reportError } from "@/lib/log-error";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { captureUtmFromUrl } from "@/lib/tracking";
@@ -45,6 +46,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    void reportError({
+      action_name: "react_root_error_boundary",
+      error,
+      severity: "high",
+    });
   }, [error]);
 
   return (
@@ -164,7 +170,32 @@ function RootComponent() {
       router.invalidate();
       queryClient.invalidateQueries();
     });
-    return () => subscription.unsubscribe();
+    // Global window error listeners → forward to centralized logger
+    const onError = (ev: ErrorEvent) => {
+      void reportError({
+        action_name: "window_onerror",
+        error: ev.error ?? ev.message,
+        severity: "medium",
+      });
+    };
+    const onRejection = (ev: PromiseRejectionEvent) => {
+      void reportError({
+        action_name: "unhandled_promise_rejection",
+        error: ev.reason,
+        severity: "medium",
+      });
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("error", onError);
+      window.addEventListener("unhandledrejection", onRejection);
+    }
+    return () => {
+      subscription.unsubscribe();
+      if (typeof window !== "undefined") {
+        window.removeEventListener("error", onError);
+        window.removeEventListener("unhandledrejection", onRejection);
+      }
+    };
   }, [router, queryClient]);
 
   return (

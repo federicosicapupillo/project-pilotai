@@ -177,6 +177,69 @@ export type Database = {
         }
         Relationships: []
       }
+      app_error_logs: {
+        Row: {
+          action_name: string
+          browser: string | null
+          created_at: string
+          device: string | null
+          email_sent: boolean
+          error_message: string
+          error_stack: string | null
+          error_type: string | null
+          id: string
+          metadata: Json | null
+          page_url: string | null
+          project_id: string | null
+          resolved_at: string | null
+          route: string | null
+          severity: string
+          status: string
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_name: string
+          browser?: string | null
+          created_at?: string
+          device?: string | null
+          email_sent?: boolean
+          error_message: string
+          error_stack?: string | null
+          error_type?: string | null
+          id?: string
+          metadata?: Json | null
+          page_url?: string | null
+          project_id?: string | null
+          resolved_at?: string | null
+          route?: string | null
+          severity?: string
+          status?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_name?: string
+          browser?: string | null
+          created_at?: string
+          device?: string | null
+          email_sent?: boolean
+          error_message?: string
+          error_stack?: string | null
+          error_type?: string | null
+          id?: string
+          metadata?: Json | null
+          page_url?: string | null
+          project_id?: string | null
+          resolved_at?: string | null
+          route?: string | null
+          severity?: string
+          status?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       conversion_events: {
         Row: {
           created_at: string
@@ -305,6 +368,27 @@ export type Database = {
           order_index?: number
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      error_email_throttle: {
+        Row: {
+          count: number
+          fingerprint: string
+          id: string
+          last_sent_at: string
+        }
+        Insert: {
+          count?: number
+          fingerprint: string
+          id?: string
+          last_sent_at?: string
+        }
+        Update: {
+          count?: number
+          fingerprint?: string
+          id?: string
+          last_sent_at?: string
         }
         Relationships: []
       }

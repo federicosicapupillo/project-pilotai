@@ -74,6 +74,17 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
           return Response.json({ received: true });
         } catch (e) {
           console.error("Webhook error:", e);
+          try {
+            await getSupabase().from("app_error_logs").insert({
+              action_name: "stripe_webhook",
+              error_type: "stripe_webhook_failed",
+              error_message: String((e as { message?: string })?.message ?? e),
+              severity: "critical",
+              metadata: { env: rawEnv } as unknown as never,
+            });
+          } catch (logErr) {
+            console.error("error log failed", logErr);
+          }
           return new Response("Webhook error", { status: 400 });
         }
       },

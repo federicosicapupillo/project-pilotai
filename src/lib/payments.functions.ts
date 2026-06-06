@@ -147,6 +147,21 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {
       console.error("createAgentCheckout error:", error);
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("app_error_logs").insert({
+          user_id: userId,
+          user_email: email ?? null,
+          project_id: data.projectId ?? null,
+          action_name: "stripe_checkout",
+          error_type: "stripe_checkout_failed",
+          error_message: String((error as { message?: string })?.message ?? error),
+          severity: "critical",
+          metadata: { environment: data.environment } as never,
+        });
+      } catch (logErr) {
+        console.error("error log failed", logErr);
+      }
       return { error: getStripeErrorMessage(error) };
     }
   });

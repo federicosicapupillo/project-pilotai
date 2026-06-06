@@ -94,19 +94,34 @@ export const generateProjectContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("LOVABLE_API_KEY mancante");
+    try {
+      const key = process.env.LOVABLE_API_KEY;
+      if (!key) throw new Error("LOVABLE_API_KEY mancante");
 
-    const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
-    const gateway = createLovableAiGatewayProvider(key);
-    const model = gateway("google/gemini-3-flash-preview");
+      const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
+      const gateway = createLovableAiGatewayProvider(key);
+      const model = gateway("google/gemini-3-flash-preview");
 
-    const { object } = await generateObject({
-      model,
-      system: SYSTEM_PROMPT,
-      prompt: buildUserPrompt(data),
-      schema: OutputSchema,
-    });
+      const { object } = await generateObject({
+        model,
+        system: SYSTEM_PROMPT,
+        prompt: buildUserPrompt(data),
+        schema: OutputSchema,
+      });
 
-    return object;
+      return object;
+    } catch (error) {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("app_error_logs").insert({
+          action_name: "generate_project_content",
+          error_type: "ai_generation_failed",
+          error_message: String((error as { message?: string })?.message ?? error),
+          severity: "high",
+        });
+      } catch (logErr) {
+        console.error("error log failed", logErr);
+      }
+      throw error;
+    }
   });
