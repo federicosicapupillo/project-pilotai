@@ -174,7 +174,24 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pwd-in">Password</Label>
-                  <Input id="pwd-in" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <div className="relative">
+                    <Input
+                      id="pwd-in"
+                      type={showPwdIn ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPwdIn((v) => !v)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showPwdIn ? "Nascondi password" : "Mostra password"}
+                    >
+                      {showPwdIn ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>
                   {busy ? "Attendere..." : "Accedi"}
@@ -194,9 +211,70 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pwd-up">Password</Label>
-                  <Input id="pwd-up" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <div className="relative">
+                    <Input
+                      id="pwd-up"
+                      type={showPwdUp ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPwdUp((v) => !v)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showPwdUp ? "Nascondi password" : "Mostra password"}
+                    >
+                      {showPwdUp ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  <ul className="text-xs space-y-1 mt-2">
+                    {[
+                      { ok: pwdChecks.length, label: "Almeno 8 caratteri" },
+                      { ok: pwdChecks.upper, label: "Una lettera maiuscola" },
+                      { ok: pwdChecks.lower, label: "Una lettera minuscola" },
+                      { ok: pwdChecks.number, label: "Un numero" },
+                      { ok: pwdChecks.special, label: "Un carattere speciale (! @ # $ % ^ & * ? _ - .)" },
+                    ].map((r) => (
+                      <li
+                        key={r.label}
+                        className={cn(
+                          "flex items-center gap-2 transition-colors",
+                          r.ok ? "text-primary" : "text-muted-foreground",
+                        )}
+                      >
+                        {r.ok ? <Check className="size-3.5" /> : <X className="size-3.5 opacity-60" />}
+                        <span>{r.label}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>
+                <div className="space-y-2">
+                  <Label htmlFor="pwd-confirm">Conferma password</Label>
+                  <div className="relative">
+                    <Input
+                      id="pwd-confirm"
+                      type={showPwdConfirm ? "text" : "password"}
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPwdConfirm((v) => !v)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showPwdConfirm ? "Nascondi password" : "Mostra password"}
+                    >
+                      {showPwdConfirm ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  {confirmPassword.length > 0 && !pwdMatch && (
+                    <p className="text-xs text-destructive">Le password non coincidono.</p>
+                  )}
+                </div>
+                <Button type="submit" variant="hero" size="lg" className="w-full" disabled={signupDisabled}>
                   {busy ? "Attendere..." : "Crea il tuo account"}
                 </Button>
               </form>
