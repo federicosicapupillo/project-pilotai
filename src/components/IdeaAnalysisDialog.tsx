@@ -203,7 +203,7 @@ export function IdeaAnalysisDialog({
           <div className="overflow-y-auto px-5 sm:px-7 py-5 sm:py-6 space-y-4">
             {isLoading && <LoadingState />}
 
-            {isError && !isLoading && (
+            {isError && !isLoading && !summary && (
               <div className="glass-card rounded-2xl p-6 border border-rose-500/30 text-center">
                 <AlertCircle className="size-6 text-rose-400 mx-auto" />
                 <p className="mt-3 text-sm">
