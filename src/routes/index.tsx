@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { IdeaEstimator } from "@/components/IdeaEstimator";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
+import { useT } from "@/lib/i18n";
 import {
   Sparkles, ArrowRight, Users, Wand2, ListChecks, BookOpen,
   Lightbulb, Rocket, Target, ShieldCheck, Layers, Zap, PenLine, FileText, Hammer,
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { t } = useT();
   return (
     <div className="min-h-screen flex flex-col">
       <main>
@@ -34,27 +36,24 @@ function Index() {
           <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
           <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-28 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
-              <Sparkles className="size-3 text-primary" /> Metodo AI per non tecnici
+              <Sparkles className="size-3 text-primary" /> {t("home.badge")}
             </div>
             <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tight leading-[1.05]">
-              Hai un'<span className="gradient-text">idea</span> per un'app?<br />
-              Scopri quante <span className="gradient-text">ore</span> servono,<br />
-              quanto potrebbe <span className="gradient-text">costare</span><br />
-              e quale <span className="gradient-text">potenziale economico</span> potrebbe avere.
+              {t("home.hero.title")}
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Scrivi la tua idea. La nostra AI ti aiuta a stimare ore, difficoltà, costi, strumenti necessari e possibile modello di ricavo per creare la prima versione funzionante.
+              {t("home.hero.subtitle")}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <a href="#calcolatore">
-                <Button variant="hero" size="xl">Calcola ore, costi e potenziale <ArrowRight className="size-4" /></Button>
+                <Button variant="hero" size="xl">{t("home.cta.primary")} <ArrowRight className="size-4" /></Button>
               </a>
               <Link to="/method">
-                <Button variant="glass" size="xl">Scopri il metodo</Button>
+                <Button variant="glass" size="xl">{t("home.cta.secondary")}</Button>
               </Link>
             </div>
             <p className="mt-6 text-xs text-muted-foreground">
-              Niente promesse magiche: tu resti il regista, gli agenti AI ti aiutano passo passo.
+              {t("home.hero.note")}
             </p>
           </div>
         </section>

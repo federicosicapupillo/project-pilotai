@@ -6,19 +6,22 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { LanguageSwitcher, useT } from "@/lib/i18n";
 
-const links: { to: string; label: string; auth?: boolean }[] = [
-  { to: "/", label: "Home" },
-  { to: "/tools", label: "Strumenti" },
-  { to: "/agents", label: "Agenti" },
-  { to: "/prezzi", label: "Prezzi" },
-  { to: "/dashboard", label: "Dashboard", auth: true },
+type NavLink = { to: string; key: string; auth?: boolean };
+const navLinks: NavLink[] = [
+  { to: "/", key: "nav.home" },
+  { to: "/tools", key: "nav.tools" },
+  { to: "/agents", key: "nav.agents" },
+  { to: "/prezzi", key: "nav.pricing" },
+  { to: "/dashboard", key: "nav.dashboard", auth: true },
 ];
 
 export function AppHeader() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const { t } = useT();
 
   const { activate, hasAccess } = useActivateTeam();
   const handleActivate = () => void activate("navbar");
@@ -71,7 +74,7 @@ export function AppHeader() {
         <BrandLockup size="md" />
 
         <nav className="hidden md:flex items-center gap-1">
-          {links
+          {navLinks
             .filter((l) => !l.auth || user)
             .map((l) => {
               const active = path === l.to || (l.to !== "/" && path.startsWith(l.to));
@@ -86,30 +89,31 @@ export function AppHeader() {
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/40")
                   }
                 >
-                  {l.label}
+                  {t(l.key)}
                 </Link>
               );
             })}
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           {user ? (
             <>
               {hasAccess ? (
                 <>
                   <Link
                     to="/project-manager"
-                    title="Parla con il Project Manager"
+                    title={t("nav.projectManager")}
                     className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border border-primary/50 bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                   >
                     <MessageSquare className="size-3.5" />
-                    <span className="hidden md:inline">Parla con il Project Manager</span>
-                    <span className="md:hidden">Project Manager</span>
+                    <span className="hidden md:inline">{t("nav.projectManager")}</span>
+                    <span className="md:hidden">{t("nav.projectManagerShort")}</span>
                   </Link>
                   <Link
                     to="/dashboard"
-                    title="Il tuo Team AI è attivo"
-                    aria-label="Accesso attivo"
+                    title={t("nav.dashboard")}
+                    aria-label={t("nav.dashboard")}
                     className="inline-grid place-items-center size-7 rounded-full border border-primary/40 bg-primary/5 text-primary/90 hover:bg-primary/10 transition-colors"
                   >
                     <ShieldCheck className="size-3.5" />
@@ -120,10 +124,10 @@ export function AppHeader() {
                   variant="hero"
                   size="sm"
                   onClick={handleActivate}
-                  title="Sblocca il tuo agente personale"
+                  title={t("nav.activate")}
                   className="hidden sm:inline-flex"
                 >
-                   <Lock className="size-3.5" /> Attiva Team AI - 29€
+                   <Lock className="size-3.5" /> {t("nav.activate")}
                 </Button>
               )}
               <div className="flex items-center gap-2 px-2 py-1 rounded-full border border-border/50 bg-secondary/40 max-w-[220px]">
@@ -135,19 +139,19 @@ export function AppHeader() {
               </div>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="size-4" />
-                <span className="hidden sm:inline">Esci</span>
+                <span className="hidden sm:inline">{t("nav.signOut")}</span>
               </Button>
             </>
           ) : (
             <>
               <Link to="/auth">
                 <Button variant="ghost" size="sm">
-                  Accedi
+                  {t("nav.signIn")}
                 </Button>
               </Link>
               <Link to="/">
                 <Button variant="hero" size="sm">
-                  Inizia ora
+                  {t("nav.start")}
                 </Button>
               </Link>
             </>
@@ -158,7 +162,7 @@ export function AppHeader() {
       {user && !hasAccess && (
         <div className="sm:hidden border-t border-border/40 px-6 py-2 flex justify-center">
           <Button variant="hero" size="sm" onClick={handleActivate} className="w-full">
-           <Lock className="size-3.5" /> Attiva Team AI - 29€
+           <Lock className="size-3.5" /> {t("nav.activate")}
           </Button>
         </div>
       )}

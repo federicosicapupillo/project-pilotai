@@ -18,6 +18,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { captureUtmFromUrl } from "@/lib/tracking";
 import { AppHeader } from "@/components/AppHeader";
 import { HelpAiWidget } from "@/components/HelpAiWidget";
+import { I18nProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -200,11 +201,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppHeader />
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <Toaster />
-      <HelpAiWidget />
+      <I18nProvider>
+        <AppHeader />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <Toaster />
+        <HelpAiWidget />
+      </I18nProvider>
     </QueryClientProvider>
   );
 }
