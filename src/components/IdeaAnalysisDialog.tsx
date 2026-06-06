@@ -217,6 +217,11 @@ export function IdeaAnalysisDialog({
 
             {ready && summary && (
               <div className="space-y-4">
+                {summary.degraded && (
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-100">
+                    Analisi generata in modalità rapida. Alcuni dati sono indicativi: puoi rigenerarla tra qualche minuto per la versione completa.
+                  </div>
+                )}
                 <Section icon={Lightbulb} title="Idea analizzata">
                   <div className="font-display font-semibold text-lg sm:text-xl leading-snug">
                     {summary.title}
