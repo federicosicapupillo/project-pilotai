@@ -48,7 +48,7 @@ Adatta sempre domande, rischi, competitor, metriche, dati da cercare, priorità 
 - SaaS: problema ricorrente, abbonamento, retention, funzioni core, CAC, valore mensile percepito
 - App consumer: frequenza d'uso, abitudine, semplicità, viralità, retention, concorrenza gratuita
 - Immobiliare: area geografica, domanda reale, target acquirenti, canali, comparabili, tempi di vendita
-- Horeca: margini, personale, flussi operativi, stagionalità, picchi, costi fissi, problemi quotidiani del ristoratore
+- Horeca: margini, personale, flussi operativi, stagionalità, picchi, costi fissi, problemi quotidiani del gestore
 Non usare mai la stessa analisi in modo rigido per ogni progetto.
 
 METODO DI LAVORO (struttura mentale obbligatoria)
