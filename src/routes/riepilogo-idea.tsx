@@ -502,8 +502,8 @@ function estimatePotentialRevenue(idea: string, target: string, projectType: str
   ];
   const proKw = [
     "professionist", "freelance", "consulent", "studio",
-    "piccola attivit", "piccole attivit", "negozio", "ristorante",
-    "palestra", "coach", "agente immobiliare",
+    "piccola attivit", "piccole attivit", "negozio",
+    "palestra", "coach",
   ];
   if (marketplaceKw.some((k) => t.includes(k))) {
     return { amount: "Fino a 10.000€/mese", tier: "marketplace" };
