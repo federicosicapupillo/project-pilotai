@@ -46,6 +46,21 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPwdIn, setShowPwdIn] = useState(false);
+  const [showPwdUp, setShowPwdUp] = useState(false);
+  const [showPwdConfirm, setShowPwdConfirm] = useState(false);
+
+  const pwdChecks = checkPassword(password);
+  const pwdValid = isPasswordValid(password);
+  const pwdMatch = password.length > 0 && password === confirmPassword;
+  const signupDisabled =
+    busy ||
+    !name.trim() ||
+    !email.trim() ||
+    !pwdValid ||
+    !confirmPassword ||
+    !pwdMatch;
 
   const handleOAuth = async (provider: "google" | "apple") => {
     const result = await lovable.auth.signInWithOAuth(provider, {
@@ -86,6 +101,14 @@ function AuthPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isPasswordValid(password)) {
+      return toast.error(
+        "La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola, un numero e un carattere speciale.",
+      );
+    }
+    if (password !== confirmPassword) {
+      return toast.error("Le password non coincidono.");
+    }
     setBusy(true);
     const { data, error } = await supabase.auth.signUp({
       email,
