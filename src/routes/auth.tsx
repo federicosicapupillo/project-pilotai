@@ -9,6 +9,25 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { BrandMark } from "@/components/BrandLogo";
+import { Eye, EyeOff, Check, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const PASSWORD_SPECIAL = /[!@#$%^&*?_\-.]/;
+
+function checkPassword(pwd: string) {
+  return {
+    length: pwd.length >= 8,
+    upper: /[A-Z]/.test(pwd),
+    lower: /[a-z]/.test(pwd),
+    number: /[0-9]/.test(pwd),
+    special: PASSWORD_SPECIAL.test(pwd),
+  };
+}
+
+function isPasswordValid(pwd: string) {
+  const c = checkPassword(pwd);
+  return c.length && c.upper && c.lower && c.number && c.special;
+}
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
