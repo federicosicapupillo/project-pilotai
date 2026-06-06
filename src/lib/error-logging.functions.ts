@@ -145,7 +145,7 @@ export const logAppError = createServerFn({ method: "POST" })
           severity: data.severity,
           browser: data.browser ?? null,
           device: data.device ?? null,
-          metadata: sanitizeMetadata(data.metadata),
+          metadata: sanitizeMetadata(data.metadata) as never,
         })
         .select("id")
         .single();
