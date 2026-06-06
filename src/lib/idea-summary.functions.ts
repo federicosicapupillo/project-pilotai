@@ -1,6 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
+import {
+  classifyIdeaTier,
+  tierHours,
+  tierDifficultyLabel,
+  tierDifficultyReason,
+  tierPotential,
+} from "./idea-deterministic";
 
 const InputSchema = z.object({
   idea: z.string().min(8).max(4000),
@@ -23,6 +30,7 @@ const OutputSchema = z.object({
   estimated_hours: z.string(),
   integrations: z.array(z.string()),
   max_revenue: z.string(),
+  degraded: z.boolean().optional(),
 });
 
 export type IdeaSummary = z.infer<typeof OutputSchema>;
@@ -65,17 +73,22 @@ FORMATO OUTPUT (JSON, tutti i campi obbligatori):
 export const generateIdeaSummary = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }): Promise<IdeaSummary> => {
-    const { enforceIpRateLimit } = await import("./rate-limit.server");
-    await enforceIpRateLimit({ endpoint: "generateIdeaSummary", maxRequests: 5, windowSeconds: 3600 });
+    let phase: string = "init";
+    try {
+      phase = "rate_limit";
+      const { enforceIpRateLimit } = await import("./rate-limit.server");
+      await enforceIpRateLimit({ endpoint: "generateIdeaSummary", maxRequests: 20, windowSeconds: 3600 });
 
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("LOVABLE_API_KEY mancante");
+      phase = "ai_key";
+      const key = process.env.LOVABLE_API_KEY;
+      if (!key) throw new Error("LOVABLE_API_KEY mancante");
 
-    const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
-    const gateway = createLovableAiGatewayProvider(key);
-    const model = gateway("google/gemini-3-flash-preview");
+      phase = "ai_call";
+      const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
+      const gateway = createLovableAiGatewayProvider(key);
+      const model = gateway("google/gemini-3-flash-preview");
 
-    const prompt = `Idea dell'utente:
+      const prompt = `Idea dell'utente:
 """${data.idea}"""
 
 Target indicato dall'utente: ${data.target || "non specificato"}
@@ -83,17 +96,132 @@ Tipo progetto suggerito dal sistema: ${data.projectType || "non specificato"}
 
 Genera un riepilogo strutturato, coerente, specifico per QUESTA idea.`;
 
-    const { text } = await generateText({
-      model,
-      system: SYSTEM_PROMPT + "\n\nRispondi SOLO con JSON valido, senza testo extra né markdown.",
-      prompt,
-    });
+      const { text } = await generateText({
+        model,
+        system: SYSTEM_PROMPT + "\n\nRispondi SOLO con JSON valido, senza testo extra né markdown.",
+        prompt,
+      });
 
-    const parsed = extractJSON(text);
-    const summary = OutputSchema.parse(parsed);
-    summary.max_revenue = computeMaxRevenue(data.idea, data.target, summary.project_type);
-    return summary;
+      phase = "parse";
+      const parsed = extractJSON(text);
+      const summary = OutputSchema.parse(parsed);
+      summary.max_revenue = computeMaxRevenue(data.idea, data.target, summary.project_type);
+      return summary;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      // Log + notify, but never throw — return a deterministic fallback so the user always sees a result.
+      await safeLogAnalysisError({
+        phase,
+        message,
+        stack: error instanceof Error ? error.stack : undefined,
+        idea: data.idea,
+        target: data.target,
+        projectType: data.projectType,
+      });
+      return buildFallbackSummary(data.idea, data.target, data.projectType);
+    }
   });
+
+async function safeLogAnalysisError(input: {
+  phase: string;
+  message: string;
+  stack?: string;
+  idea: string;
+  target: string;
+  projectType: string;
+}) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const sanitizedMessage = input.message
+      .replace(/sk_live_[A-Za-z0-9]+/g, "sk_live_[redacted]")
+      .replace(/sk_test_[A-Za-z0-9]+/g, "sk_test_[redacted]")
+      .replace(/Bearer\s+[A-Za-z0-9._-]+/g, "Bearer [redacted]");
+    await supabaseAdmin.from("app_error_logs").insert({
+      action_name: "generate_idea_budget_analysis",
+      error_type: "analysis_generation_failed",
+      error_message: sanitizedMessage,
+      error_stack: input.stack?.slice(0, 8000),
+      severity: "high",
+      metadata: {
+        phase: input.phase,
+        idea_preview: input.idea.slice(0, 240),
+        target: input.target,
+        project_type: input.projectType,
+        ai_provider: "lovable-gateway/google/gemini-3-flash-preview",
+      },
+    });
+    await sendAdminEmailSafe(sanitizedMessage, input.phase);
+  } catch (e) {
+    console.error("[idea-summary] safeLogAnalysisError failed", e);
+  }
+}
+
+async function sendAdminEmailSafe(message: string, phase: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+  try {
+    const from = process.env.ERROR_EMAIL_FROM || "IdeaPilot AI <onboarding@resend.dev>";
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: ["federico.sica@gmail.com"],
+        subject: "[IdeaPilot AI] Errore generazione analisi idea (high)",
+        html: `<p><strong>Azione:</strong> generate_idea_budget_analysis</p>
+               <p><strong>Fase:</strong> ${escapeHtml(phase)}</p>
+               <p><strong>Errore:</strong> ${escapeHtml(message)}</p>`,
+      }),
+    });
+  } catch (e) {
+    console.error("[idea-summary] resend email failed", e);
+  }
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) =>
+    c === "&" ? "&amp;" : c === "<" ? "&lt;" : c === ">" ? "&gt;" : c === '"' ? "&quot;" : "&#39;",
+  );
+}
+
+function buildFallbackSummary(idea: string, target: string, projectType: string): IdeaSummary {
+  const tier = classifyIdeaTier(idea, target);
+  const trimmed = idea.trim();
+  const firstSentence = trimmed.split(/[.!?\n]/)[0]?.trim() || trimmed;
+  const title = firstSentence.length > 80 ? firstSentence.slice(0, 77) + "…" : firstSentence || "La tua idea";
+  const pt = projectType || (tier === "marketplace" ? "Marketplace" : tier === "avanzata" ? "Web app avanzata" : tier === "media" ? "Web app" : "Web app semplice");
+  const targetText = target?.trim()
+    ? target
+    : "Utenti che oggi gestiscono manualmente questa attività e cercano uno strumento più semplice.";
+  return {
+    title,
+    short_description: trimmed.length > 220 ? trimmed.slice(0, 217) + "…" : trimmed,
+    project_type: pt,
+    target: targetText,
+    problem:
+      "L'utente perde tempo o opportunità gestendo manualmente questa attività, senza un flusso operativo chiaro.",
+    solution:
+      "Una prima versione funzionante che automatizza i passaggi principali, raccoglie i dati essenziali e mostra subito un risultato utile.",
+    first_version:
+      "Parti da una versione minima con le 3-4 funzioni più importanti, un'unica area utente e un flusso semplice dall'inizio alla fine.",
+    essential_features: [
+      "Schermata principale con i dati o le azioni chiave",
+      "Inserimento o raccolta delle informazioni essenziali",
+      "Salvataggio sicuro su database",
+      "Visualizzazione dei risultati o dello stato",
+    ],
+    screens: ["Home", "Inserimento dati", "Elenco / risultati", "Dettaglio singolo elemento"],
+    difficulty: tierDifficultyLabel(tier),
+    difficulty_reason: tierDifficultyReason(tier),
+    estimated_hours: tierHours(tier),
+    integrations: [],
+    max_revenue: tierPotential(tier).amount.replace(/^Fino a /, "Fino a "),
+    degraded: true,
+  };
+}
 
 // Deterministic potenziale massimo: same idea → same value, sempre.
 // Leggermente più alto del realistico (richiesta utente).
