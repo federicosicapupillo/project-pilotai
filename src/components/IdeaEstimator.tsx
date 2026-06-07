@@ -627,11 +627,16 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         open={readyOpen}
         onOpenChange={setReadyOpen}
         runId={pendingRunId}
-        onAuthNavigate={(path) => {
+        onAuthNavigate={(path, mode) => {
           if (typeof window !== "undefined") {
-            try { localStorage.setItem(REDIRECT_KEY, path); } catch { /* ignore */ }
+            try {
+              localStorage.setItem(REDIRECT_KEY, path);
+              if (pendingRunId) {
+                localStorage.setItem("pending_idea_run_id", pendingRunId);
+              }
+            } catch { /* ignore */ }
           }
-          navigate({ to: "/auth" });
+          navigate({ to: "/auth", search: { mode } });
         }}
       />
       <IdeaAnalysisDialog
