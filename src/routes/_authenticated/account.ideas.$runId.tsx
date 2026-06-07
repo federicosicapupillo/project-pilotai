@@ -137,29 +137,59 @@ function ReportPage() {
 
         <div className="grid lg:grid-cols-5 gap-4">
           {/* HERO — Potential */}
-          <div className="lg:col-span-3 relative overflow-hidden rounded-3xl p-7 sm:p-8 border border-primary/40 glass-card glow-soft">
+          <div className="lg:col-span-3 relative overflow-hidden rounded-3xl p-8 sm:p-10 border border-primary/50 glass-card shadow-[0_0_80px_-20px_oklch(0.7_0.2_280/0.55)]">
+            {/* Layered glow */}
             <div
               aria-hidden
-              className="absolute -top-24 -right-24 size-72 rounded-full opacity-60 blur-3xl"
+              className="absolute -top-32 -right-24 size-[28rem] rounded-full opacity-70 blur-3xl"
               style={{ background: "var(--gradient-primary)" }}
+            />
+            <div
+              aria-hidden
+              className="absolute -bottom-40 -left-20 size-80 rounded-full opacity-40 blur-3xl"
+              style={{ background: "var(--gradient-primary)" }}
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 opacity-[0.04] pointer-events-none"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
             />
             <div className="relative">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/80">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/40 border border-primary/30 text-[11px] uppercase tracking-[0.2em] font-semibold text-foreground/90">
                   <ArrowUpRight className="size-3.5 text-primary" /> {t("report.eco.heroTitle")}
                 </div>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-primary/40 bg-primary/10 text-[10px] uppercase tracking-wider text-primary">
-                  {t("report.eco.heroBadge")}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/50 bg-primary/15 text-[10px] uppercase tracking-[0.18em] font-bold text-primary">
+                  <Sparkles className="size-3" /> {t("report.eco.heroBadge")}
                 </span>
               </div>
-              <div className="mt-5 flex items-baseline gap-2 flex-wrap">
-                <div className="font-display font-semibold tracking-tight text-4xl sm:text-5xl lg:text-6xl gradient-text leading-none">
+
+              <p className="text-sm text-foreground/70 mt-6 max-w-md">
+                {t("report.eco.heroEmotional")}
+              </p>
+
+              <div className="mt-3 flex items-baseline gap-2 flex-wrap">
+                <div
+                  className="font-display font-bold tracking-tighter gradient-text leading-[0.95] drop-shadow-[0_0_40px_oklch(0.7_0.2_280/0.4)]"
+                  style={{ fontSize: "clamp(3.5rem, 11vw, 7.5rem)" }}
+                >
                   {potentialDisplay}
                 </div>
-                <span className="text-muted-foreground text-lg">{t("report.perMonth")}</span>
+                <span className="text-foreground/70 text-2xl sm:text-3xl font-display font-medium">
+                  {t("report.perMonth")}
+                </span>
               </div>
-              <p className="text-foreground/85 mt-4 max-w-md leading-relaxed">{t("report.eco.heroDesc")}</p>
-              <p className="text-[11px] text-muted-foreground/80 mt-3 italic">{t("report.eco.heroDisclaimer")}</p>
+
+              <p className="text-foreground/90 mt-5 max-w-md leading-relaxed text-base">
+                {t("report.eco.heroDesc")}
+              </p>
+              <p className="text-[11px] text-muted-foreground/70 mt-4 italic">
+                {t("report.eco.heroDisclaimer")}
+              </p>
             </div>
           </div>
 
@@ -196,6 +226,19 @@ function ReportPage() {
           <div>
             <div className="font-display text-sm mb-1">{t("report.eco.contextTitle")}</div>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("report.eco.contextBody")}</p>
+          </div>
+        </div>
+
+        {/* Bridge to CTA — converts the wow moment into a next step */}
+        <div className="relative overflow-hidden rounded-2xl p-6 sm:p-7 border border-primary/40 bg-gradient-to-br from-primary/10 via-background/40 to-accent/10 glow-soft">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 justify-between">
+            <div className="max-w-xl">
+              <div className="font-display text-lg sm:text-xl mb-1.5">{t("report.eco.bridgeTitle")}</div>
+              <p className="text-sm text-muted-foreground leading-relaxed">{t("report.eco.bridgeBody")}</p>
+            </div>
+            <Button variant="hero" size="lg" className="shrink-0" onClick={() => navigate({ to: "/prezzi" })}>
+              <Sparkles className="size-4" /> {t("report.cta.activate")} <ArrowRight className="size-4" />
+            </Button>
           </div>
         </div>
       </section>
