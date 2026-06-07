@@ -19,10 +19,16 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
       "www.ideapilots.app",
       "project-pilotai.lovable.app",
     ]);
-    const isLovablePreview = /\.lovable\.app$/.test(parsedReturn.hostname);
-    const isLocalhost = parsedReturn.hostname === "localhost" || parsedReturn.hostname === "127.0.0.1";
-    if (!ALLOWED_RETURN_HOSTS.has(parsedReturn.hostname) && !isLovablePreview && !isLocalhost) {
-      throw new Error("Invalid returnUrl: domain not allowed");
+    const host = parsedReturn.hostname;
+    const isLovablePreview =
+      /\.lovable\.app$/.test(host) ||
+      /\.lovable\.dev$/.test(host) ||
+      /\.lovableproject\.com$/.test(host) ||
+      /\.lovable\.host$/.test(host);
+    const isLocalhost = host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0";
+    if (!ALLOWED_RETURN_HOSTS.has(host) && !isLovablePreview && !isLocalhost) {
+      console.warn("[createAgentCheckout] returnUrl host rejected:", host, "url=", data.returnUrl);
+      throw new Error(`Invalid returnUrl: domain not allowed (${host})`);
     }
     if (parsedReturn.protocol !== "https:" && !isLocalhost) {
       throw new Error("Invalid returnUrl: must be https");
