@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessBadge } from "@/components/TeamAiEarlyAccess";
 import { LanguageSwitcher, useT } from "@/lib/i18n";
 
 type NavLink = { to: string; key: string; auth?: boolean };
@@ -120,15 +121,17 @@ export function AppHeader() {
                   </Link>
                 </>
               ) : (
-                <Button
-                  variant="hero"
-                  size="sm"
-                  onClick={handleActivate}
-                  title={t("nav.activate")}
-                  className="hidden sm:inline-flex"
-                >
-                   <Lock className="size-3.5" /> {t("nav.activate")}
-                </Button>
+                <div className="hidden sm:inline-flex items-center gap-2">
+                  <TeamAiEarlyAccessBadge />
+                  <Button
+                    variant="hero"
+                    size="sm"
+                    onClick={handleActivate}
+                    title={t("nav.activate")}
+                  >
+                    <Lock className="size-3.5" /> {t("nav.activate")}
+                  </Button>
+                </div>
               )}
               <div className="flex items-center gap-2 px-2 py-1 rounded-full border border-border/50 bg-secondary/40 max-w-[220px]">
                 <UserCircle2 className="size-4 text-primary shrink-0" aria-label="Account" />

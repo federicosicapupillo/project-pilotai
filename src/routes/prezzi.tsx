@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessBox } from "@/components/TeamAiEarlyAccess";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/prezzi")({
@@ -208,6 +209,9 @@ function PrezziPage() {
                 <p className="text-xs text-muted-foreground text-center mt-2 inline-flex items-center justify-center gap-1.5 w-full">
                   <ShieldCheck className="size-3.5" /> {t("pricing.cta.secure")}
                 </p>
+                <div className="mt-4">
+                  <TeamAiEarlyAccessBox />
+                </div>
               </div>
             </div>
           </div>

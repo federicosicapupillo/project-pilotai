@@ -9,6 +9,7 @@ import { ToolBadge } from "@/components/ToolBadge";
 import { toast } from "sonner";
 import { useAcademyAccess } from "@/components/AcademyLock";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessMicro } from "@/components/TeamAiEarlyAccess";
 
 export const Route = createFileRoute("/agents")({
   head: () => ({
@@ -499,6 +500,7 @@ function _LegacyUnused() {
                       <Sparkles className="size-3.5" /> Attiva Team AI - 29€ <ArrowRight className="size-3.5" />
                     </Link>
                   </Button>
+                  <TeamAiEarlyAccessMicro className="mt-2" />
                 </div>
               </div>
             )}

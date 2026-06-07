@@ -5,6 +5,7 @@ import { claimAnonIdeaRuns, getIdeaRun } from "@/lib/idea-runs.functions";
 import { getAnonSessionId } from "@/lib/anon-session";
 import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { TeamAiEarlyAccessMicro, TeamAiEarlyAccessBox } from "@/components/TeamAiEarlyAccess";
 import {
   singleMonthlyPotential,
   singleTraditionalCost,
@@ -236,9 +237,15 @@ function ReportPage() {
               <div className="font-display text-lg sm:text-xl mb-1.5">{t("report.eco.bridgeTitle")}</div>
               <p className="text-sm text-muted-foreground leading-relaxed">{t("report.eco.bridgeBody")}</p>
             </div>
-            <Button variant="hero" size="lg" className="shrink-0" onClick={() => navigate({ to: "/prezzi" })}>
-              <Sparkles className="size-4" /> {t("report.cta.activate")} <ArrowRight className="size-4" />
-            </Button>
+            <div className="flex flex-col items-stretch sm:items-end gap-1.5 shrink-0">
+              <Button variant="hero" size="lg" onClick={() => navigate({ to: "/prezzi" })}>
+                <Sparkles className="size-4" /> {t("report.cta.activate")} <ArrowRight className="size-4" />
+              </Button>
+              <TeamAiEarlyAccessMicro align="right" className="max-w-xs" />
+            </div>
+          </div>
+          <div className="mt-5">
+            <TeamAiEarlyAccessBox />
           </div>
         </div>
       </section>
@@ -274,13 +281,16 @@ function ReportPage() {
         </section>
       )}
 
-      <div className="flex flex-wrap gap-3 pt-2">
-        <Button variant="hero" size="lg" onClick={() => navigate({ to: "/prezzi" })}>
-          <Sparkles className="size-4" /> {t("report.cta.activate")} <ArrowRight className="size-4" />
-        </Button>
-        <Button asChild variant="glass" size="lg">
-          <Link to="/dashboard">Dashboard</Link>
-        </Button>
+      <div className="pt-2 space-y-3">
+        <div className="flex flex-wrap gap-3">
+          <Button variant="hero" size="lg" onClick={() => navigate({ to: "/prezzi" })}>
+            <Sparkles className="size-4" /> {t("report.cta.activate")} <ArrowRight className="size-4" />
+          </Button>
+          <Button asChild variant="glass" size="lg">
+            <Link to="/dashboard">Dashboard</Link>
+          </Button>
+        </div>
+        <TeamAiEarlyAccessMicro />
       </div>
     </div>
   );

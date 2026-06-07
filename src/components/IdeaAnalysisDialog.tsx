@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessMicro } from "@/components/TeamAiEarlyAccess";
 import { useT } from "@/lib/i18n";
 import {
   classify,
@@ -408,6 +409,7 @@ export function IdeaAnalysisDialog({
                   <span className="text-[11px] text-muted-foreground">
                     {t("iad.cta.activateHint")}
                   </span>
+                  <TeamAiEarlyAccessMicro align="right" className="max-w-xs" />
                 </div>
               )}
             </div>
