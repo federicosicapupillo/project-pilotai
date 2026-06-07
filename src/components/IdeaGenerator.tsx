@@ -26,7 +26,7 @@ export type IdeaGeneratorProps = {
 
 export function IdeaGenerator({
   onSelect,
-  triggerLabel = "Genera un'idea per me",
+  triggerLabel = "Genera 3 idee per me",
   variant = "card",
   presetBudget,
   presetTarget,
@@ -81,7 +81,7 @@ export function IdeaGenerator({
   };
 
   const trigger = (
-    <Button variant="hero" size="lg" onClick={handleTriggerClick} disabled={step === "loading"}>
+    <Button variant="glass" size="lg" onClick={handleTriggerClick} disabled={step === "loading"}>
       {step === "loading"
         ? <><Loader2 className="size-4 animate-spin" /> Generazione…</>
         : <><Wallet className="size-4" /> {step === "results" ? "Rigenera idee" : triggerLabel}</>}
@@ -91,14 +91,14 @@ export function IdeaGenerator({
   return (
     <>
       {variant === "card" ? (
-        <div className="rounded-xl border border-border/60 bg-background/30 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-          <div className="size-10 rounded-lg gradient-bg grid place-items-center glow-soft shrink-0">
-            <Lightbulb className="size-5 text-primary-foreground" />
+        <div className="rounded-xl border border-dashed border-border/50 bg-background/20 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="size-10 rounded-lg border border-border/50 bg-background/40 grid place-items-center shrink-0">
+            <Lightbulb className="size-5 text-muted-foreground" />
           </div>
           <div className="flex-1">
-            <div className="font-display font-semibold">Non hai ancora un'idea?</div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Useremo il budget, il target, il modello di ricavo e il prezzo che hai selezionato qui sopra per generare 3 idee coerenti.
+            <div className="font-display font-medium text-foreground/90">Non hai ancora un'idea?</div>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              Possiamo generare 3 idee coerenti in base al budget, target, modello di ricavo e prezzo che hai selezionato.
             </p>
             {triggerError && (
               <p className="text-xs text-destructive mt-2 flex items-center gap-1.5">
