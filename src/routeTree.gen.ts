@@ -34,6 +34,7 @@ import { Route as ApiPublicTestErrorEmailRouteImport } from './routes/api/public
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as AuthenticatedAccountIdeasRunIdRouteImport } from './routes/_authenticated/account.ideas.$runId'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
 import { Route as AuthenticatedAcademyLessonsIdRouteImport } from './routes/_authenticated/academy.lessons.$id'
 
@@ -166,6 +167,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedAccountIdeasRunIdRoute =
+  AuthenticatedAccountIdeasRunIdRouteImport.update({
+    id: '/account/ideas/$runId',
+    path: '/account/ideas/$runId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAcademyModulesIdRoute =
   AuthenticatedAcademyModulesIdRouteImport.update({
     id: '/academy/modules/$id',
@@ -205,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/account/ideas/$runId': typeof AuthenticatedAccountIdeasRunIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -233,6 +241,7 @@ export interface FileRoutesByTo {
   '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
   '/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/account/ideas/$runId': typeof AuthenticatedAccountIdeasRunIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -263,6 +272,7 @@ export interface FileRoutesById {
   '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
   '/_authenticated/academy/lessons/$id': typeof AuthenticatedAcademyLessonsIdRoute
   '/_authenticated/academy/modules/$id': typeof AuthenticatedAcademyModulesIdRoute
+  '/_authenticated/account/ideas/$runId': typeof AuthenticatedAccountIdeasRunIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/api/public/test-error-email'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
+    | '/account/ideas/$runId'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/api/public/test-error-email'
     | '/academy/lessons/$id'
     | '/academy/modules/$id'
+    | '/account/ideas/$runId'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -350,6 +362,7 @@ export interface FileRouteTypes {
     | '/api/public/test-error-email'
     | '/_authenticated/academy/lessons/$id'
     | '/_authenticated/academy/modules/$id'
+    | '/_authenticated/account/ideas/$runId'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -549,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/account/ideas/$runId': {
+      id: '/_authenticated/account/ideas/$runId'
+      path: '/account/ideas/$runId'
+      fullPath: '/account/ideas/$runId'
+      preLoaderRoute: typeof AuthenticatedAccountIdeasRunIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/academy/modules/$id': {
       id: '/_authenticated/academy/modules/$id'
       path: '/academy/modules/$id'
@@ -578,6 +598,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
   AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
   AuthenticatedAcademyModulesIdRoute: typeof AuthenticatedAcademyModulesIdRoute
+  AuthenticatedAccountIdeasRunIdRoute: typeof AuthenticatedAccountIdeasRunIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -592,6 +613,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
   AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
   AuthenticatedAcademyModulesIdRoute: AuthenticatedAcademyModulesIdRoute,
+  AuthenticatedAccountIdeasRunIdRoute: AuthenticatedAccountIdeasRunIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -618,3 +640,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
