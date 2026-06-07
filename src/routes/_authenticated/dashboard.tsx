@@ -194,21 +194,18 @@ function DashboardPage() {
           </div>
         </Link>
       ) : (
-        <div className="glass-card rounded-2xl p-6 border border-primary/40 glow-soft flex flex-col sm:flex-row sm:items-center gap-5 mb-10">
-          <div className="size-12 rounded-full gradient-bg grid place-items-center shrink-0">
-            <Bot className="size-6 text-primary-foreground" />
+        <div className="glass-card rounded-2xl p-6 border border-primary/30 flex flex-col sm:flex-row sm:items-center gap-5 mb-10">
+          <div className="size-12 rounded-full bg-primary/15 border border-primary/30 grid place-items-center shrink-0">
+            <Lock className="size-5 text-primary" />
           </div>
           <div className="flex-1">
             <h3 className="font-display font-semibold text-lg">
-              Inizia a far costruire l'app al tuo Team AI
+              Prompt, roadmap e strumenti
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Il progetto è pronto. Attiva il Team AI per sbloccare prompt, roadmap, strumenti e istruzioni operative.
+              Disponibili dopo l'attivazione del Team IA. Il bottone di attivazione è sempre nella barra in alto.
             </p>
           </div>
-          <Button variant="hero" size="lg" className="shrink-0" onClick={() => activate("dashboard_banner")}>
-            <Lock className="size-4" /> Attiva il mio Team AI - 29€
-          </Button>
         </div>
       )}
 
@@ -278,24 +275,16 @@ function DashboardPage() {
           {hasAccess ? (
             <AgentPromptsSection projectId={activeProjectId} />
           ) : (
-            <div className="rounded-2xl p-6 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft">
-              <h3 className="font-display font-semibold text-lg">
-                Prompt e roadmap si sbloccano dopo l'attivazione
+            <div className="rounded-2xl p-6 border border-border/60 bg-background/40">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider border border-primary/40 bg-primary/10 text-primary/90 font-semibold">
+                <Lock className="size-3" /> Bloccato
+              </div>
+              <h3 className="font-display font-semibold text-lg mt-3">
+                Prompt e roadmap operativa
               </h3>
               <p className="text-sm text-muted-foreground mt-2">
-                Il tuo progetto è stato creato. Per vedere prompt operativi, roadmap completa, strumenti e istruzioni devi attivare il Team AI.
+                I prompt verranno generati e organizzati dopo l'attivazione del Team IA, insieme alla roadmap completa, strumenti e istruzioni.
               </p>
-              <Button
-                variant="hero"
-                size="lg"
-                className="mt-4 w-full"
-                onClick={() => activate("dashboard_side_cta")}
-              >
-                <Lock className="size-4" /> Attiva il mio Team AI - 29€
-              </Button>
-              <div className="mt-2">
-                <TeamAiEarlyAccessMicro align="center" />
-              </div>
             </div>
           )}
         </aside>

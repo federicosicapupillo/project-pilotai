@@ -246,18 +246,13 @@ function ProjectPage() {
             </div>
           )}
           {!hasAccess && (
-            <div className="rounded-2xl p-6 sm:p-8 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft text-center">
-              <h3 className="text-xl sm:text-2xl font-display font-semibold">
-                Vuoi sbloccare gli strumenti del tuo Team AI?
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto">
-                Ora vedi il metodo. Dopo l'attivazione vedrai anche gli strumenti reali, l'ordine operativo completo e come usarli nel tuo progetto.
-              </p>
-              <div className="mt-5 flex justify-center">
-                <Button size="lg" variant="hero" onClick={() => activate("project_stack_cta", id)}>
-                  <Lock className="size-4" /> Attiva il mio Team AI - 29€
-                </Button>
+            <div className="rounded-2xl p-6 border border-border/60 bg-background/40 text-center">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider border border-primary/40 bg-primary/10 text-primary/90 font-semibold">
+                <Lock className="size-3" /> Bloccato
               </div>
+              <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
+                Gli strumenti reali usati in ogni fase si sbloccano dopo l'attivazione del Team IA.
+              </p>
             </div>
           )}
         </TabsContent>
@@ -295,45 +290,18 @@ function ProjectPage() {
               <AppRoadmap projectId={id} />
             </div>
           ) : (
-            <div className="rounded-2xl p-6 sm:p-8 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft text-center">
-              <h3 className="text-xl sm:text-2xl font-display font-semibold">
-                La roadmap operativa si sblocca con il Team AI
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto">
-                Attiva il Team AI per vedere la roadmap del progetto e iniziare ad avanzare step per step.
-              </p>
-              <div className="mt-5 flex justify-center">
-                <Button size="lg" variant="hero" onClick={() => activate("project_roadmap_cta", id)}>
-                  <Lock className="size-4" /> Attiva il mio Team AI - 29€
-                </Button>
+            <div className="rounded-2xl p-6 border border-border/60 bg-background/40 text-center">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider border border-primary/40 bg-primary/10 text-primary/90 font-semibold">
+                <Lock className="size-3" /> Bloccato
               </div>
+              <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
+                Roadmap operativa disponibile dopo l'attivazione del Team IA.
+              </p>
             </div>
           )}
         </TabsContent>
       </Tabs>
 
-      {!hasAccess && (
-        <div className="mt-12 rounded-2xl p-8 sm:p-10 border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 glow-soft text-center">
-          <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-            Vuoi iniziare davvero a costruire questa app?
-          </h2>
-          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-            Il progetto è pronto. Ora devi solo attivare il tuo Team AI per mettere al lavoro gli agenti, sbloccare prompt, strumenti e roadmap operative.
-          </p>
-          <div className="mt-6 flex justify-center">
-            <Button
-              size="lg"
-              variant="hero"
-              onClick={() => activate("project_detail_cta", id)}
-            >
-              <Lock className="size-4" /> Attiva il mio Team AI - 29€
-            </Button>
-          </div>
-          <div className="mt-3 max-w-md mx-auto">
-            <TeamAiEarlyAccessMicro align="center" />
-          </div>
-        </div>
-      )}
 
     </div>
   );

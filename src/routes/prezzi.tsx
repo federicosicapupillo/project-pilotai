@@ -258,33 +258,33 @@ function PrezziPage() {
           </div>
         </section>
 
-        {/* CTA FINALE */}
-        <section className="mt-20">
-          <div className="glass-card rounded-3xl p-8 sm:p-12 text-center max-w-3xl mx-auto border-primary/40 ring-1 ring-primary/20">
-            <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-              {t("pricing.final.title.a")}<span className="gradient-text">{t("pricing.final.title.b")}</span>{t("pricing.final.title.c")}
-            </h2>
-            <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-              {t("pricing.final.desc")}
-            </p>
-            <div className="mt-6 max-w-sm mx-auto">
-              <PrimaryCta />
-              {hasAccess ? (
+        {hasAccess ? (
+          <section className="mt-20">
+            <div className="glass-card rounded-3xl p-8 sm:p-12 text-center max-w-3xl mx-auto border-primary/40 ring-1 ring-primary/20">
+              <h2 className="text-2xl sm:text-3xl font-display font-semibold">
+                {t("pricing.final.title.a")}<span className="gradient-text">{t("pricing.final.title.b")}</span>{t("pricing.final.title.c")}
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
+                {t("pricing.final.desc")}
+              </p>
+              <div className="mt-6 max-w-sm mx-auto">
+                <PrimaryCta />
                 <p className="text-xs text-muted-foreground mt-3">{t("pricing.final.active")}</p>
-              ) : (
-                <>
-                  <p className="text-xs text-foreground/80 mt-3 leading-snug">{t("pricing.final.access")}</p>
-                  <p className="text-[11px] text-muted-foreground mt-1 leading-snug">{t("cta.early.finalNote")}</p>
-                </>
-              )}
+              </div>
+              <div className="text-center mt-6">
+                <Link to="/method" className="text-sm text-primary hover:underline">
+                  {t("pricing.final.method")}
+                </Link>
+              </div>
             </div>
-            <div className="text-center mt-6">
-              <Link to="/method" className="text-sm text-primary hover:underline">
-                {t("pricing.final.method")}
-              </Link>
-            </div>
-          </div>
-        </section>
+          </section>
+        ) : (
+          <section className="mt-20 text-center">
+            <Link to="/method" className="text-sm text-primary hover:underline">
+              {t("pricing.final.method")}
+            </Link>
+          </section>
+        )}
       </main>
     </div>
   );

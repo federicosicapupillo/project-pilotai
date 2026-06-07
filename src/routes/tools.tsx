@@ -331,40 +331,24 @@ function ToolsPage() {
         </section>
       )}
 
-      {/* CTA finale */}
-      <section className="mt-12 relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/15 via-violet-500/10 to-fuchsia-500/10 p-8 sm:p-12 text-center">
-        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
-        <div className="relative">
-          <h2 className="text-3xl sm:text-4xl font-display font-semibold">
-            {hasAccess
-              ? "Il tuo Team AI è attivo"
-              : "Pronto a trasformare la tua idea nella prima versione?"}
-          </h2>
-          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-            {hasAccess
-              ? "Ora puoi usare strumenti, prompt e roadmap per portare avanti il progetto."
-              : "Attiva il Team IA e inizia a costruire il progetto partendo dal report che hai appena generato."}
-          </p>
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            {hasAccess ? (
+      {hasAccess && (
+        <section className="mt-12 relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/15 via-violet-500/10 to-fuchsia-500/10 p-8 sm:p-12 text-center">
+          <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
+          <div className="relative">
+            <h2 className="text-3xl sm:text-4xl font-display font-semibold">Il tuo Team AI è attivo</h2>
+            <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+              Ora puoi usare strumenti, prompt e roadmap per portare avanti il progetto.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button variant="hero" size="lg" asChild>
                 <Link to="/dashboard">
                   <Sparkles className="size-4" /> Vai alla dashboard <ArrowRight className="size-4" />
                 </Link>
               </Button>
-            ) : (
-              <Button variant="hero" size="lg" onClick={handleActivate}>
-                <Sparkles className="size-4" /> Attiva Team IA - 29€ <ArrowRight className="size-4" />
-              </Button>
-            )}
-          </div>
-          {!hasAccess && (
-            <div className="mt-3 flex justify-center">
-              <TeamAiEarlyAccessMicro align="center" className="max-w-md" />
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
