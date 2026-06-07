@@ -172,24 +172,32 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     setAnalysisParams(p);
     setLoadingError(null);
     setLoadingOpen(true);
+    setPendingRunId(null);
     const scope = getBudgetScope(budget, r.signals);
-    try {
-      persistCalculatorRun(p.idea, r, scope, { source });
-      extraTrack?.();
-    } catch {
-      /* never throw */
-    }
-    // Lightweight perceived-processing delay; results are already computed.
-    window.setTimeout(() => {
-      try {
-        setResult(r);
+    const isAuthed = !!user;
+    const persistPromise = persistCalculatorRun(p.idea, r, scope, { source });
+    try { extraTrack?.(); } catch { /* never throw */ }
+    const delay = new Promise<void>((resolve) => window.setTimeout(resolve, 1400));
+    Promise.all([persistPromise, delay])
+      .then(([runId]) => {
+        setPendingRunId(runId);
+        if (isAuthed) {
+          setResult(r);
+          setLoadingOpen(false);
+          revealResults();
+          return;
+        }
+        if (!runId) {
+          setLoadingError("est.ready.saveError");
+          return;
+        }
         setLoadingOpen(false);
-        revealResults();
-      } catch (err) {
+        setReadyOpen(true);
+      })
+      .catch((err) => {
         console.error("[IdeaEstimator] reveal failed", err);
         setLoadingError("est.loader.error");
-      }
-    }, 1400);
+      });
   };
 
   const onCalc = () => {
