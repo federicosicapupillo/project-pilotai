@@ -818,7 +818,7 @@ const en: Dict = {
   "pricing.final.title.c": " is ready. Want to activate it?",
   "pricing.final.desc": "Bring your idea. Set the direction. Let the AI agents start turning it into a first app.",
   "pricing.final.active": "Your AI Team is already active.",
-  "pricing.final.access": "Instant access after payment.",
+  "pricing.final.access": "Launch price reserved for early users. Activate the AI Team now for €29 and get 12 months of platform access with no credit packs.",
   "pricing.final.method": "I want to see the method first →",
 
   // Pricing — team agents
