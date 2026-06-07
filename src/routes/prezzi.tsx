@@ -269,9 +269,14 @@ function PrezziPage() {
             </p>
             <div className="mt-6 max-w-sm mx-auto">
               <PrimaryCta />
-              <p className="text-xs text-muted-foreground mt-3">
-                {hasAccess ? t("pricing.final.active") : t("pricing.final.access")}
-              </p>
+              {hasAccess ? (
+                <p className="text-xs text-muted-foreground mt-3">{t("pricing.final.active")}</p>
+              ) : (
+                <>
+                  <p className="text-xs text-foreground/80 mt-3 leading-snug">{t("pricing.final.access")}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1 leading-snug">{t("cta.early.finalNote")}</p>
+                </>
+              )}
             </div>
             <div className="text-center mt-6">
               <Link to="/method" className="text-sm text-primary hover:underline">

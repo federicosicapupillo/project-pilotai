@@ -12,6 +12,7 @@ import { SyntheticRoadmap } from "@/components/SyntheticRoadmap";
 import { computeProgress, currentPhase, nextActionableStep } from "@/lib/app-roadmap";
 import { useActivateTeam } from "@/hooks/use-activate-team";
 import { Lock } from "lucide-react";
+import { TeamAiEarlyAccessMicro } from "@/components/TeamAiEarlyAccess";
 
 export const Route = createFileRoute("/_authenticated/projects/$id")({
   head: () => ({ meta: [{ title: "Progetto — IdeaPilot AI" }] }),
@@ -328,9 +329,9 @@ function ProjectPage() {
               <Lock className="size-4" /> Attiva il mio Team AI - 29€
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-3">
-            Pagamento sicuro. Accesso immediato dopo l'attivazione.
-          </p>
+          <div className="mt-3 max-w-md mx-auto">
+            <TeamAiEarlyAccessMicro align="center" />
+          </div>
         </div>
       )}
 
