@@ -425,37 +425,54 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           </div>
         </details>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            variant="hero"
-            size="lg"
-            onClick={onCalc}
-            disabled={idea.trim().length < 8 || analysisOpen}
-          >
-            <Wand2 className="size-4" />
-            {analysisOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
-          </Button>
-          {analysisParams && !analysisOpen && (
+        {/* Primary CTA */}
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <Button
-              variant="glass"
-              size="lg"
-              onClick={() => setAnalysisOpen(true)}
+              variant="hero"
+              size="xl"
+              onClick={onCalc}
+              disabled={idea.trim().length < 8 || analysisOpen}
+              className="shadow-lg shadow-primary/20"
             >
-              <Eye className="size-4" /> {t("est.btn.review")}
+              <Wand2 className="size-4" />
+              {analysisOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
             </Button>
-          )}
+            {analysisParams && !analysisOpen && (
+              <Button
+                variant="glass"
+                size="lg"
+                onClick={() => setAnalysisOpen(true)}
+              >
+                <Eye className="size-4" /> {t("est.btn.review")}
+              </Button>
+            )}
+          </div>
           <p className="text-xs text-muted-foreground">
             {t("est.btn.note")}
           </p>
         </div>
 
-        {/* Non hai ancora un'idea? */}
+        {/* Divider before secondary path */}
+        <div className="relative my-2">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-border/40" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-background/80 px-3 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              oppure
+            </span>
+          </div>
+        </div>
+
+        {/* Secondary path: idea generator */}
         <IdeaGenerator
           onSelect={handleGeneratedIdea}
           presetBudget={budget}
           presetTarget={target || targetChoice}
           presetRevenue={revenue}
           presetPrice={price}
+          triggerLabel="Genera 3 idee per me"
         />
       </div>
 
