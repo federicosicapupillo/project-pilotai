@@ -619,6 +619,120 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   );
 }
 
+function AnalysisLoadingDialog({
+  open,
+  error,
+  onRetry,
+  onClose,
+}: {
+  open: boolean;
+  error: string | null;
+  onRetry: () => void;
+  onClose: () => void;
+}) {
+  const { t } = useT();
+  const steps = [
+    t("est.loader.step1"),
+    t("est.loader.step2"),
+    t("est.loader.step3"),
+    t("est.loader.step4"),
+  ];
+  const [stepIdx, setStepIdx] = useState(0);
+  const [progress, setProgress] = useState(8);
+
+  useEffect(() => {
+    if (!open) {
+      setStepIdx(0);
+      setProgress(8);
+      return;
+    }
+    const stepTimer = window.setInterval(() => {
+      setStepIdx((i) => Math.min(i + 1, steps.length - 1));
+    }, 350);
+    const progTimer = window.setInterval(() => {
+      setProgress((p) => (p >= 92 ? 92 : p + 7));
+    }, 120);
+    return () => {
+      window.clearInterval(stepTimer);
+      window.clearInterval(progTimer);
+    };
+  }, [open, steps.length]);
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o && error) onClose();
+      }}
+    >
+      <DialogContent
+        className="sm:max-w-md border-primary/30"
+        style={{
+          background:
+            "linear-gradient(160deg, color-mix(in oklab, var(--primary) 10%, hsl(222 47% 6%)) 0%, hsl(222 47% 5%) 100%)",
+          boxShadow:
+            "0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 30px 80px -40px color-mix(in oklab, var(--primary) 70%, transparent)",
+        }}
+      >
+        {error ? (
+          <>
+            <DialogHeader>
+              <DialogTitle className="font-display">
+                <span className="inline-flex items-center gap-2">
+                  <AlertTriangle className="size-5 text-amber-400" />
+                  Ops…
+                </span>
+              </DialogTitle>
+              <DialogDescription>{t(error)}</DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="glass" size="sm" onClick={onClose}>
+                Chiudi
+              </Button>
+              <Button variant="hero" size="sm" onClick={onRetry}>
+                Riprova
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl tracking-tight">
+                <span className="inline-flex items-center gap-2.5">
+                  <span
+                    className="grid size-9 place-items-center rounded-xl"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, hsl(220 90% 60%), hsl(280 80% 60%))",
+                      boxShadow:
+                        "0 0 20px -4px hsl(265 85% 60% / 0.6), inset 0 1px 0 hsl(0 0% 100% / 0.2)",
+                    }}
+                  >
+                    <Sparkles className="size-4 text-white animate-pulse" />
+                  </span>
+                  {t("est.loader.title")}
+                </span>
+              </DialogTitle>
+              <DialogDescription className="pt-1">
+                {t("est.loader.desc")}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 pt-2">
+              <Progress value={progress} className="h-1.5" />
+              <div className="text-xs text-muted-foreground inline-flex items-center gap-2">
+                <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+                <span key={stepIdx} className="animate-in fade-in duration-300">
+                  {steps[stepIdx]}…
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: BudgetBand; onRoadmap: () => void }) {
   const baseCost = Math.round((result.costRecLow + result.costRecHigh) / 2);
   const inserted = getBudget(budget);
