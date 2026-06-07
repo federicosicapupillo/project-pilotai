@@ -50,7 +50,12 @@ function ReportPage() {
           console.error("[ReportPage] claim failed", err);
         }
       }
-      return fetchRun({ data: { id: runId } });
+      const res = await fetchRun({ data: { id: runId } });
+      // Clean up the pending hint once the user has reached their report.
+      if (typeof window !== "undefined") {
+        try { localStorage.removeItem("pending_idea_run_id"); } catch { /* ignore */ }
+      }
+      return res;
     },
     retry: 1,
   });
