@@ -765,6 +765,87 @@ function AnalysisLoadingDialog({
   );
 }
 
+function ProjectReadyAuthDialog({
+  open,
+  onOpenChange,
+  runId,
+  onAuthNavigate,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  runId: string | null;
+  onAuthNavigate: (path: string) => void;
+}) {
+  const { t } = useT();
+  const targetPath = runId ? `/account/ideas/${runId}` : "/dashboard";
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="sm:max-w-lg border-primary/30"
+        style={{
+          background:
+            "linear-gradient(160deg, color-mix(in oklab, var(--primary) 14%, hsl(222 47% 6%)) 0%, hsl(222 47% 5%) 60%, color-mix(in oklab, var(--accent) 10%, hsl(222 47% 6%)) 100%)",
+          boxShadow:
+            "0 0 0 1px color-mix(in oklab, var(--primary) 30%, transparent), 0 30px 80px -40px color-mix(in oklab, var(--primary) 70%, transparent), 0 12px 40px -20px color-mix(in oklab, var(--accent) 55%, transparent)",
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle className="font-display text-2xl tracking-tight">
+            <span className="inline-flex items-center gap-3">
+              <span
+                className="grid size-11 place-items-center rounded-2xl"
+                style={{
+                  background:
+                    "linear-gradient(135deg, hsl(220 90% 60%), hsl(280 80% 60%), hsl(320 80% 60%))",
+                  boxShadow:
+                    "0 0 26px -4px hsl(280 80% 60% / 0.7), inset 0 1px 0 hsl(0 0% 100% / 0.22)",
+                }}
+              >
+                <FileText className="size-5 text-white" strokeWidth={2.4} />
+              </span>
+              {t("est.ready.title")}
+            </span>
+          </DialogTitle>
+          <DialogDescription className="pt-2 text-foreground/75 leading-relaxed">
+            {t("est.ready.subtitle")}
+          </DialogDescription>
+        </DialogHeader>
+
+        <ul className="space-y-2 pt-1">
+          {["est.ready.l1", "est.ready.l2", "est.ready.l3", "est.ready.l4", "est.ready.l5"].map((k) => (
+            <li key={k} className="flex items-start gap-2.5 text-sm text-foreground/85">
+              <CheckCircle2 className="size-4 text-primary mt-0.5 shrink-0" />
+              <span>{t(k)}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex flex-col gap-2 pt-3">
+          <Button
+            variant="hero"
+            size="lg"
+            className="w-full shadow-lg shadow-primary/20"
+            onClick={() => onAuthNavigate(targetPath)}
+          >
+            <Sparkles className="size-4" /> {t("est.ready.ctaPrimary")}
+          </Button>
+          <Button
+            variant="glass"
+            size="lg"
+            className="w-full"
+            onClick={() => onAuthNavigate(targetPath)}
+          >
+            <LogIn className="size-4" /> {t("est.ready.ctaSecondary")}
+          </Button>
+          <p className="text-[11px] text-muted-foreground/80 text-center pt-1">
+            {t("est.ready.micro")}
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: BudgetBand; onRoadmap: () => void }) {
   const baseCost = Math.round((result.costRecLow + result.costRecHigh) / 2);
   const inserted = getBudget(budget);
