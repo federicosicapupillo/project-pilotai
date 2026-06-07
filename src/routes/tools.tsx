@@ -174,22 +174,6 @@ function ToolsPage() {
             ))}
           </ul>
 
-          {!hasAccess && (
-            <div className="mt-8 pt-6 border-t border-border/40">
-              <h3 className="font-display font-semibold text-xl sm:text-2xl">
-                Vuoi mettere al lavoro i tuoi agenti AI?
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
-                Porta la tua idea. Guarda cosa preparano. Approva solo ciò che ti convince.
-              </p>
-              <div className="mt-5 flex flex-col items-center gap-2">
-                <Button variant="hero" size="lg" onClick={handleActivate}>
-                  <Sparkles className="size-4" /> Attiva il mio Team IA - 29€ <ArrowRight className="size-4" />
-                </Button>
-                <TeamAiEarlyAccessMicro align="center" className="max-w-md" />
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
