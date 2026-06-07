@@ -33,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
+    to_create: "DA CREARE",
     draft: "Bozza",
     in_progress: "In corso",
     completed: "Completato",
