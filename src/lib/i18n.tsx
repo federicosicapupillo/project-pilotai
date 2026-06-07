@@ -159,14 +159,14 @@ const it: Dict = {
 
   // Estimator
   "est.eyebrow": "Calcolatore intelligente",
-  "est.title.a": "Hai un'idea per un'app? ",
-  "est.title.b": "Scopri ore, costi e budget consigliato.",
+  "est.title.a": "Scopri se la tua ",
+  "est.title.b": "idea può diventare un'app vera.",
   "est.desc":
-    "Scrivi la tua idea, inserisci il budget che vuoi dedicare al progetto e scopri quante ore servono, quanto potrebbe costare e quale potenziale economico potrebbe avere.",
-  "est.label.idea": "✍️ Raccontami la tua idea",
+    "Analizza fattibilità, ore, costi, budget consigliato e potenziale economico del progetto prima di investire sul serio.",
+  "est.label.idea": "Raccontami la tua idea",
   "est.placeholder.idea":
-    "Esempio: voglio creare un'app che aiuti freelance e piccoli team a organizzare attività, clienti e scadenze in modo semplice.",
-  "est.hint.idea": "💡 Più sei chiaro, più la stima sarà utile.",
+    "Esempio: voglio creare un'app che aiuti freelance, creator o piccoli team a organizzare attività, clienti e scadenze in modo semplice.",
+  "est.hint.idea": "Più sei chiaro, più la stima sarà precisa.",
   "est.budget.title": "Inserisci il tuo budget",
   "est.budget.desc":
     "Indica il budget operativo per la prima versione funzionante. Non includere il costo del corso.",
@@ -566,14 +566,14 @@ const en: Dict = {
 
   // Estimator
   "est.eyebrow": "Smart calculator",
-  "est.title.a": "Have an app idea? ",
-  "est.title.b": "See hours, costs and recommended budget.",
+  "est.title.a": "Find out if your ",
+  "est.title.b": "idea can become a real app.",
   "est.desc":
-    "Describe your idea, set the budget you want to dedicate to the project, and find out how many hours it takes, what it could cost, and what kind of revenue potential it has.",
-  "est.label.idea": "✍️ Describe your app idea",
+    "Analyze feasibility, hours, costs, recommended budget and revenue potential before you invest for real.",
+  "est.label.idea": "Tell me about your idea",
   "est.placeholder.idea":
-    "Example: I want to create an app that helps freelancers and small teams organize tasks, clients and deadlines in a simple way.",
-  "est.hint.idea": "💡 The clearer you are, the more useful the estimate.",
+    "Example: I want to create an app that helps freelancers, creators or small teams organize tasks, clients and deadlines in a simple way.",
+  "est.hint.idea": "The clearer you are, the more accurate the estimate.",
   "est.budget.title": "Enter your budget",
   "est.budget.desc":
     "Set the operational budget for the first working version. Do not include the cost of the course.",

@@ -65,7 +65,7 @@ const BUDGET_META: Record<string, BudgetMeta> = {
 export type IdeaEstimatorProps = { embed?: boolean };
 
 export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
-  const { t } = useT();
+  const { t, locale } = useT();
   const [idea, setIdea] = useState("");
   const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
@@ -121,14 +121,13 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     <div className="glass-card rounded-2xl p-6 sm:p-8 border border-primary/20 glow-soft">
       {!embed && (
         <>
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/85">
             <Gauge className="size-3.5 text-primary" /> {t("est.eyebrow")}
           </div>
-          <h2 className="font-display font-semibold text-2xl sm:text-3xl mt-2">
-            {t("est.title.a")}
-            <span className="gradient-text">{t("est.title.b")}</span>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl lg:text-[2.75rem] mt-4 leading-[1.1] tracking-tight">
+            <EstimatorTitle locale={locale} />
           </h2>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-base sm:text-lg text-foreground/75 mt-4 max-w-2xl leading-relaxed">
             {t("est.desc")}
           </p>
         </>
@@ -137,7 +136,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
       <div className={embed ? "space-y-3" : "mt-5 space-y-3"}>
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-xs uppercase tracking-[0.18em] font-semibold text-foreground/90">
+            <label className="text-[11px] uppercase tracking-[0.2em] font-semibold text-foreground/90">
               {t("est.label.idea")}
             </label>
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -160,7 +159,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               placeholder={t("est.placeholder.idea")}
               rows={6}
               maxLength={2000}
-              className="text-base sm:text-[17px] leading-relaxed text-foreground placeholder:text-muted-foreground/70 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 sm:p-5 min-h-[160px]"
+              className="text-base sm:text-[17px] leading-relaxed text-foreground placeholder:text-foreground/45 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 sm:p-5 min-h-[170px]"
             />
           </div>
           <p className="text-xs text-muted-foreground/80 mt-2 pl-1">
@@ -764,5 +763,42 @@ function BudgetFitBadge({ fit }: { fit: BudgetFit }) {
     <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border ${cls}`}>
       <Icon className="size-3.5" /> {fit}
     </span>
+  );
+}
+
+function EstHL({
+  tone,
+  children,
+}: {
+  tone: "indigo" | "cyan" | "violet" | "rainbow";
+  children: React.ReactNode;
+}) {
+  return <span className={`hero-hl hero-hl-${tone}`}>{children}</span>;
+}
+
+function EstimatorTitle({ locale }: { locale: "it" | "en" }) {
+  if (locale === "it") {
+    return (
+      <>
+        Scopri se la tua <EstHL tone="indigo">idea</EstHL> può diventare un'
+        <EstHL tone="rainbow">app vera</EstHL>.
+        <span className="block mt-2 text-foreground/85 text-2xl sm:text-3xl lg:text-[2rem] font-display font-medium">
+          Analizza <EstHL tone="cyan">fattibilità</EstHL>,{" "}
+          <EstHL tone="violet">costi</EstHL> e{" "}
+          <EstHL tone="rainbow">potenziale economico</EstHL>.
+        </span>
+      </>
+    );
+  }
+  return (
+    <>
+      Find out if your <EstHL tone="indigo">idea</EstHL> can become a{" "}
+      <EstHL tone="rainbow">real app</EstHL>.
+      <span className="block mt-2 text-foreground/85 text-2xl sm:text-3xl lg:text-[2rem] font-display font-medium">
+        Analyze <EstHL tone="cyan">feasibility</EstHL>,{" "}
+        <EstHL tone="violet">costs</EstHL> and{" "}
+        <EstHL tone="rainbow">revenue potential</EstHL>.
+      </span>
+    </>
   );
 }
