@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { askHelpAi } from "@/lib/help-ai.functions";
 import { useActiveProject } from "@/hooks/use-active-project";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -56,6 +57,7 @@ function pageContextLabel(pathname: string): string {
 export function HelpAiWidget() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { active } = useActiveProject();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
@@ -105,6 +107,9 @@ export function HelpAiWidget() {
   }, [open]);
 
   if (HIDDEN_ROUTES.includes(pathname)) return null;
+  // Help assistant is only available to authenticated users (the server
+  // function requires auth). Hide it for anonymous visitors.
+  if (!user) return null;
 
   const send = (text: string) => {
     const trimmed = text.trim();
