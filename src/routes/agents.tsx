@@ -228,17 +228,9 @@ function AgentsPage() {
           Tu dai l'ok. Il Project Manager coordina. Gli agenti eseguono.
         </p>
         {!hasAccess && (
-          <div className="mt-6 flex flex-col sm:flex-row sm:items-start gap-3">
-            <div className="flex flex-col items-start gap-1.5">
-              <Button variant="hero" size="lg" onClick={handleActivate}>
-                <Sparkles className="size-4" /> Attiva il mio Team IA - 29€ <ArrowRight className="size-4" />
-              </Button>
-              <TeamAiEarlyAccessMicro className="max-w-sm" />
-            </div>
-            <p className="text-xs text-muted-foreground sm:max-w-xs sm:pl-3 sm:border-l sm:border-border/40">
-              Dopo l'attivazione sblocchi tool, prompt e istruzioni operative.
-            </p>
-          </div>
+          <p className="mt-6 inline-flex items-center gap-2 text-xs text-muted-foreground px-3 py-1.5 rounded-full border border-border/60 bg-background/40">
+            <Lock className="size-3.5 text-primary" /> Tool, prompt e istruzioni operative si sbloccano dopo l'attivazione del Team IA.
+          </p>
         )}
       </div>
 
@@ -344,27 +336,6 @@ function AgentsPage() {
         })}
       </div>
 
-      {!hasAccess && (
-        <div
-          className="mt-10 rounded-2xl border border-primary/40 p-6 sm:p-8 text-center"
-          style={{
-            background:
-              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 16%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
-            boxShadow: "0 0 40px -10px color-mix(in oklab, var(--primary) 45%, transparent)",
-          }}
-        >
-          <h2 className="text-xl sm:text-2xl font-display font-semibold">Pronto a trasformare la tua idea nella prima versione?</h2>
-          <p className="text-sm sm:text-base text-foreground/85 mt-3 max-w-2xl mx-auto leading-relaxed">
-            Attiva il Team IA e inizia a costruire il progetto: tu dai le direttive al Project Manager, lui coordina gli agenti e ti mostra il lavoro da approvare.
-          </p>
-          <div className="mt-5 flex flex-col items-center gap-2">
-            <Button variant="hero" size="lg" onClick={handleActivate}>
-              <Sparkles className="size-4" /> Attiva Team IA - 29€ <ArrowRight className="size-4" />
-            </Button>
-            <TeamAiEarlyAccessMicro align="center" className="max-w-md" />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
