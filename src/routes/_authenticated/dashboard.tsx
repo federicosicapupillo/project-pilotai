@@ -25,6 +25,7 @@ import { useRoadmapProgress } from "@/lib/roadmap-progress";
 import { DashboardRoadmap } from "@/components/DashboardRoadmap";
 import { AgentPromptsSection } from "@/components/AgentPromptsSection";
 import { useActiveProject } from "@/hooks/use-active-project";
+import { TeamAiEarlyAccessMicro } from "@/components/TeamAiEarlyAccess";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — IdeaPilot AI" }] }),
@@ -292,9 +293,9 @@ function DashboardPage() {
               >
                 <Lock className="size-4" /> Attiva il mio Team AI - 29€
               </Button>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Accesso immediato dopo il pagamento.
-              </p>
+              <div className="mt-2">
+                <TeamAiEarlyAccessMicro align="center" />
+              </div>
             </div>
           )}
         </aside>
