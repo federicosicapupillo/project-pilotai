@@ -159,7 +159,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               placeholder={t("est.placeholder.idea")}
               rows={6}
               maxLength={2000}
-              className="text-base sm:text-[17px] leading-relaxed text-foreground placeholder:text-foreground/45 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 sm:p-5 min-h-[170px]"
+              className="text-base sm:text-[17px] leading-relaxed text-foreground placeholder:text-foreground/55 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 sm:p-5 min-h-[160px] sm:min-h-[180px]"
             />
           </div>
           <p className="text-xs text-muted-foreground/80 mt-2 pl-1">
