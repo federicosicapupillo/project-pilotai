@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const MessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -43,10 +44,17 @@ Flusso tipico da spiegare quando utile:
 5. Il Project Manager valida e sblocca lo step successivo.`;
 
 export const askHelpAi = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => InputSchema.parse(input))
-  .handler(async ({ data }): Promise<{ text: string }> => {
+  .handler(async ({ data, context }): Promise<{ text: string }> => {
     const { enforceIpRateLimit } = await import("./rate-limit.server");
-    await enforceIpRateLimit({ endpoint: "askHelpAi", maxRequests: 30, windowSeconds: 3600 });
+    // Authenticated callers only; keep a per-IP cap as defense-in-depth
+    // against compromised accounts and shared-token abuse.
+    await enforceIpRateLimit({
+      endpoint: `askHelpAi:${context.userId}`,
+      maxRequests: 20,
+      windowSeconds: 3600,
+    });
 
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("LOVABLE_API_KEY mancante");

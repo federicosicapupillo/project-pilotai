@@ -11,8 +11,21 @@ export const createAgentCheckout = createServerFn({ method: "POST" })
     if (data.environment !== "sandbox" && data.environment !== "live") {
       throw new Error("Invalid environment");
     }
-    if (!data.returnUrl || !/^https?:\/\//.test(data.returnUrl)) {
-      throw new Error("Invalid returnUrl");
+    if (!data.returnUrl) throw new Error("Invalid returnUrl");
+    let parsedReturn: URL;
+    try { parsedReturn = new URL(data.returnUrl); } catch { throw new Error("Invalid returnUrl"); }
+    const ALLOWED_RETURN_HOSTS = new Set([
+      "ideapilots.app",
+      "www.ideapilots.app",
+      "project-pilotai.lovable.app",
+    ]);
+    const isLovablePreview = /\.lovable\.app$/.test(parsedReturn.hostname);
+    const isLocalhost = parsedReturn.hostname === "localhost" || parsedReturn.hostname === "127.0.0.1";
+    if (!ALLOWED_RETURN_HOSTS.has(parsedReturn.hostname) && !isLovablePreview && !isLocalhost) {
+      throw new Error("Invalid returnUrl: domain not allowed");
+    }
+    if (parsedReturn.protocol !== "https:" && !isLocalhost) {
+      throw new Error("Invalid returnUrl: must be https");
     }
     const projectId =
       typeof data.projectId === "string" &&
@@ -191,18 +204,24 @@ export const getAgentAccess = createServerFn({ method: "GET" })
  * env the user paid in.
  */
 export const verifyCheckoutSession = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { sessionId: string }) => {
     if (!data.sessionId || !/^cs_(test|live)_[A-Za-z0-9]+$/.test(data.sessionId)) {
       throw new Error("Invalid sessionId");
     }
     return { sessionId: data.sessionId };
   })
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { createStripeClient, getStripeErrorMessage } = await import("@/lib/stripe.server");
     const envGuess: StripeEnv = data.sessionId.startsWith("cs_live_") ? "live" : "sandbox";
     try {
       const stripe = createStripeClient(envGuess);
       const session = await stripe.checkout.sessions.retrieve(data.sessionId);
+      // Ownership check: only the user who initiated the session can read it.
+      const sessionUserId = (session.metadata as { userId?: string } | null)?.userId;
+      if (!sessionUserId || sessionUserId !== context.userId) {
+        return { ok: false as const, error: "Sessione non trovata o non appartiene a questo utente" };
+      }
       console.log("[verify] session", {
         environment: envGuess,
         sessionId: session.id,

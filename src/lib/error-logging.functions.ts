@@ -126,15 +126,51 @@ export const logAppError = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }): Promise<{ ok: boolean; id?: string; emailed?: boolean }> => {
     try {
+      // Public endpoint: enforce a per-IP rate limit to prevent log flooding
+      // and admin-email spam from unauthenticated callers. Fail-open on infra
+      // errors so a misbehaving rate-limit table never breaks logging.
+      try {
+        const { enforceIpRateLimit } = await import("./rate-limit.server");
+        await enforceIpRateLimit({
+          endpoint: "logAppError",
+          maxRequests: 20,
+          windowSeconds: 3600,
+        });
+      } catch (rlErr) {
+        // Rate limit exceeded → silently drop the log entry.
+        return { ok: false };
+      }
+
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const sanitizedMessage = sanitizeMessage(data.error_message);
       const sanitizedStack = data.error_stack ? sanitizeMessage(data.error_stack) : null;
 
+      // Do NOT trust caller-supplied user_id / user_email — this endpoint is
+      // unauthenticated. If a session token is attached, derive the identity
+      // from it; otherwise drop these fields entirely so anon callers cannot
+      // impersonate real users in the log table.
+      let verifiedUserId: string | null = null;
+      let verifiedUserEmail: string | null = null;
+      try {
+        const { getRequestHeader } = await import("@tanstack/react-start/server");
+        const auth = getRequestHeader("authorization") || getRequestHeader("Authorization");
+        if (auth?.toLowerCase().startsWith("bearer ")) {
+          const token = auth.slice(7).trim();
+          const { data: userRes } = await supabaseAdmin.auth.getUser(token);
+          if (userRes?.user) {
+            verifiedUserId = userRes.user.id;
+            verifiedUserEmail = userRes.user.email ?? null;
+          }
+        }
+      } catch {
+        // Best-effort identity resolution; fall through to anon.
+      }
+
       const { data: inserted, error: insertError } = await supabaseAdmin
         .from("app_error_logs")
         .insert({
-          user_id: data.user_id ?? null,
-          user_email: data.user_email ?? null,
+          user_id: verifiedUserId,
+          user_email: verifiedUserEmail,
           project_id: data.project_id ?? null,
           page_url: data.page_url ?? null,
           route: data.route ?? null,
