@@ -728,6 +728,90 @@ function CostBox({ label, value, highlight }: { label: string; value: string; hi
   );
 }
 
+function EconomicsHero({ result }: { result: Estimate }) {
+  const potentialHigh = result.potentialHigh;
+  const potentialLow = result.potentialLow;
+  const tradHigh = result.costAgencyHigh;
+  const aiMid = Math.round((result.costRecLow + result.costRecHigh) / 2);
+  const savings = Math.max(0, tradHigh - aiMid);
+
+  return (
+    <div className="grid gap-3 lg:grid-cols-5">
+      {/* HERO — Potenziale economico */}
+      <div
+        className="lg:col-span-3 relative overflow-hidden rounded-2xl border border-primary/40 p-5 sm:p-6"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--accent) 22%, transparent))",
+          boxShadow:
+            "0 10px 40px -10px color-mix(in oklab, var(--primary) 45%, transparent)",
+        }}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-20 -right-20 size-56 rounded-full blur-3xl opacity-40"
+          style={{ background: "color-mix(in oklab, var(--primary) 60%, transparent)" }}
+        />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-primary-foreground/90 bg-primary/30 border border-primary/40 rounded-full px-2.5 py-1">
+              <TrendingUp className="size-3" /> Potenziale economico stimato
+            </span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground border border-border/60 rounded-full px-2 py-0.5">
+              Scenario realistico
+            </span>
+          </div>
+          <div className="font-display font-bold leading-[1.02] text-4xl sm:text-5xl lg:text-[3.5rem] gradient-text">
+            Fino a {fmt(potentialHigh)}
+            <span className="text-2xl sm:text-3xl lg:text-4xl text-foreground/80 font-semibold">/mese</span>
+          </div>
+          <div className="mt-1 text-xs text-muted-foreground">
+            Fascia indicativa: {fmt(potentialLow)} – {fmt(potentialHigh)} al mese
+          </div>
+          <p className="mt-3 text-sm text-foreground/90 leading-relaxed max-w-md">
+            Se validata e proposta al pubblico giusto, questa app potrebbe generare entrate ricorrenti.
+          </p>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Stima orientativa, non garantita, basata su una prima ipotesi di mercato.
+          </p>
+        </div>
+      </div>
+
+      {/* Supporto — Costo tradizionale + Risparmio */}
+      <div className="lg:col-span-2 grid gap-3">
+        <div className="rounded-2xl border border-border/60 bg-background/40 p-4 sm:p-5">
+          <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+            <Wallet className="size-3.5 text-primary" /> Costo sviluppo tradizionale
+          </div>
+          <div className="font-display font-semibold text-2xl sm:text-3xl text-foreground/95">
+            Fino a {fmt(tradHigh)}
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+            Quanto avresti potuto spendere affidando analisi, progettazione e prima versione a freelance o agenzie esterne.
+          </p>
+        </div>
+        <div
+          className="rounded-2xl border border-emerald-500/30 p-4 sm:p-5"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, #10b981 14%, transparent), color-mix(in oklab, var(--primary) 10%, transparent))",
+          }}
+        >
+          <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-emerald-300 mb-2">
+            <Sparkles className="size-3.5" /> Risparmio stimato con Team IA
+          </div>
+          <div className="font-display font-semibold text-2xl sm:text-3xl text-emerald-300">
+            {fmt(savings)} risparmiati
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+            Confronto orientativo tra sviluppo tradizionale esterno e accesso guidato al Team IA.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ScenarioBox({
   tone, label, customers, price, revenue,
 }: {
