@@ -562,6 +562,7 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
   const breakEvenPrices = highBudget ? [97, 297, 497] : [29, 97, 297];
 
   const hasBudget = !!inserted && budget !== "Non lo so ancora" && inserted.max > 0;
+  const scope = getBudgetScope(budget, result.signals);
 
   let consiglio = "Puoi costruire una prima versione funzionante con database, dashboard base e flusso utente principale.";
   if (hasBudget && inserted!.max <= 300) {
