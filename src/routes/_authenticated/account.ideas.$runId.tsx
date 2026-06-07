@@ -38,22 +38,21 @@ function ReportPage() {
   const navigate = useNavigate();
   const claim = useServerFn(claimAnonIdeaRuns);
   const fetchRun = useServerFn(getIdeaRun);
-  const didClaim = useRef(false);
-
-  // Claim any anon runs from this browser session — one-shot.
-  useEffect(() => {
-    if (didClaim.current) return;
-    didClaim.current = true;
-    const sessionId = getAnonSessionId();
-    if (!sessionId) return;
-    claim({ data: { sessionId, preferredRunId: runId } }).catch((err) =>
-      console.error("[ReportPage] claim failed", err),
-    );
-  }, [runId, claim]);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["idea-run", runId],
-    queryFn: () => fetchRun({ data: { id: runId } }),
+    queryFn: async () => {
+      // Claim any anon runs from this browser session first, so RLS read can succeed.
+      const sessionId = getAnonSessionId();
+      if (sessionId) {
+        try {
+          await claim({ data: { sessionId, preferredRunId: runId } });
+        } catch (err) {
+          console.error("[ReportPage] claim failed", err);
+        }
+      }
+      return fetchRun({ data: { id: runId } });
+    },
     retry: 1,
   });
 
