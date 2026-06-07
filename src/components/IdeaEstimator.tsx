@@ -53,6 +53,15 @@ function budgetFit(insertedMax: number, rec: { min: number; max: number }): Budg
 
 const REDIRECT_KEY = "post_auth_redirect";
 
+type BudgetMeta = { Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>; sublabel: string; tone: "cyan" | "indigo" | "violet" | "magenta" };
+const BUDGET_META: Record<string, BudgetMeta> = {
+  "100€ – 300€":     { Icon: BarChart3,  sublabel: "Essenziale",  tone: "cyan" },
+  "300€ – 700€":     { Icon: TrendingUp, sublabel: "Ideale",      tone: "indigo" },
+  "700€ – 1.500€":   { Icon: Rocket,     sublabel: "Consigliato", tone: "magenta" },
+  "1.500€ – 3.000€": { Icon: Zap,        sublabel: "Avanzato",    tone: "violet" },
+  "3.000€+":         { Icon: Gem,        sublabel: "Premium",     tone: "violet" },
+};
+
 export type IdeaEstimatorProps = { embed?: boolean };
 
 export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
