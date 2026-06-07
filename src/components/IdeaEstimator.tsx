@@ -765,3 +765,40 @@ function BudgetFitBadge({ fit }: { fit: BudgetFit }) {
     </span>
   );
 }
+
+function EstHL({
+  tone,
+  children,
+}: {
+  tone: "indigo" | "cyan" | "violet" | "rainbow";
+  children: React.ReactNode;
+}) {
+  return <span className={`hero-hl hero-hl-${tone}`}>{children}</span>;
+}
+
+function EstimatorTitle({ locale }: { locale: "it" | "en" }) {
+  if (locale === "it") {
+    return (
+      <>
+        Scopri se la tua <EstHL tone="indigo">idea</EstHL> può diventare un'
+        <EstHL tone="rainbow">app vera</EstHL>.
+        <span className="block mt-2 text-foreground/85 text-2xl sm:text-3xl lg:text-[2rem] font-display font-medium">
+          Analizza <EstHL tone="cyan">fattibilità</EstHL>,{" "}
+          <EstHL tone="violet">costi</EstHL> e{" "}
+          <EstHL tone="rainbow">potenziale economico</EstHL>.
+        </span>
+      </>
+    );
+  }
+  return (
+    <>
+      Find out if your <EstHL tone="indigo">idea</EstHL> can become a{" "}
+      <EstHL tone="rainbow">real app</EstHL>.
+      <span className="block mt-2 text-foreground/85 text-2xl sm:text-3xl lg:text-[2rem] font-display font-medium">
+        Analyze <EstHL tone="cyan">feasibility</EstHL>,{" "}
+        <EstHL tone="violet">costs</EstHL> and{" "}
+        <EstHL tone="rainbow">revenue potential</EstHL>.
+      </span>
+    </>
+  );
+}
