@@ -101,16 +101,16 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const navigate = useNavigate();
   const persistRun = useServerFn(saveIdeaRun);
 
-  const persistCalculatorRun = (
+  const persistCalculatorRun = async (
     ideaText: string,
     r: Estimate,
     scope: BudgetScope,
     extra: { source: "manual" | "generated" },
-  ) => {
+  ): Promise<string | null> => {
     try {
       const traditional = r.costAgencyHigh;
       const teamAi = 29;
-      void persistRun({
+      const res = await persistRun({
         data: {
           ideaText,
           normalizedIdeaText: normalizeIdea(ideaText),
@@ -142,8 +142,12 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             tier: scope.tier,
           },
         },
-      }).catch(() => { /* swallow — never block UI */ });
-    } catch { /* never throw */ }
+      });
+      return res?.id ?? null;
+    } catch (err) {
+      console.error("[persistCalculatorRun] failed", err);
+      return null;
+    }
   };
 
   const revealResults = () => {
