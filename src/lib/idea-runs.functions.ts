@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { projectTitleFromIdea } from "@/lib/idea-report-format";
 
 const RunInput = z.object({
   ideaText: z.string().min(1).max(4000),
@@ -165,6 +166,53 @@ export const claimAnonIdeaRuns = createServerFn({ method: "POST" })
         )[0];
         targetId = latest?.id ?? null;
       }
+
+      // Materialize each claimed run as a "DA CREARE" project in the user's
+      // dashboard (idempotent — unique index on (user_id, idea_run_id)).
+      const runIds = new Set<string>([...claimed.map((r) => r.id)]);
+      if (targetId) runIds.add(targetId);
+      if (runIds.size > 0) {
+        try {
+          const ids = Array.from(runIds);
+          const { data: existingProjects } = await supabaseAdmin
+            .from("projects")
+            .select("idea_run_id")
+            .eq("user_id", userId)
+            .in("idea_run_id", ids)
+            .is("deleted_at", null);
+          const alreadyHas = new Set(
+            (existingProjects ?? []).map((p) => p.idea_run_id).filter(Boolean) as string[],
+          );
+          const missing = ids.filter((id) => !alreadyHas.has(id));
+          if (missing.length > 0) {
+            const { data: runs } = await supabaseAdmin
+              .from("idea_calculator_runs")
+              .select("id, idea_text, optional_details")
+              .in("id", missing)
+              .eq("user_id", userId);
+            const rows = (runs ?? []).map((r) => {
+              const opt = (r.optional_details ?? {}) as Record<string, unknown>;
+              const productType = typeof opt.projectType === "string" ? opt.projectType : null;
+              return {
+                user_id: userId,
+                idea_run_id: r.id,
+                title: projectTitleFromIdea(r.idea_text),
+                idea_description: r.idea_text ?? null,
+                product_type: productType,
+                status: "to_create",
+              };
+            });
+            if (rows.length > 0) {
+              const { error: insErr } = await supabaseAdmin.from("projects").insert(rows);
+              if (insErr) console.error("[claimAnonIdeaRuns] project insert failed", insErr);
+            }
+          }
+        } catch (projErr) {
+          console.error("[claimAnonIdeaRuns] project materialization failed", projErr);
+          // Non-fatal — claim still succeeds, user still reaches the report.
+        }
+      }
+
       return { claimed: claimed.length, runId: targetId };
     } catch (err) {
       console.error("[claimAnonIdeaRuns] failed", err);
