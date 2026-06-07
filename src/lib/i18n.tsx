@@ -162,7 +162,7 @@ const it: Dict = {
   "est.title.a": "Scopri se la tua ",
   "est.title.b": "idea può diventare un'app vera.",
   "est.desc":
-    "Analizza fattibilità, ore, costi, budget consigliato e potenziale economico del progetto prima di investire sul serio.",
+    "Una prima valutazione di fattibilità, ore stimate, costi potenziali e potenziale economico — prima di investire sul serio.",
   "est.label.idea": "Raccontami la tua idea",
   "est.placeholder.idea":
     "Esempio: voglio creare un'app che aiuti freelance, creator o piccoli team a organizzare attività, clienti e scadenze in modo semplice.",
@@ -569,7 +569,7 @@ const en: Dict = {
   "est.title.a": "Find out if your ",
   "est.title.b": "idea can become a real app.",
   "est.desc":
-    "Analyze feasibility, hours, costs, recommended budget and revenue potential before you invest for real.",
+    "A first evaluation of feasibility, estimated hours, potential costs and revenue potential — before investing seriously.",
   "est.label.idea": "Tell me about your idea",
   "est.placeholder.idea":
     "Example: I want to create an app that helps freelancers, creators or small teams organize tasks, clients and deadlines in a simple way.",
