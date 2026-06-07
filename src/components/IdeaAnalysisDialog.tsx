@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessMicro } from "@/components/TeamAiEarlyAccess";
 import { useT } from "@/lib/i18n";
 import {
   classify,

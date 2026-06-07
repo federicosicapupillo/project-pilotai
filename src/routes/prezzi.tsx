@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessBox } from "@/components/TeamAiEarlyAccess";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/prezzi")({

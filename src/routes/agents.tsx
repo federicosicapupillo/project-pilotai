@@ -9,6 +9,7 @@ import { ToolBadge } from "@/components/ToolBadge";
 import { toast } from "sonner";
 import { useAcademyAccess } from "@/components/AcademyLock";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessMicro } from "@/components/TeamAiEarlyAccess";
 
 export const Route = createFileRoute("/agents")({
   head: () => ({

@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessBadge } from "@/components/TeamAiEarlyAccess";
 import { LanguageSwitcher, useT } from "@/lib/i18n";
 
 type NavLink = { to: string; key: string; auth?: boolean };
