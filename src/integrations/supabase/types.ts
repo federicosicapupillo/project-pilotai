@@ -864,6 +864,7 @@ export type Database = {
           experience_level: string | null
           id: string
           idea_description: string | null
+          idea_run_id: string | null
           problem: string | null
           product_type: string | null
           solution: string | null
@@ -881,6 +882,7 @@ export type Database = {
           experience_level?: string | null
           id?: string
           idea_description?: string | null
+          idea_run_id?: string | null
           problem?: string | null
           product_type?: string | null
           solution?: string | null
@@ -898,6 +900,7 @@ export type Database = {
           experience_level?: string | null
           id?: string
           idea_description?: string | null
+          idea_run_id?: string | null
           problem?: string | null
           product_type?: string | null
           solution?: string | null
@@ -908,7 +911,15 @@ export type Database = {
           urgency?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_idea_run_id_fkey"
+            columns: ["idea_run_id"]
+            isOneToOne: false
+            referencedRelation: "idea_calculator_runs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prompts: {
         Row: {
