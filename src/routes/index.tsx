@@ -27,26 +27,28 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t } = useT();
+  const { t, locale } = useT();
   return (
     <div className="min-h-screen flex flex-col">
       <main>
         {/* HERO */}
         <section className="relative hero-bg overflow-hidden">
           <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
+          {/* Soft halo behind hero title */}
+          <div className="hero-halo pointer-events-none" aria-hidden="true" />
           <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-28 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs">
               <Sparkles className="size-3 text-primary" /> {t("home.badge")}
             </div>
             <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tight leading-[1.05]">
-              {t("home.hero.title")}
+              <HeroTitle locale={locale} />
             </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="mt-6 text-lg text-foreground/80 max-w-2xl mx-auto">
               {t("home.hero.subtitle")}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <a href="#calcolatore">
-                <Button variant="hero" size="xl">{t("home.cta.primary")} <ArrowRight className="size-4" /></Button>
+                <Button variant="hero" size="xl" className="glow-primary hover:glow-primary">{t("home.cta.primary")} <ArrowRight className="size-4" /></Button>
               </a>
               <Link to="/method">
                 <Button variant="glass" size="xl">{t("home.cta.secondary")}</Button>
@@ -241,4 +243,32 @@ function Section({ title, eyebrow, children }: { title: string; eyebrow: string;
       {children}
     </section>
   );
+}
+
+function HeroTitle({ locale }: { locale: "it" | "en" }) {
+  if (locale === "it") {
+    return (
+      <>
+        Hai un'<HL tone="indigo">idea</HL> per un'<HL tone="cyan">app</HL>?{" "}
+        Scopri <HL tone="violet">ore</HL>, <HL tone="violet">costi</HL> e{" "}
+        <HL tone="rainbow">potenziale economico</HL>.
+      </>
+    );
+  }
+  return (
+    <>
+      Turn your app <HL tone="indigo">idea</HL> into a real{" "}
+      <HL tone="cyan">project</HL> in <HL tone="rainbow">minutes</HL>.
+    </>
+  );
+}
+
+function HL({
+  tone,
+  children,
+}: {
+  tone: "indigo" | "cyan" | "violet" | "rainbow";
+  children: React.ReactNode;
+}) {
+  return <span className={`hero-hl hero-hl-${tone}`}>{children}</span>;
 }
