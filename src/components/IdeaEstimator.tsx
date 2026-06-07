@@ -11,6 +11,7 @@ import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
   Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb, Eye,
+  BarChart3, Rocket, Zap, Gem, HelpCircle, Check,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useT } from "@/lib/i18n";
