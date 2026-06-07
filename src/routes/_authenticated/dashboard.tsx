@@ -84,18 +84,22 @@ function DashboardPage() {
     if (!pendingId && !sessionId) return;
     let cancelled = false;
     (async () => {
-      try {
-        const res = await claimRuns({
-          data: { sessionId, preferredRunId: pendingId ?? undefined },
-        });
-        if (cancelled) return;
-        const target = res?.runId ?? pendingId;
-        if (target) {
-          try { localStorage.removeItem("pending_idea_run_id"); } catch { /* ignore */ }
-          navigate({ to: "/account/ideas/$runId", params: { runId: target } });
+      let target: string | null = pendingId;
+      if (sessionId) {
+        try {
+          const res = await claimRuns({
+            data: { sessionId, preferredRunId: pendingId ?? undefined },
+          });
+          if (cancelled) return;
+          target = res?.runId ?? pendingId;
+        } catch (err) {
+          console.error("[dashboard] claim failed", err);
         }
-      } catch (err) {
-        console.error("[dashboard] claim failed", err);
+      }
+      if (cancelled) return;
+      if (target) {
+        try { localStorage.removeItem("pending_idea_run_id"); } catch { /* ignore */ }
+        navigate({ to: "/account/ideas/$runId", params: { runId: target } });
       }
     })();
     return () => { cancelled = true; };
