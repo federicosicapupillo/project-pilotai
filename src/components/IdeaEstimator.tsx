@@ -19,7 +19,7 @@ import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
   Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb, Eye,
-  BarChart3, Rocket, Zap, Gem, HelpCircle, Check,
+  BarChart3, Rocket, Zap, Gem, HelpCircle, Check, FileText, LogIn,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useT } from "@/lib/i18n";
@@ -33,6 +33,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { saveIdeaRun } from "@/lib/idea-runs.functions";
 import { hashIdea, normalizeIdea } from "@/lib/idea-deterministic";
 import { getAnonSessionId } from "@/lib/anon-session";
+import { useAuth } from "@/hooks/use-auth";
 import {
   getBudgetScope, PRICING_VERSION, PROMPT_VERSION,
   type BudgetScope,
@@ -82,6 +83,7 @@ export type IdeaEstimatorProps = { embed?: boolean };
 
 export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const { t, locale } = useT();
+  const { user } = useAuth();
   const [idea, setIdea] = useState("");
   const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
@@ -93,20 +95,22 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [analysisParams, setAnalysisParams] = useState<IdeaParams | null>(null);
   const [loadingOpen, setLoadingOpen] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [readyOpen, setReadyOpen] = useState(false);
+  const [pendingRunId, setPendingRunId] = useState<string | null>(null);
   const justRevealed = useRef(false);
   const navigate = useNavigate();
   const persistRun = useServerFn(saveIdeaRun);
 
-  const persistCalculatorRun = (
+  const persistCalculatorRun = async (
     ideaText: string,
     r: Estimate,
     scope: BudgetScope,
     extra: { source: "manual" | "generated" },
-  ) => {
+  ): Promise<string | null> => {
     try {
       const traditional = r.costAgencyHigh;
       const teamAi = 29;
-      void persistRun({
+      const res = await persistRun({
         data: {
           ideaText,
           normalizedIdeaText: normalizeIdea(ideaText),
@@ -138,8 +142,12 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
             tier: scope.tier,
           },
         },
-      }).catch(() => { /* swallow — never block UI */ });
-    } catch { /* never throw */ }
+      });
+      return res?.id ?? null;
+    } catch (err) {
+      console.error("[persistCalculatorRun] failed", err);
+      return null;
+    }
   };
 
   const revealResults = () => {
@@ -164,24 +172,32 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     setAnalysisParams(p);
     setLoadingError(null);
     setLoadingOpen(true);
+    setPendingRunId(null);
     const scope = getBudgetScope(budget, r.signals);
-    try {
-      persistCalculatorRun(p.idea, r, scope, { source });
-      extraTrack?.();
-    } catch {
-      /* never throw */
-    }
-    // Lightweight perceived-processing delay; results are already computed.
-    window.setTimeout(() => {
-      try {
-        setResult(r);
+    const isAuthed = !!user;
+    const persistPromise = persistCalculatorRun(p.idea, r, scope, { source });
+    try { extraTrack?.(); } catch { /* never throw */ }
+    const delay = new Promise<void>((resolve) => window.setTimeout(resolve, 1400));
+    Promise.all([persistPromise, delay])
+      .then(([runId]) => {
+        setPendingRunId(runId);
+        if (isAuthed) {
+          setResult(r);
+          setLoadingOpen(false);
+          revealResults();
+          return;
+        }
+        if (!runId) {
+          setLoadingError("est.ready.saveError");
+          return;
+        }
         setLoadingOpen(false);
-        revealResults();
-      } catch (err) {
+        setReadyOpen(true);
+      })
+      .catch((err) => {
         console.error("[IdeaEstimator] reveal failed", err);
         setLoadingError("est.loader.error");
-      }
-    }, 1400);
+      });
   };
 
   const onCalc = () => {
@@ -563,6 +579,11 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           <p className="text-xs text-muted-foreground">
             {t("est.btn.note")}
           </p>
+          {!user && (
+            <p className="text-[11px] text-muted-foreground/70 leading-relaxed max-w-xl">
+              {t("est.btn.preNote")}
+            </p>
+          )}
         </div>
 
         {/* Divider before secondary path */}
@@ -588,7 +609,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         />
       </div>
 
-      {result && (
+      {result && user && (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
           <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />
         </div>
@@ -601,6 +622,17 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           onCalc();
         }}
         onClose={() => setLoadingOpen(false)}
+      />
+      <ProjectReadyAuthDialog
+        open={readyOpen}
+        onOpenChange={setReadyOpen}
+        runId={pendingRunId}
+        onAuthNavigate={(path) => {
+          if (typeof window !== "undefined") {
+            try { localStorage.setItem(REDIRECT_KEY, path); } catch { /* ignore */ }
+          }
+          navigate({ to: "/auth" });
+        }}
       />
       <IdeaAnalysisDialog
         open={analysisOpen}
@@ -728,6 +760,87 @@ function AnalysisLoadingDialog({
             </div>
           </>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ProjectReadyAuthDialog({
+  open,
+  onOpenChange,
+  runId,
+  onAuthNavigate,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  runId: string | null;
+  onAuthNavigate: (path: string) => void;
+}) {
+  const { t } = useT();
+  const targetPath = runId ? `/account/ideas/${runId}` : "/dashboard";
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="sm:max-w-lg border-primary/30"
+        style={{
+          background:
+            "linear-gradient(160deg, color-mix(in oklab, var(--primary) 14%, hsl(222 47% 6%)) 0%, hsl(222 47% 5%) 60%, color-mix(in oklab, var(--accent) 10%, hsl(222 47% 6%)) 100%)",
+          boxShadow:
+            "0 0 0 1px color-mix(in oklab, var(--primary) 30%, transparent), 0 30px 80px -40px color-mix(in oklab, var(--primary) 70%, transparent), 0 12px 40px -20px color-mix(in oklab, var(--accent) 55%, transparent)",
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle className="font-display text-2xl tracking-tight">
+            <span className="inline-flex items-center gap-3">
+              <span
+                className="grid size-11 place-items-center rounded-2xl"
+                style={{
+                  background:
+                    "linear-gradient(135deg, hsl(220 90% 60%), hsl(280 80% 60%), hsl(320 80% 60%))",
+                  boxShadow:
+                    "0 0 26px -4px hsl(280 80% 60% / 0.7), inset 0 1px 0 hsl(0 0% 100% / 0.22)",
+                }}
+              >
+                <FileText className="size-5 text-white" strokeWidth={2.4} />
+              </span>
+              {t("est.ready.title")}
+            </span>
+          </DialogTitle>
+          <DialogDescription className="pt-2 text-foreground/75 leading-relaxed">
+            {t("est.ready.subtitle")}
+          </DialogDescription>
+        </DialogHeader>
+
+        <ul className="space-y-2 pt-1">
+          {["est.ready.l1", "est.ready.l2", "est.ready.l3", "est.ready.l4", "est.ready.l5"].map((k) => (
+            <li key={k} className="flex items-start gap-2.5 text-sm text-foreground/85">
+              <CheckCircle2 className="size-4 text-primary mt-0.5 shrink-0" />
+              <span>{t(k)}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex flex-col gap-2 pt-3">
+          <Button
+            variant="hero"
+            size="lg"
+            className="w-full shadow-lg shadow-primary/20"
+            onClick={() => onAuthNavigate(targetPath)}
+          >
+            <Sparkles className="size-4" /> {t("est.ready.ctaPrimary")}
+          </Button>
+          <Button
+            variant="glass"
+            size="lg"
+            className="w-full"
+            onClick={() => onAuthNavigate(targetPath)}
+          >
+            <LogIn className="size-4" /> {t("est.ready.ctaSecondary")}
+          </Button>
+          <p className="text-[11px] text-muted-foreground/80 text-center pt-1">
+            {t("est.ready.micro")}
+          </p>
+        </div>
       </DialogContent>
     </Dialog>
   );

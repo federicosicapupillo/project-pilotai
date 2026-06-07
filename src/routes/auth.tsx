@@ -81,10 +81,27 @@ function AuthPage() {
     return v;
   };
 
+  // Whitelist internal redirect destinations to avoid open-redirect issues.
+  const safeRedirect = (target: string | null): string | null => {
+    if (!target) return null;
+    if (
+      target === "/checkout-agente" ||
+      target === "/new-project" ||
+      target === "/dashboard" ||
+      /^\/account\/ideas\/[a-f0-9-]{10,}$/i.test(target)
+    ) {
+      return target;
+    }
+    return null;
+  };
+
   if (!loading && user) {
-    const target = consumeRedirect();
+    const target = safeRedirect(consumeRedirect());
     if (target === "/checkout-agente") return <Navigate to="/checkout-agente" replace />;
     if (target === "/new-project") return <Navigate to="/new-project" replace />;
+    if (target && target.startsWith("/account/ideas/")) {
+      return <Navigate to={target} replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -95,9 +112,10 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success(t("auth.toast.welcome"));
-    const target = consumeRedirect();
+    const target = safeRedirect(consumeRedirect());
     if (target === "/checkout-agente") navigate({ to: "/checkout-agente" });
     else if (target === "/new-project") navigate({ to: "/new-project" });
+    else if (target && target.startsWith("/account/ideas/")) navigate({ to: target });
     else navigate({ to: "/dashboard" });
   };
 
@@ -122,9 +140,10 @@ function AuthPage() {
     if (error) return toast.error(error.message);
     if (data.session) {
       toast.success(t("auth.toast.created"));
-      const target = consumeRedirect();
+      const target = safeRedirect(consumeRedirect());
       if (target === "/checkout-agente") navigate({ to: "/checkout-agente" });
       else if (target === "/new-project") navigate({ to: "/new-project" });
+      else if (target && target.startsWith("/account/ideas/")) navigate({ to: target });
       else navigate({ to: "/dashboard" });
     } else {
       toast.success(t("auth.toast.createdConfirm"));
