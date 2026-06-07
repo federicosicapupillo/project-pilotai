@@ -627,11 +627,16 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         open={readyOpen}
         onOpenChange={setReadyOpen}
         runId={pendingRunId}
-        onAuthNavigate={(path) => {
+        onAuthNavigate={(path, mode) => {
           if (typeof window !== "undefined") {
-            try { localStorage.setItem(REDIRECT_KEY, path); } catch { /* ignore */ }
+            try {
+              localStorage.setItem(REDIRECT_KEY, path);
+              if (pendingRunId) {
+                localStorage.setItem("pending_idea_run_id", pendingRunId);
+              }
+            } catch { /* ignore */ }
           }
-          navigate({ to: "/auth" });
+          navigate({ to: "/auth", search: { mode } });
         }}
       />
       <IdeaAnalysisDialog
@@ -774,7 +779,7 @@ function ProjectReadyAuthDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
   runId: string | null;
-  onAuthNavigate: (path: string) => void;
+  onAuthNavigate: (path: string, mode: "signup" | "signin") => void;
 }) {
   const { t } = useT();
   const targetPath = runId ? `/account/ideas/${runId}` : "/dashboard";
@@ -825,7 +830,7 @@ function ProjectReadyAuthDialog({
             variant="hero"
             size="lg"
             className="w-full shadow-lg shadow-primary/20"
-            onClick={() => onAuthNavigate(targetPath)}
+            onClick={() => onAuthNavigate(targetPath, "signup")}
           >
             <Sparkles className="size-4" /> {t("est.ready.ctaPrimary")}
           </Button>
@@ -833,7 +838,7 @@ function ProjectReadyAuthDialog({
             variant="glass"
             size="lg"
             className="w-full"
-            onClick={() => onAuthNavigate(targetPath)}
+            onClick={() => onAuthNavigate(targetPath, "signin")}
           >
             <LogIn className="size-4" /> {t("est.ready.ctaSecondary")}
           </Button>
