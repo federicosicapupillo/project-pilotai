@@ -6,6 +6,11 @@ import { getAnonSessionId } from "@/lib/anon-session";
 import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
+  singleMonthlyPotential,
+  singleTraditionalCost,
+  singleSavings,
+} from "@/lib/idea-report-format";
+import {
   Loader2, Clock, Activity, Layers, Wallet, TrendingUp, Calculator,
   CheckCircle2, AlertTriangle, Sparkles, ArrowRight, FileText, ArrowUpRight, PiggyBank,
 } from "lucide-react";
@@ -87,14 +92,15 @@ function ReportPage() {
   const inScope = Array.isArray(run.features_in_scope) ? (run.features_in_scope as string[]) : [];
   const outOfScope = Array.isArray(run.features_out_of_scope) ? (run.features_out_of_scope as string[]) : [];
 
-  const potMin = run.estimated_potential_revenue_min;
-  const potMax = run.estimated_potential_revenue_max;
-  const potentialDisplay =
-    potMin != null && potMax != null && potMin !== potMax
-      ? `${fmtEur(potMin)} – ${fmtEur(potMax)}`
-      : potMax != null
-        ? `${t("report.upTo")} ${fmtEur(potMax)}`
-        : "—";
+  const singlePotential = singleMonthlyPotential(
+    run.estimated_potential_revenue_min,
+    run.estimated_potential_revenue_max,
+    run.idea_hash,
+  );
+  const singleTraditional = singleTraditionalCost(run.traditional_cost_estimate, run.idea_hash);
+  const teamAiPrice = run.team_ai_cost ?? 29;
+  const computedSavings = singleSavings(singleTraditional, teamAiPrice);
+  const potentialDisplay = singlePotential != null ? fmtEur(singlePotential) : "—";
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
@@ -164,7 +170,7 @@ function ReportPage() {
                 <Calculator className="size-3.5 text-foreground/70" /> {t("report.traditional")}
               </div>
               <div className="font-display font-semibold tracking-tight text-3xl sm:text-4xl mt-3">
-                {t("report.upTo")} <span className="text-foreground">{fmtEur(run.traditional_cost_estimate)}</span>
+                <span className="text-foreground">{fmtEur(singleTraditional)}</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{t("report.eco.tradDesc")}</p>
             </div>
@@ -174,7 +180,7 @@ function ReportPage() {
                 <PiggyBank className="size-3.5 text-teal" /> {t("report.savings")}
               </div>
               <div className="font-display font-semibold tracking-tight text-3xl sm:text-4xl mt-3">
-                <span style={{ color: "var(--teal)" }}>{fmtEur(run.estimated_savings)}</span>
+                <span style={{ color: "var(--teal)" }}>{fmtEur(computedSavings)}</span>
                 <span className="text-base text-muted-foreground font-normal ml-2">{t("report.eco.savingsLabel")}</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{t("report.eco.savingsDesc")}</p>
