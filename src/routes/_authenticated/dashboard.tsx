@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2, Trash2, Loader2 } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2, Trash2, Loader2, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -112,7 +112,7 @@ function DashboardPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("id, title, idea_description, status, product_type, updated_at")
+        .select("id, title, idea_description, status, product_type, updated_at, idea_run_id")
         .is("deleted_at", null)
         .order("updated_at", { ascending: false });
       if (error) throw error;
@@ -310,6 +310,7 @@ type ProjectRow = {
   status: string;
   product_type: string | null;
   updated_at: string;
+  idea_run_id: string | null;
 };
 
 function ProjectCard({
