@@ -83,6 +83,7 @@ export type IdeaEstimatorProps = { embed?: boolean };
 
 export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const { t, locale } = useT();
+  const { user } = useAuth();
   const [idea, setIdea] = useState("");
   const [budget, setBudget] = useState<BudgetBand>("");
   const [target, setTarget] = useState("");
@@ -94,6 +95,8 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [analysisParams, setAnalysisParams] = useState<IdeaParams | null>(null);
   const [loadingOpen, setLoadingOpen] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [readyOpen, setReadyOpen] = useState(false);
+  const [pendingRunId, setPendingRunId] = useState<string | null>(null);
   const justRevealed = useRef(false);
   const navigate = useNavigate();
   const persistRun = useServerFn(saveIdeaRun);
