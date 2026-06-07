@@ -17,6 +17,8 @@ import { Route as PrezziRouteImport } from './routes/prezzi'
 import { Route as PagamentoSuccessoRouteImport } from './routes/pagamento-successo'
 import { Route as PagamentoAnnullatoRouteImport } from './routes/pagamento-annullato'
 import { Route as MethodRouteImport } from './routes/method'
+import { Route as ImportaRouteImport } from './routes/importa'
+import { Route as ConnettoriRouteImport } from './routes/connettori'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalizzaIdeaRouteImport } from './routes/analizza-idea'
 import { Route as AgentsRouteImport } from './routes/agents'
@@ -75,6 +77,16 @@ const PagamentoAnnullatoRoute = PagamentoAnnullatoRouteImport.update({
 const MethodRoute = MethodRouteImport.update({
   id: '/method',
   path: '/method',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImportaRoute = ImportaRouteImport.update({
+  id: '/importa',
+  path: '/importa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnettoriRoute = ConnettoriRouteImport.update({
+  id: '/connettori',
+  path: '/connettori',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -185,6 +197,8 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AgentsRoute
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
+  '/connettori': typeof ConnettoriRoute
+  '/importa': typeof ImportaRoute
   '/method': typeof MethodRoute
   '/pagamento-annullato': typeof PagamentoAnnullatoRoute
   '/pagamento-successo': typeof PagamentoSuccessoRoute
@@ -213,6 +227,8 @@ export interface FileRoutesByTo {
   '/agents': typeof AgentsRoute
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
+  '/connettori': typeof ConnettoriRoute
+  '/importa': typeof ImportaRoute
   '/method': typeof MethodRoute
   '/pagamento-annullato': typeof PagamentoAnnullatoRoute
   '/pagamento-successo': typeof PagamentoSuccessoRoute
@@ -243,6 +259,8 @@ export interface FileRoutesById {
   '/agents': typeof AgentsRoute
   '/analizza-idea': typeof AnalizzaIdeaRoute
   '/auth': typeof AuthRoute
+  '/connettori': typeof ConnettoriRoute
+  '/importa': typeof ImportaRoute
   '/method': typeof MethodRoute
   '/pagamento-annullato': typeof PagamentoAnnullatoRoute
   '/pagamento-successo': typeof PagamentoSuccessoRoute
@@ -273,6 +291,8 @@ export interface FileRouteTypes {
     | '/agents'
     | '/analizza-idea'
     | '/auth'
+    | '/connettori'
+    | '/importa'
     | '/method'
     | '/pagamento-annullato'
     | '/pagamento-successo'
@@ -301,6 +321,8 @@ export interface FileRouteTypes {
     | '/agents'
     | '/analizza-idea'
     | '/auth'
+    | '/connettori'
+    | '/importa'
     | '/method'
     | '/pagamento-annullato'
     | '/pagamento-successo'
@@ -330,6 +352,8 @@ export interface FileRouteTypes {
     | '/agents'
     | '/analizza-idea'
     | '/auth'
+    | '/connettori'
+    | '/importa'
     | '/method'
     | '/pagamento-annullato'
     | '/pagamento-successo'
@@ -360,6 +384,8 @@ export interface RootRouteChildren {
   AgentsRoute: typeof AgentsRoute
   AnalizzaIdeaRoute: typeof AnalizzaIdeaRoute
   AuthRoute: typeof AuthRoute
+  ConnettoriRoute: typeof ConnettoriRoute
+  ImportaRoute: typeof ImportaRoute
   MethodRoute: typeof MethodRoute
   PagamentoAnnullatoRoute: typeof PagamentoAnnullatoRoute
   PagamentoSuccessoRoute: typeof PagamentoSuccessoRoute
@@ -428,6 +454,20 @@ declare module '@tanstack/react-router' {
       path: '/method'
       fullPath: '/method'
       preLoaderRoute: typeof MethodRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/importa': {
+      id: '/importa'
+      path: '/importa'
+      fullPath: '/importa'
+      preLoaderRoute: typeof ImportaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connettori': {
+      id: '/connettori'
+      path: '/connettori'
+      fullPath: '/connettori'
+      preLoaderRoute: typeof ConnettoriRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -604,6 +644,8 @@ const rootRouteChildren: RootRouteChildren = {
   AgentsRoute: AgentsRoute,
   AnalizzaIdeaRoute: AnalizzaIdeaRoute,
   AuthRoute: AuthRoute,
+  ConnettoriRoute: ConnettoriRoute,
+  ImportaRoute: ImportaRoute,
   MethodRoute: MethodRoute,
   PagamentoAnnullatoRoute: PagamentoAnnullatoRoute,
   PagamentoSuccessoRoute: PagamentoSuccessoRoute,
@@ -618,3 +660,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
