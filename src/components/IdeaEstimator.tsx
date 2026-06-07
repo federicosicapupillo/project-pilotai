@@ -11,6 +11,7 @@ import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
   Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb, Eye,
+  BarChart3, Rocket, Zap, Gem, HelpCircle, Check,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useT } from "@/lib/i18n";
@@ -51,6 +52,15 @@ function budgetFit(insertedMax: number, rec: { min: number; max: number }): Budg
 }
 
 const REDIRECT_KEY = "post_auth_redirect";
+
+type BudgetMeta = { Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>; sublabel: string; tone: "cyan" | "indigo" | "violet" | "magenta" };
+const BUDGET_META: Record<string, BudgetMeta> = {
+  "100€ – 300€":     { Icon: BarChart3,  sublabel: "Essenziale",  tone: "cyan" },
+  "300€ – 700€":     { Icon: TrendingUp, sublabel: "Ideale",      tone: "indigo" },
+  "700€ – 1.500€":   { Icon: Rocket,     sublabel: "Consigliato", tone: "magenta" },
+  "1.500€ – 3.000€": { Icon: Zap,        sublabel: "Avanzato",    tone: "violet" },
+  "3.000€+":         { Icon: Gem,        sublabel: "Premium",     tone: "violet" },
+};
 
 export type IdeaEstimatorProps = { embed?: boolean };
 
@@ -194,38 +204,115 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           <div className="relative mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {BUDGET_OPTIONS.filter((b) => b.label !== "Non lo so ancora").map((b) => {
               const active = budget === b.label;
+              const meta = BUDGET_META[b.label] ?? { Icon: BarChart3, sublabel: "", tone: "indigo" as const };
+              const recommended = b.label === "700€ – 1.500€";
+              const Icon = meta.Icon;
               return (
                 <button
                   key={b.label}
                   type="button"
                   onClick={() => setBudget(active ? "" : b.label)}
-                  className={`relative h-16 rounded-xl border transition-all duration-200 grid place-items-center text-center px-2 ${
-                    active
-                      ? "border-primary/70 -translate-y-0.5"
-                      : "border-white/[0.06] bg-white/[0.02] hover:border-primary/40 hover:bg-white/[0.04] hover:-translate-y-0.5"
-                  }`}
-                  style={
-                    active
-                      ? {
-                          background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--accent) 12%, transparent))",
-                          boxShadow: "0 0 0 1px hsl(var(--primary) / 0.5), 0 10px 30px -12px hsl(var(--primary) / 0.55)",
-                        }
-                      : undefined
-                  }
                   aria-pressed={active}
+                  className={`group relative h-[124px] rounded-2xl border overflow-hidden text-left transition-all duration-200 will-change-transform ${
+                    active
+                      ? "-translate-y-0.5"
+                      : "hover:-translate-y-0.5"
+                  } ${
+                    recommended
+                      ? active
+                        ? "border-fuchsia-400/70"
+                        : "border-fuchsia-400/40 hover:border-fuchsia-300/70"
+                      : active
+                        ? "border-primary/70"
+                        : "border-white/[0.07] hover:border-primary/40"
+                  }`}
+                  style={{
+                    background: active
+                      ? recommended
+                        ? "linear-gradient(135deg, color-mix(in oklab, hsl(320 85% 60%) 22%, hsl(222 47% 6%)) 0%, color-mix(in oklab, var(--primary) 18%, hsl(222 47% 6%)) 100%)"
+                        : "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, hsl(222 47% 6%)) 0%, color-mix(in oklab, var(--accent) 16%, hsl(222 47% 6%)) 100%)"
+                      : recommended
+                        ? "linear-gradient(135deg, color-mix(in oklab, hsl(320 85% 60%) 10%, hsl(222 47% 7%)) 0%, color-mix(in oklab, var(--primary) 8%, hsl(222 47% 7%)) 100%)"
+                        : "linear-gradient(160deg, hsl(222 47% 7% / 0.85) 0%, hsl(222 47% 5% / 0.85) 100%)",
+                    boxShadow: active
+                      ? recommended
+                        ? "0 0 0 1px hsl(320 85% 65% / 0.55), 0 14px 38px -16px hsl(320 85% 60% / 0.7), inset 0 1px 0 hsl(0 0% 100% / 0.06)"
+                        : "0 0 0 1px hsl(var(--primary) / 0.55), 0 14px 34px -14px hsl(var(--primary) / 0.65), inset 0 1px 0 hsl(0 0% 100% / 0.06)"
+                      : recommended
+                        ? "0 10px 28px -18px hsl(320 85% 60% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.04)"
+                        : "inset 0 1px 0 hsl(0 0% 100% / 0.03)",
+                  }}
                 >
-                  {active && (
-                    <span className="absolute top-2 right-2 size-1.5 rounded-full bg-primary shadow-[0_0_8px_2px_hsl(var(--primary)/0.7)]" aria-hidden />
+                  {/* Recommended badge */}
+                  {recommended && (
+                    <span
+                      className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase text-white"
+                      style={{
+                        background: "linear-gradient(135deg, hsl(265 85% 60%), hsl(320 85% 60%))",
+                        boxShadow: "0 4px 14px -4px hsl(320 85% 60% / 0.7)",
+                      }}
+                    >
+                      {active ? (<><Check className="size-2.5" strokeWidth={3} /> Scelto</>) : "Consigliato"}
+                    </span>
                   )}
-                  <span className={`font-display font-semibold text-[15px] sm:text-base whitespace-nowrap tracking-tight ${active ? "text-white" : "text-foreground/90"}`}>
-                    {b.display}
-                  </span>
+                  {/* Selected check (non-recommended) */}
+                  {active && !recommended && (
+                    <span
+                      className="absolute top-2 right-2 z-10 inline-flex size-5 items-center justify-center rounded-full text-white"
+                      style={{ background: "linear-gradient(135deg, hsl(220 90% 60%), hsl(265 85% 60%))" }}
+                      aria-hidden
+                    >
+                      <Check className="size-3" strokeWidth={3} />
+                    </span>
+                  )}
+
+                  {/* Hover sheen */}
+                  <div
+                    className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background:
+                        "radial-gradient(120% 80% at 50% 0%, color-mix(in oklab, var(--primary) 14%, transparent) 0%, transparent 60%)",
+                    }}
+                    aria-hidden
+                  />
+
+                  <div className="relative flex h-full flex-col items-center justify-center gap-2 px-3 py-3">
+                    <span
+                      className="grid size-9 place-items-center rounded-xl"
+                      style={{
+                        background: recommended
+                          ? "linear-gradient(135deg, hsl(265 85% 60%), hsl(320 85% 60%))"
+                          : meta.tone === "cyan"
+                            ? "linear-gradient(135deg, hsl(195 90% 55%), hsl(220 90% 60%))"
+                            : meta.tone === "violet"
+                              ? "linear-gradient(135deg, hsl(250 85% 62%), hsl(280 80% 60%))"
+                              : "linear-gradient(135deg, hsl(220 90% 60%), hsl(250 85% 60%))",
+                        boxShadow: "0 6px 18px -6px hsl(220 90% 60% / 0.55), inset 0 1px 0 hsl(0 0% 100% / 0.2)",
+                      }}
+                    >
+                      <Icon className="size-4 text-white" strokeWidth={2.4} />
+                    </span>
+                    <span className={`font-display font-semibold text-[15px] tracking-tight whitespace-nowrap ${active ? "text-white" : "text-foreground/95"}`}>
+                      {b.display}
+                    </span>
+                    <span
+                      className={`text-[11px] font-medium uppercase tracking-[0.08em] ${
+                        recommended
+                          ? "text-fuchsia-200/90"
+                          : active
+                            ? "text-primary-foreground/80"
+                            : "text-muted-foreground"
+                      }`}
+                    >
+                      {meta.sublabel}
+                    </span>
+                  </div>
                 </button>
               );
             })}
           </div>
 
-          {/* Non lo so ancora — full width */}
+          {/* Non lo so ancora — full width, dashed elegant */}
           {(() => {
             const b = BUDGET_OPTIONS.find((o) => o.label === "Non lo so ancora")!;
             const active = budget === b.label;
@@ -233,24 +320,23 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               <button
                 type="button"
                 onClick={() => setBudget(active ? "" : b.label)}
-                className={`relative mt-3 w-full h-12 rounded-xl border transition-all duration-200 grid place-items-center text-center ${
-                  active
-                    ? "border-primary/60"
-                    : "border-white/[0.06] bg-white/[0.02] hover:border-primary/35 hover:bg-white/[0.04]"
-                }`}
-                style={
-                  active
-                    ? {
-                        background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 14%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
-                        boxShadow: "0 0 0 1px hsl(var(--primary) / 0.45), 0 8px 24px -14px hsl(var(--primary) / 0.5)",
-                      }
-                    : undefined
-                }
                 aria-pressed={active}
+                className={`group relative mt-3 w-full h-14 rounded-2xl border border-dashed transition-all duration-200 flex items-center justify-center gap-2.5 ${
+                  active
+                    ? "border-primary/70 text-white"
+                    : "border-white/15 hover:border-primary/50 text-muted-foreground hover:text-foreground"
+                }`}
+                style={{
+                  background: active
+                    ? "linear-gradient(135deg, color-mix(in oklab, var(--primary) 16%, hsl(222 47% 6%)), color-mix(in oklab, var(--accent) 12%, hsl(222 47% 6%)))"
+                    : "linear-gradient(160deg, hsl(222 47% 7% / 0.6) 0%, hsl(222 47% 5% / 0.6) 100%)",
+                  boxShadow: active
+                    ? "0 0 0 1px hsl(var(--primary) / 0.5), 0 10px 26px -14px hsl(var(--primary) / 0.55)"
+                    : undefined,
+                }}
               >
-                <span className={`text-sm font-medium ${active ? "text-white" : "text-muted-foreground"}`}>
-                  {b.display}
-                </span>
+                <HelpCircle className={`size-4 transition-colors ${active ? "text-white" : "text-muted-foreground group-hover:text-primary"}`} />
+                <span className="text-sm font-medium">{b.display}</span>
               </button>
             );
           })()}
