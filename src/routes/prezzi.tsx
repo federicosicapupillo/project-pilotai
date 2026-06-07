@@ -117,17 +117,22 @@ function PrezziPage() {
                 <h2 className="font-display font-semibold text-3xl sm:text-4xl mt-4">
                   {t("pricing.cardTitle.a")}<span className="gradient-text">{t("pricing.cardTitle.b")}</span>
                 </h2>
+                <p className="mt-3 text-sm sm:text-base gradient-text font-semibold">
+                  {t("pricing.launchHook")}
+                </p>
                 <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
                   {t("pricing.cardDesc")}
                 </p>
 
-                <div className="mt-6 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/60 bg-primary/10 text-[11px] font-semibold uppercase tracking-wider text-primary glow-soft">
+                <div className="mt-7 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full gradient-bg text-primary-foreground text-[11px] font-bold uppercase tracking-[0.14em] glow-soft">
                   <Sparkles className="size-3" /> {t("pricing.launch")}
                 </div>
-                <div className="mt-3 flex items-baseline justify-center gap-2">
-                  <div className="font-display font-semibold text-7xl gradient-text leading-none">29€</div>
+                <div className="mt-4 flex items-baseline justify-center gap-2">
+                  <div className="font-display font-semibold text-7xl sm:text-8xl gradient-text leading-none">29€</div>
                 </div>
-                <div className="text-sm text-foreground/90 mt-2 font-medium">{t("pricing.oneTime")}</div>
+                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/50 bg-primary/10 text-sm font-semibold text-foreground">
+                  {t("pricing.oneTime")}
+                </div>
                 <p className="text-xs text-muted-foreground mt-3 max-w-md mx-auto">
                   {t("pricing.accessNote")}
                 </p>
@@ -142,11 +147,21 @@ function PrezziPage() {
                         {t("pricing.early")}
                       </div>
                       <div className="mt-1.5 text-sm sm:text-[15px] font-semibold text-foreground leading-snug">
-                        <span className="gradient-text">{t("pricing.earlyLine.a")}</span> {t("pricing.earlyLine.b")} <span className="text-primary">{t("pricing.earlyLine.c")}</span>
+                        {t("pricing.earlyTitle")}
                       </div>
-                      <div className="mt-1 text-xs text-muted-foreground leading-snug">
-                        {t("pricing.earlyNote.a")} <span className="text-foreground font-semibold">{t("pricing.earlyNote.b")}</span>.
-                      </div>
+                      <p className="mt-1.5 text-xs sm:text-[13px] text-muted-foreground leading-relaxed">
+                        {t("pricing.earlyBody")}
+                      </p>
+                      <p className="mt-2 text-xs sm:text-[13px] text-foreground/90 leading-relaxed border-l-2 border-primary/60 pl-3">
+                        {t("pricing.valueLine")}
+                      </p>
+                      <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                        {["pricing.bullets.1","pricing.bullets.2","pricing.bullets.3","pricing.bullets.4"].map((k) => (
+                          <li key={k} className="flex items-start gap-1.5 text-[11px] sm:text-xs text-foreground/85">
+                            <Check className="size-3.5 text-primary mt-0.5 shrink-0" /> {t(k)}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 </div>
