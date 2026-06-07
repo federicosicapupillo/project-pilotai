@@ -578,8 +578,11 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
         </p>
       </Block>
 
-      {/* Potenziale economico */}
-      <Block icon={TrendingUp} title="Potenziale economico stimato">
+      {/* Risultati economici: hero + supporto */}
+      <EconomicsHero result={result} />
+
+      {/* Dettaglio scenari (supporto) */}
+      <Block icon={BarChart3} title="Scenari di mercato">
         <div className="grid sm:grid-cols-3 gap-3">
           <ScenarioBox
             tone="prudent"
@@ -604,7 +607,7 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
           />
         </div>
         <p className="text-xs text-muted-foreground mt-3">
-          Stima basata su prezzo, target, modello di ricavo, difficoltà commerciale e capacità di acquisire clienti. Lo scenario ambizioso è possibile solo se il progetto viene validato, promosso e venduto bene.
+          Stima orientativa basata su prezzo, target, modello di ricavo e capacità di acquisire clienti. Non è una promessa di guadagno.
         </p>
       </Block>
 
