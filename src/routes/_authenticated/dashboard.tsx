@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2, Trash2, Loader2 } from "lucide-react";
+import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2, Trash2, Loader2, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -112,7 +112,7 @@ function DashboardPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("id, title, idea_description, status, product_type, updated_at")
+        .select("id, title, idea_description, status, product_type, updated_at, idea_run_id")
         .is("deleted_at", null)
         .order("updated_at", { ascending: false });
       if (error) throw error;
@@ -310,6 +310,7 @@ type ProjectRow = {
   status: string;
   product_type: string | null;
   updated_at: string;
+  idea_run_id: string | null;
 };
 
 function ProjectCard({
@@ -417,6 +418,21 @@ function ProjectCard({
         <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
           Prossimo step: attiva il Team AI e fai partire il lavoro sulla tua idea.
         </p>
+      )}
+      {p.idea_run_id && (
+        <div className="mt-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+          <Link
+            to="/account/ideas/$runId"
+            params={{ runId: p.idea_run_id }}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex w-full items-center justify-center gap-2 text-sm font-semibold px-3 py-2 rounded-md gradient-bg text-primary-foreground hover:opacity-90 transition-opacity"
+          >
+            <FileText className="size-4" /> Rivedi report e potenziale stimato
+          </Link>
+          <p className="text-[11px] text-muted-foreground mt-2 text-center">
+            Il report resta salvato nel tuo account.
+          </p>
+        </div>
       )}
       <div className="flex items-center justify-between mt-3 gap-2">
         <span className="text-xs text-muted-foreground truncate">
