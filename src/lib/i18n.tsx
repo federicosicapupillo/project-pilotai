@@ -167,6 +167,7 @@ const it: Dict = {
   "est.placeholder.idea":
     "Esempio: voglio creare un'app che aiuti freelance, creator o piccoli team a organizzare attività, clienti e scadenze in modo semplice.",
   "est.hint.idea": "Più sei chiaro, più la stima sarà precisa.",
+  "est.hint.privacy": "Salviamo la tua richiesta per mantenere coerenti le stime e permetterti di ritrovare la tua idea in futuro.",
   "est.budget.title": "Inserisci il tuo budget",
   "est.budget.desc":
     "Indica il budget operativo per la prima versione funzionante. Non includere il costo del corso.",
