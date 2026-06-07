@@ -37,6 +37,9 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Entra o crea il tuo account per iniziare un progetto." },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    mode: search.mode === "signup" || search.mode === "signin" ? search.mode : undefined,
+  }),
   component: AuthPage,
 });
 
@@ -44,6 +47,8 @@ function AuthPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { t } = useT();
+  const search = Route.useSearch();
+  const defaultTab = search.mode === "signup" ? "signup" : "signin";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -164,7 +169,7 @@ function AuthPage() {
             </div>
           </div>
 
-          <Tabs defaultValue="signin">
+          <Tabs defaultValue={defaultTab}>
             <TabsList className="grid grid-cols-2 w-full mb-6">
               <TabsTrigger value="signin">{t("auth.signin")}</TabsTrigger>
               <TabsTrigger value="signup">{t("auth.signup")}</TabsTrigger>
