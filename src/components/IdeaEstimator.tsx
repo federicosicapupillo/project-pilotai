@@ -650,11 +650,21 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
         </p>
       </Block>
 
-      {/* Avviso realistico */}
-      <div className="flex items-start gap-2 rounded-xl bg-background/40 border border-border/60 p-3">
-        <AlertCircle className="size-4 text-primary mt-0.5 shrink-0" />
-        <p className="text-xs text-muted-foreground">
-          Queste stime non sono promesse di guadagno. Servono a capire l'ordine di grandezza economico del progetto. I risultati reali dipendono da mercato, prezzo, offerta, traffico, capacità di vendita, qualità del prodotto ed esecuzione.
+      {/* Messaggio chiave sotto i risultati */}
+      <div className="relative overflow-hidden rounded-xl border border-primary/25 p-4"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 12%, transparent), color-mix(in oklab, var(--accent) 10%, transparent))",
+        }}
+      >
+        <div className="flex items-start gap-3">
+          <Sparkles className="size-4 text-primary mt-0.5 shrink-0" />
+          <p className="text-sm text-foreground/90 leading-relaxed">
+            Prima di spendere migliaia di euro per sviluppare tutto da zero, puoi <strong className="text-foreground">validare la tua idea</strong> e costruire una prima versione con un approccio più <strong className="text-foreground">guidato, sostenibile e realistico</strong>.
+          </p>
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-2 pl-7">
+          Le stime mostrate sono orientative. I risultati reali dipendono da mercato, prezzo, offerta ed esecuzione.
         </p>
       </div>
 
