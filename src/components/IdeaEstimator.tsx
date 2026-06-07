@@ -226,6 +226,9 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           <p className="text-xs text-muted-foreground/80 mt-2 pl-1">
             {t("est.hint.idea")}
           </p>
+          <p className="text-[11px] text-muted-foreground/60 mt-1.5 pl-1">
+            {t("est.hint.privacy")}
+          </p>
         </div>
 
         {/* Budget operativo — campo evidenziato */}
