@@ -392,6 +392,105 @@ export type Database = {
         }
         Relationships: []
       }
+      idea_calculator_runs: {
+        Row: {
+          ai_model_version: string | null
+          created_at: string
+          estimated_dev_cost_max: number | null
+          estimated_dev_cost_min: number | null
+          estimated_hours_max: number | null
+          estimated_hours_min: number | null
+          estimated_potential_revenue_max: number | null
+          estimated_potential_revenue_min: number | null
+          estimated_savings: number | null
+          features_in_scope: Json | null
+          features_out_of_scope: Json | null
+          id: string
+          idea_hash: string
+          idea_text: string
+          language: string | null
+          normalized_idea_text: string
+          optional_details: Json | null
+          pricing_version: string
+          prompt_version: string | null
+          recommended_mvp_scope: string | null
+          result_summary: Json | null
+          revenue_model: string | null
+          selected_budget_range: string | null
+          session_id: string | null
+          suggested_price: string | null
+          target_user: string | null
+          team_ai_cost: number | null
+          traditional_cost_estimate: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          ai_model_version?: string | null
+          created_at?: string
+          estimated_dev_cost_max?: number | null
+          estimated_dev_cost_min?: number | null
+          estimated_hours_max?: number | null
+          estimated_hours_min?: number | null
+          estimated_potential_revenue_max?: number | null
+          estimated_potential_revenue_min?: number | null
+          estimated_savings?: number | null
+          features_in_scope?: Json | null
+          features_out_of_scope?: Json | null
+          id?: string
+          idea_hash: string
+          idea_text: string
+          language?: string | null
+          normalized_idea_text: string
+          optional_details?: Json | null
+          pricing_version?: string
+          prompt_version?: string | null
+          recommended_mvp_scope?: string | null
+          result_summary?: Json | null
+          revenue_model?: string | null
+          selected_budget_range?: string | null
+          session_id?: string | null
+          suggested_price?: string | null
+          target_user?: string | null
+          team_ai_cost?: number | null
+          traditional_cost_estimate?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          ai_model_version?: string | null
+          created_at?: string
+          estimated_dev_cost_max?: number | null
+          estimated_dev_cost_min?: number | null
+          estimated_hours_max?: number | null
+          estimated_hours_min?: number | null
+          estimated_potential_revenue_max?: number | null
+          estimated_potential_revenue_min?: number | null
+          estimated_savings?: number | null
+          features_in_scope?: Json | null
+          features_out_of_scope?: Json | null
+          id?: string
+          idea_hash?: string
+          idea_text?: string
+          language?: string | null
+          normalized_idea_text?: string
+          optional_details?: Json | null
+          pricing_version?: string
+          prompt_version?: string | null
+          recommended_mvp_scope?: string | null
+          result_summary?: Json | null
+          revenue_model?: string | null
+          selected_budget_range?: string | null
+          session_id?: string | null
+          suggested_price?: string | null
+          target_user?: string | null
+          team_ai_cost?: number | null
+          traditional_cost_estimate?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       improvement_backlog: {
         Row: {
           created_at: string

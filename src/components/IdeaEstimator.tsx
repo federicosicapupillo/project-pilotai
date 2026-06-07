@@ -21,6 +21,14 @@ import {
   type Difficulty, type RevenueModel, type PriceBand,
   type BudgetBand, type Estimate, type IdeaParams,
 } from "@/lib/idea-estimate";
+import { useServerFn } from "@tanstack/react-start";
+import { saveIdeaRun } from "@/lib/idea-runs.functions";
+import { hashIdea, normalizeIdea } from "@/lib/idea-deterministic";
+import { getAnonSessionId } from "@/lib/anon-session";
+import {
+  getBudgetScope, PRICING_VERSION, PROMPT_VERSION,
+  type BudgetScope,
+} from "@/lib/pricing-config";
 
 const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
   "Landing page":   { label: "100€ – 300€",     min: 100,  max: 300 },
@@ -76,6 +84,52 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [analysisOpen, setAnalysisOpen] = useState(false);
   const [analysisParams, setAnalysisParams] = useState<IdeaParams | null>(null);
   const navigate = useNavigate();
+  const persistRun = useServerFn(saveIdeaRun);
+
+  const persistCalculatorRun = (
+    ideaText: string,
+    r: Estimate,
+    scope: BudgetScope,
+    extra: { source: "manual" | "generated" },
+  ) => {
+    try {
+      const traditional = r.costAgencyHigh;
+      const teamAi = 29;
+      void persistRun({
+        data: {
+          ideaText,
+          normalizedIdeaText: normalizeIdea(ideaText),
+          ideaHash: hashIdea(ideaText),
+          language: locale,
+          sessionId: getAnonSessionId(),
+          selectedBudgetRange: budget,
+          targetUser: target || targetChoice,
+          revenueModel: revenue,
+          suggestedPrice: price,
+          estimatedHoursMin: r.hoursLow,
+          estimatedHoursMax: r.hoursHigh,
+          estimatedDevCostMin: r.costRecLow,
+          estimatedDevCostMax: r.costRecHigh,
+          estimatedPotentialRevenueMin: r.potentialLow,
+          estimatedPotentialRevenueMax: r.potentialHigh,
+          traditionalCostEstimate: traditional,
+          teamAiCost: teamAi,
+          estimatedSavings: Math.max(0, traditional - teamAi),
+          featuresInScope: scope.inScope,
+          featuresOutOfScope: scope.outOfScope,
+          recommendedMvpScope: scope.recommendedMvpScope,
+          pricingVersion: PRICING_VERSION,
+          promptVersion: PROMPT_VERSION,
+          optionalDetails: {
+            source: extra.source,
+            projectType: r.projectType,
+            difficulty: r.difficulty,
+            tier: scope.tier,
+          },
+        },
+      }).catch(() => { /* swallow — never block UI */ });
+    } catch { /* never throw */ }
+  };
 
   const onCalc = () => {
     if (idea.trim().length < 8) return;
@@ -85,12 +139,17 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     saveIdeaParams(p);
     setAnalysisParams(p);
     setAnalysisOpen(true);
+    const scope = getBudgetScope(budget, r.signals);
+    persistCalculatorRun(p.idea, r, scope, { source: "manual" });
     void trackEvent("idea_estimate_calculated", {
       hoursLow: r.hoursLow, hoursHigh: r.hoursHigh,
       difficulty: r.difficulty, projectType: r.projectType,
       costAiLow: r.costAiLow, costAiHigh: r.costAiHigh,
       monthlyLow: r.monthlyLow, monthlyHigh: r.monthlyHigh,
       potentialLabel: r.potentialLabel,
+      budget,
+      tier: scope.tier,
+      pricingVersion: PRICING_VERSION,
     });
   };
 
@@ -102,6 +161,8 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     saveIdeaParams(p);
     setAnalysisParams(p);
     setAnalysisOpen(true);
+    const scope = getBudgetScope(budget, r.signals);
+    persistCalculatorRun(p.idea, r, scope, { source: "generated" });
     void trackEvent("idea_estimate_from_generator", {
       difficulty: r.difficulty, projectType: r.projectType,
     });
@@ -501,6 +562,7 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
   const breakEvenPrices = highBudget ? [97, 297, 497] : [29, 97, 297];
 
   const hasBudget = !!inserted && budget !== "Non lo so ancora" && inserted.max > 0;
+  const scope = getBudgetScope(budget, result.signals);
 
   let consiglio = "Puoi costruire una prima versione funzionante con database, dashboard base e flusso utente principale.";
   if (hasBudget && inserted!.max <= 300) {
@@ -672,6 +734,44 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
       <Block icon={Lightbulb} title="Consiglio operativo">
         <p className="text-sm text-foreground/90">{consiglio}</p>
       </Block>
+
+      {/* Scope budget-driven: cosa puoi costruire / cosa rimandare */}
+      {hasBudget && (
+        <Block icon={Target} title={`Cosa puoi costruire con ${budget}`}>
+          <p className="text-sm text-foreground/90 mb-3">{scope.recommendedMvpScope}</p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-emerald-300 mb-2">
+                <CheckCircle2 className="size-3.5" /> In scope ora
+              </div>
+              <ul className="space-y-1.5">
+                {scope.inScope.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-foreground/90">
+                    <Check className="size-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-amber-300 mb-2">
+                <AlertTriangle className="size-3.5" /> Da rimandare alla fase successiva
+              </div>
+              <ul className="space-y-1.5">
+                {scope.outOfScope.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-foreground/80">
+                    <XCircle className="size-3.5 text-amber-400/80 mt-0.5 shrink-0" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            <strong className="text-foreground/85">Prossimo step consigliato:</strong> {scope.nextStep}
+          </p>
+        </Block>
+      )}
 
       {/* Cassetta degli attrezzi AI */}
       <ReusableToolkitBox showExample />
