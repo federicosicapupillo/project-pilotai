@@ -735,6 +735,44 @@ function ResultCard({ result, budget, onRoadmap }: { result: Estimate; budget: B
         <p className="text-sm text-foreground/90">{consiglio}</p>
       </Block>
 
+      {/* Scope budget-driven: cosa puoi costruire / cosa rimandare */}
+      {hasBudget && (
+        <Block icon={Target} title={`Cosa puoi costruire con ${budget}`}>
+          <p className="text-sm text-foreground/90 mb-3">{scope.recommendedMvpScope}</p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-emerald-300 mb-2">
+                <CheckCircle2 className="size-3.5" /> In scope ora
+              </div>
+              <ul className="space-y-1.5">
+                {scope.inScope.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-foreground/90">
+                    <Check className="size-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-amber-300 mb-2">
+                <AlertTriangle className="size-3.5" /> Da rimandare alla fase successiva
+              </div>
+              <ul className="space-y-1.5">
+                {scope.outOfScope.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-foreground/80">
+                    <XCircle className="size-3.5 text-amber-400/80 mt-0.5 shrink-0" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            <strong className="text-foreground/85">Prossimo step consigliato:</strong> {scope.nextStep}
+          </p>
+        </Block>
+      )}
+
       {/* Cassetta degli attrezzi AI */}
       <ReusableToolkitBox showExample />
 
