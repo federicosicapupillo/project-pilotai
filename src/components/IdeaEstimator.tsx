@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +7,14 @@ import { ToolIcon } from "@/components/ToolIcon";
 import { IdeaGenerator } from "@/components/IdeaGenerator";
 import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
 import { IdeaAnalysisDialog } from "@/components/IdeaAnalysisDialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
@@ -83,6 +91,9 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [result, setResult] = useState<Estimate | null>(null);
   const [analysisOpen, setAnalysisOpen] = useState(false);
   const [analysisParams, setAnalysisParams] = useState<IdeaParams | null>(null);
+  const [loadingOpen, setLoadingOpen] = useState(false);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
+  const justRevealed = useRef(false);
   const navigate = useNavigate();
   const persistRun = useServerFn(saveIdeaRun);
 
@@ -131,17 +142,56 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     } catch { /* never throw */ }
   };
 
+  const revealResults = () => {
+    justRevealed.current = true;
+    // Smooth scroll after the result has rendered.
+    setTimeout(() => {
+      if (typeof window === "undefined") return;
+      const el = document.getElementById("estimator-result");
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 80);
+  };
+
+  const runAnalysis = (
+    p: IdeaParams,
+    r: Estimate,
+    source: "manual" | "generated",
+    extraTrack?: () => void,
+  ) => {
+    setResult(null); // reset so the reveal animation re-triggers
+    setAnalysisParams(p);
+    setLoadingError(null);
+    setLoadingOpen(true);
+    const scope = getBudgetScope(budget, r.signals);
+    try {
+      persistCalculatorRun(p.idea, r, scope, { source });
+      extraTrack?.();
+    } catch {
+      /* never throw */
+    }
+    // Lightweight perceived-processing delay; results are already computed.
+    window.setTimeout(() => {
+      try {
+        setResult(r);
+        setLoadingOpen(false);
+        revealResults();
+      } catch (err) {
+        console.error("[IdeaEstimator] reveal failed", err);
+        setLoadingError("est.loader.error");
+      }
+    }, 1400);
+  };
+
   const onCalc = () => {
     if (idea.trim().length < 8) return;
     const r = classify(idea, target, revenue, price);
-    setResult(r);
     const p: IdeaParams = { idea: idea.trim(), budget, target: target || targetChoice, revenue, price };
     saveIdeaParams(p);
-    setAnalysisParams(p);
-    setAnalysisOpen(true);
     const scope = getBudgetScope(budget, r.signals);
-    persistCalculatorRun(p.idea, r, scope, { source: "manual" });
-    void trackEvent("idea_estimate_calculated", {
+    runAnalysis(p, r, "manual", () => {
+      void trackEvent("idea_estimate_calculated", {
       hoursLow: r.hoursLow, hoursHigh: r.hoursHigh,
       difficulty: r.difficulty, projectType: r.projectType,
       costAiLow: r.costAiLow, costAiHigh: r.costAiHigh,
@@ -150,21 +200,19 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
       budget,
       tier: scope.tier,
       pricingVersion: PRICING_VERSION,
+      });
     });
   };
 
   const handleGeneratedIdea = (description: string) => {
     setIdea(description);
     const r = classify(description, target, revenue, price);
-    setResult(r);
     const p: IdeaParams = { idea: description.trim(), budget, target: target || targetChoice, revenue, price };
     saveIdeaParams(p);
-    setAnalysisParams(p);
-    setAnalysisOpen(true);
-    const scope = getBudgetScope(budget, r.signals);
-    persistCalculatorRun(p.idea, r, scope, { source: "generated" });
-    void trackEvent("idea_estimate_from_generator", {
-      difficulty: r.difficulty, projectType: r.projectType,
+    runAnalysis(p, r, "generated", () => {
+      void trackEvent("idea_estimate_from_generator", {
+        difficulty: r.difficulty, projectType: r.projectType,
+      });
     });
   };
 
@@ -496,13 +544,13 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               variant="hero"
               size="xl"
               onClick={onCalc}
-              disabled={idea.trim().length < 8 || analysisOpen}
+              disabled={idea.trim().length < 8 || loadingOpen}
               className="shadow-lg shadow-primary/20"
             >
               <Wand2 className="size-4" />
-              {analysisOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
+              {loadingOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
             </Button>
-            {analysisParams && !analysisOpen && (
+            {analysisParams && !loadingOpen && result && (
               <Button
                 variant="glass"
                 size="lg"
@@ -540,7 +588,20 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         />
       </div>
 
-      {result && <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />}
+      {result && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />
+        </div>
+      )}
+      <AnalysisLoadingDialog
+        open={loadingOpen}
+        error={loadingError}
+        onRetry={() => {
+          setLoadingError(null);
+          onCalc();
+        }}
+        onClose={() => setLoadingOpen(false)}
+      />
       <IdeaAnalysisDialog
         open={analysisOpen}
         onOpenChange={setAnalysisOpen}
