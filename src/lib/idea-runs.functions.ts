@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getRequest } from "@tanstack/react-start/server";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const RunInput = z.object({
   ideaText: z.string().min(1).max(4000),
@@ -118,4 +119,69 @@ export const saveIdeaRun = createServerFn({ method: "POST" })
       console.error("[saveIdeaRun] failed", error);
       return { id: null as string | null, reused: false, error: "save_failed" };
     }
+  });
+
+// Claims anonymous runs (identified by session_id) for the authenticated user.
+// Returns the most recently-claimed run id so the UI can navigate to its report.
+export const claimAnonIdeaRuns = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        sessionId: z.string().min(1).max(128),
+        preferredRunId: z.string().uuid().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const userId = context.userId;
+
+      // Only claim rows that are still anonymous — never reassign an already-owned run.
+      const { data: updated, error } = await supabaseAdmin
+        .from("idea_calculator_runs")
+        .update({ user_id: userId, updated_at: new Date().toISOString() })
+        .eq("session_id", data.sessionId)
+        .is("user_id", null)
+        .select("id, created_at");
+      if (error) throw error;
+
+      const claimed = updated ?? [];
+      let targetId: string | null = data.preferredRunId ?? null;
+      if (targetId && !claimed.some((r) => r.id === targetId)) {
+        // Verify ownership before exposing the id (covers the "already claimed earlier" case).
+        const { data: owned } = await supabaseAdmin
+          .from("idea_calculator_runs")
+          .select("id")
+          .eq("id", targetId)
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (!owned) targetId = null;
+      }
+      if (!targetId && claimed.length > 0) {
+        const latest = [...claimed].sort((a, b) =>
+          (b.created_at ?? "").localeCompare(a.created_at ?? ""),
+        )[0];
+        targetId = latest?.id ?? null;
+      }
+      return { claimed: claimed.length, runId: targetId };
+    } catch (err) {
+      console.error("[claimAnonIdeaRuns] failed", err);
+      return { claimed: 0, runId: null as string | null, error: "claim_failed" };
+    }
+  });
+
+// Fetches a single run owned by the authenticated user. RLS-enforced.
+export const getIdeaRun = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: row, error } = await context.supabase
+      .from("idea_calculator_runs")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw error;
+    return { run: row };
   });
