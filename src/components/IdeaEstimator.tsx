@@ -124,10 +124,10 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/85">
             <Gauge className="size-3.5 text-primary" /> {t("est.eyebrow")}
           </div>
-          <h2 className="font-display font-semibold text-3xl sm:text-4xl lg:text-[2.75rem] mt-4 leading-[1.1] tracking-tight">
+          <h2 className="font-display font-semibold text-[1.75rem] sm:text-4xl lg:text-[2.5rem] mt-4 leading-[1.12] tracking-tight text-balance max-w-3xl">
             <EstimatorTitle locale={locale} />
           </h2>
-          <p className="text-base sm:text-lg text-foreground/75 mt-4 max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base lg:text-lg text-foreground/70 mt-4 max-w-2xl leading-relaxed text-balance">
             {t("est.desc")}
           </p>
         </>
@@ -780,25 +780,17 @@ function EstimatorTitle({ locale }: { locale: "it" | "en" }) {
   if (locale === "it") {
     return (
       <>
-        Scopri se la tua <EstHL tone="indigo">idea</EstHL> può diventare un'
-        <EstHL tone="rainbow">app vera</EstHL>.
-        <span className="block mt-2 text-foreground/85 text-2xl sm:text-3xl lg:text-[2rem] font-display font-medium">
-          Analizza <EstHL tone="cyan">fattibilità</EstHL>,{" "}
-          <EstHL tone="violet">costi</EstHL> e{" "}
-          <EstHL tone="rainbow">potenziale economico</EstHL>.
-        </span>
+        Scopri se la tua <EstHL tone="indigo">idea</EstHL>
+        <br className="hidden sm:inline" />{" "}
+        può diventare un’<EstHL tone="rainbow">app vera</EstHL>.
       </>
     );
   }
   return (
     <>
-      Find out if your <EstHL tone="indigo">idea</EstHL> can become a{" "}
-      <EstHL tone="rainbow">real app</EstHL>.
-      <span className="block mt-2 text-foreground/85 text-2xl sm:text-3xl lg:text-[2rem] font-display font-medium">
-        Analyze <EstHL tone="cyan">feasibility</EstHL>,{" "}
-        <EstHL tone="violet">costs</EstHL> and{" "}
-        <EstHL tone="rainbow">revenue potential</EstHL>.
-      </span>
+      Find out if your <EstHL tone="indigo">idea</EstHL>
+      <br className="hidden sm:inline" />{" "}
+      can become a <EstHL tone="rainbow">real app</EstHL>.
     </>
   );
 }
