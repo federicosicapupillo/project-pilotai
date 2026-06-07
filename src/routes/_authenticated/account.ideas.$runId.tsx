@@ -7,7 +7,7 @@ import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, Clock, Activity, Layers, Wallet, TrendingUp, Calculator,
-  CheckCircle2, AlertTriangle, Sparkles, ArrowRight, FileText,
+  CheckCircle2, AlertTriangle, Sparkles, ArrowRight, FileText, ArrowUpRight, PiggyBank,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/account/ideas/$runId")({
@@ -87,6 +87,15 @@ function ReportPage() {
   const inScope = Array.isArray(run.features_in_scope) ? (run.features_in_scope as string[]) : [];
   const outOfScope = Array.isArray(run.features_out_of_scope) ? (run.features_out_of_scope as string[]) : [];
 
+  const potMin = run.estimated_potential_revenue_min;
+  const potMax = run.estimated_potential_revenue_max;
+  const potentialDisplay =
+    potMin != null && potMax != null && potMin !== potMax
+      ? `${fmtEur(potMin)} – ${fmtEur(potMax)}`
+      : potMax != null
+        ? `${t("report.upTo")} ${fmtEur(potMax)}`
+        : "—";
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
       <div>
@@ -98,6 +107,7 @@ function ReportPage() {
             ? String((run.optional_details as Record<string, unknown>).projectType)
             : "Il tuo progetto"}
         </h1>
+        <p className="text-muted-foreground mt-2 max-w-2xl">{t("report.subtitle")}</p>
       </div>
 
       <section className="glass-card rounded-2xl p-6 border border-primary/20">
@@ -112,12 +122,75 @@ function ReportPage() {
         <Metric icon={Wallet} label={t("report.budget")} value={run.selected_budget_range ?? "—"} />
       </section>
 
-      <section className="glass-card rounded-2xl p-6 border border-primary/20 space-y-4">
-        <h2 className="font-display text-lg">{t("report.section.economics")}</h2>
-        <div className="grid sm:grid-cols-3 gap-3">
-          <Metric icon={TrendingUp} label={t("report.potential")} value={`${fmtEur(run.estimated_potential_revenue_min)} – ${fmtEur(run.estimated_potential_revenue_max)}`} />
-          <Metric icon={Calculator} label={t("report.traditional")} value={fmtEur(run.traditional_cost_estimate)} />
-          <Metric icon={Sparkles} label={t("report.savings")} value={fmtEur(run.estimated_savings)} accent />
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-primary/90">
+            <Sparkles className="size-3.5" /> {t("report.eco.kicker")}
+          </span>
+        </div>
+
+        <div className="grid lg:grid-cols-5 gap-4">
+          {/* HERO — Potential */}
+          <div className="lg:col-span-3 relative overflow-hidden rounded-3xl p-7 sm:p-8 border border-primary/40 glass-card glow-soft">
+            <div
+              aria-hidden
+              className="absolute -top-24 -right-24 size-72 rounded-full opacity-60 blur-3xl"
+              style={{ background: "var(--gradient-primary)" }}
+            />
+            <div className="relative">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/80">
+                  <ArrowUpRight className="size-3.5 text-primary" /> {t("report.eco.heroTitle")}
+                </div>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-primary/40 bg-primary/10 text-[10px] uppercase tracking-wider text-primary">
+                  {t("report.eco.heroBadge")}
+                </span>
+              </div>
+              <div className="mt-5 flex items-baseline gap-2 flex-wrap">
+                <div className="font-display font-semibold tracking-tight text-4xl sm:text-5xl lg:text-6xl gradient-text leading-none">
+                  {potentialDisplay}
+                </div>
+                <span className="text-muted-foreground text-lg">{t("report.perMonth")}</span>
+              </div>
+              <p className="text-foreground/85 mt-4 max-w-md leading-relaxed">{t("report.eco.heroDesc")}</p>
+              <p className="text-[11px] text-muted-foreground/80 mt-3 italic">{t("report.eco.heroDisclaimer")}</p>
+            </div>
+          </div>
+
+          {/* Supporting cards stack */}
+          <div className="lg:col-span-2 grid gap-4">
+            <div className="rounded-2xl p-6 border border-border/50 bg-background/40 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
+                <Calculator className="size-3.5 text-foreground/70" /> {t("report.traditional")}
+              </div>
+              <div className="font-display font-semibold tracking-tight text-3xl sm:text-4xl mt-3">
+                {t("report.upTo")} <span className="text-foreground">{fmtEur(run.traditional_cost_estimate)}</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{t("report.eco.tradDesc")}</p>
+            </div>
+
+            <div className="relative overflow-hidden rounded-2xl p-6 border border-teal/30 bg-background/40 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
+                <PiggyBank className="size-3.5 text-teal" /> {t("report.savings")}
+              </div>
+              <div className="font-display font-semibold tracking-tight text-3xl sm:text-4xl mt-3">
+                <span style={{ color: "var(--teal)" }}>{fmtEur(run.estimated_savings)}</span>
+                <span className="text-base text-muted-foreground font-normal ml-2">{t("report.eco.savingsLabel")}</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{t("report.eco.savingsDesc")}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Context box */}
+        <div className="rounded-2xl p-5 border border-border/40 bg-background/30 flex gap-3 items-start">
+          <div className="size-9 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
+            <TrendingUp className="size-4 text-primary" />
+          </div>
+          <div>
+            <div className="font-display text-sm mb-1">{t("report.eco.contextTitle")}</div>
+            <p className="text-sm text-muted-foreground leading-relaxed">{t("report.eco.contextBody")}</p>
+          </div>
         </div>
       </section>
 
