@@ -21,6 +21,14 @@ import {
   type Difficulty, type RevenueModel, type PriceBand,
   type BudgetBand, type Estimate, type IdeaParams,
 } from "@/lib/idea-estimate";
+import { useServerFn } from "@tanstack/react-start";
+import { saveIdeaRun } from "@/lib/idea-runs.functions";
+import { hashIdea, normalizeIdea } from "@/lib/idea-deterministic";
+import { getAnonSessionId } from "@/lib/anon-session";
+import {
+  getBudgetScope, PRICING_VERSION, PROMPT_VERSION,
+  type BudgetScope,
+} from "@/lib/pricing-config";
 
 const RECOMMENDED_BY_TYPE: Record<string, { label: string; min: number; max: number }> = {
   "Landing page":   { label: "100€ – 300€",     min: 100,  max: 300 },
@@ -76,6 +84,52 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [analysisOpen, setAnalysisOpen] = useState(false);
   const [analysisParams, setAnalysisParams] = useState<IdeaParams | null>(null);
   const navigate = useNavigate();
+  const persistRun = useServerFn(saveIdeaRun);
+
+  const persistCalculatorRun = (
+    ideaText: string,
+    r: Estimate,
+    scope: BudgetScope,
+    extra: { source: "manual" | "generated" },
+  ) => {
+    try {
+      const traditional = r.costAgencyHigh;
+      const teamAi = 29;
+      void persistRun({
+        data: {
+          ideaText,
+          normalizedIdeaText: normalizeIdea(ideaText),
+          ideaHash: hashIdea(ideaText),
+          language: locale,
+          sessionId: getAnonSessionId(),
+          selectedBudgetRange: budget,
+          targetUser: target || targetChoice,
+          revenueModel: revenue,
+          suggestedPrice: price,
+          estimatedHoursMin: r.hoursLow,
+          estimatedHoursMax: r.hoursHigh,
+          estimatedDevCostMin: r.costRecLow,
+          estimatedDevCostMax: r.costRecHigh,
+          estimatedPotentialRevenueMin: r.potentialLow,
+          estimatedPotentialRevenueMax: r.potentialHigh,
+          traditionalCostEstimate: traditional,
+          teamAiCost: teamAi,
+          estimatedSavings: Math.max(0, traditional - teamAi),
+          featuresInScope: scope.inScope,
+          featuresOutOfScope: scope.outOfScope,
+          recommendedMvpScope: scope.recommendedMvpScope,
+          pricingVersion: PRICING_VERSION,
+          promptVersion: PROMPT_VERSION,
+          optionalDetails: {
+            source: extra.source,
+            projectType: r.projectType,
+            difficulty: r.difficulty,
+            tier: scope.tier,
+          },
+        },
+      }).catch(() => { /* swallow — never block UI */ });
+    } catch { /* never throw */ }
+  };
 
   const onCalc = () => {
     if (idea.trim().length < 8) return;
@@ -85,12 +139,17 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     saveIdeaParams(p);
     setAnalysisParams(p);
     setAnalysisOpen(true);
+    const scope = getBudgetScope(budget, r.signals);
+    persistCalculatorRun(p.idea, r, scope, { source: "manual" });
     void trackEvent("idea_estimate_calculated", {
       hoursLow: r.hoursLow, hoursHigh: r.hoursHigh,
       difficulty: r.difficulty, projectType: r.projectType,
       costAiLow: r.costAiLow, costAiHigh: r.costAiHigh,
       monthlyLow: r.monthlyLow, monthlyHigh: r.monthlyHigh,
       potentialLabel: r.potentialLabel,
+      budget,
+      tier: scope.tier,
+      pricingVersion: PRICING_VERSION,
     });
   };
 
@@ -102,6 +161,8 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     saveIdeaParams(p);
     setAnalysisParams(p);
     setAnalysisOpen(true);
+    const scope = getBudgetScope(budget, r.signals);
+    persistCalculatorRun(p.idea, r, scope, { source: "generated" });
     void trackEvent("idea_estimate_from_generator", {
       difficulty: r.difficulty, projectType: r.projectType,
     });
