@@ -579,6 +579,11 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           <p className="text-xs text-muted-foreground">
             {t("est.btn.note")}
           </p>
+          {!user && (
+            <p className="text-[11px] text-muted-foreground/70 leading-relaxed max-w-xl">
+              {t("est.btn.preNote")}
+            </p>
+          )}
         </div>
 
         {/* Divider before secondary path */}
@@ -604,7 +609,7 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         />
       </div>
 
-      {result && (
+      {result && user && (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
           <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />
         </div>
@@ -617,6 +622,17 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
           onCalc();
         }}
         onClose={() => setLoadingOpen(false)}
+      />
+      <ProjectReadyAuthDialog
+        open={readyOpen}
+        onOpenChange={setReadyOpen}
+        runId={pendingRunId}
+        onAuthNavigate={(path) => {
+          if (typeof window !== "undefined") {
+            try { localStorage.setItem(REDIRECT_KEY, path); } catch { /* ignore */ }
+          }
+          navigate({ to: "/auth" });
+        }}
       />
       <IdeaAnalysisDialog
         open={analysisOpen}
