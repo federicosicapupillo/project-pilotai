@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +7,14 @@ import { ToolIcon } from "@/components/ToolIcon";
 import { IdeaGenerator } from "@/components/IdeaGenerator";
 import { ReusableToolkitBox, getReuseBadge } from "@/components/ReusableToolkitBox";
 import { IdeaAnalysisDialog } from "@/components/IdeaAnalysisDialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
@@ -83,6 +91,9 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
   const [result, setResult] = useState<Estimate | null>(null);
   const [analysisOpen, setAnalysisOpen] = useState(false);
   const [analysisParams, setAnalysisParams] = useState<IdeaParams | null>(null);
+  const [loadingOpen, setLoadingOpen] = useState(false);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
+  const justRevealed = useRef(false);
   const navigate = useNavigate();
   const persistRun = useServerFn(saveIdeaRun);
 
@@ -131,17 +142,56 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     } catch { /* never throw */ }
   };
 
+  const revealResults = () => {
+    justRevealed.current = true;
+    // Smooth scroll after the result has rendered.
+    setTimeout(() => {
+      if (typeof window === "undefined") return;
+      const el = document.getElementById("estimator-result");
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 80);
+  };
+
+  const runAnalysis = (
+    p: IdeaParams,
+    r: Estimate,
+    source: "manual" | "generated",
+    extraTrack?: () => void,
+  ) => {
+    setResult(null); // reset so the reveal animation re-triggers
+    setAnalysisParams(p);
+    setLoadingError(null);
+    setLoadingOpen(true);
+    const scope = getBudgetScope(budget, r.signals);
+    try {
+      persistCalculatorRun(p.idea, r, scope, { source });
+      extraTrack?.();
+    } catch {
+      /* never throw */
+    }
+    // Lightweight perceived-processing delay; results are already computed.
+    window.setTimeout(() => {
+      try {
+        setResult(r);
+        setLoadingOpen(false);
+        revealResults();
+      } catch (err) {
+        console.error("[IdeaEstimator] reveal failed", err);
+        setLoadingError("est.loader.error");
+      }
+    }, 1400);
+  };
+
   const onCalc = () => {
     if (idea.trim().length < 8) return;
     const r = classify(idea, target, revenue, price);
-    setResult(r);
     const p: IdeaParams = { idea: idea.trim(), budget, target: target || targetChoice, revenue, price };
     saveIdeaParams(p);
-    setAnalysisParams(p);
-    setAnalysisOpen(true);
     const scope = getBudgetScope(budget, r.signals);
-    persistCalculatorRun(p.idea, r, scope, { source: "manual" });
-    void trackEvent("idea_estimate_calculated", {
+    runAnalysis(p, r, "manual", () => {
+      void trackEvent("idea_estimate_calculated", {
       hoursLow: r.hoursLow, hoursHigh: r.hoursHigh,
       difficulty: r.difficulty, projectType: r.projectType,
       costAiLow: r.costAiLow, costAiHigh: r.costAiHigh,
@@ -150,21 +200,19 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
       budget,
       tier: scope.tier,
       pricingVersion: PRICING_VERSION,
+      });
     });
   };
 
   const handleGeneratedIdea = (description: string) => {
     setIdea(description);
     const r = classify(description, target, revenue, price);
-    setResult(r);
     const p: IdeaParams = { idea: description.trim(), budget, target: target || targetChoice, revenue, price };
     saveIdeaParams(p);
-    setAnalysisParams(p);
-    setAnalysisOpen(true);
-    const scope = getBudgetScope(budget, r.signals);
-    persistCalculatorRun(p.idea, r, scope, { source: "generated" });
-    void trackEvent("idea_estimate_from_generator", {
-      difficulty: r.difficulty, projectType: r.projectType,
+    runAnalysis(p, r, "generated", () => {
+      void trackEvent("idea_estimate_from_generator", {
+        difficulty: r.difficulty, projectType: r.projectType,
+      });
     });
   };
 
@@ -496,13 +544,13 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               variant="hero"
               size="xl"
               onClick={onCalc}
-              disabled={idea.trim().length < 8 || analysisOpen}
+              disabled={idea.trim().length < 8 || loadingOpen}
               className="shadow-lg shadow-primary/20"
             >
               <Wand2 className="size-4" />
-              {analysisOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
+              {loadingOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
             </Button>
-            {analysisParams && !analysisOpen && (
+            {analysisParams && !loadingOpen && result && (
               <Button
                 variant="glass"
                 size="lg"
@@ -540,7 +588,20 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
         />
       </div>
 
-      {result && <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />}
+      {result && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <ResultCard result={result} budget={budget} onRoadmap={goToRoadmap} />
+        </div>
+      )}
+      <AnalysisLoadingDialog
+        open={loadingOpen}
+        error={loadingError}
+        onRetry={() => {
+          setLoadingError(null);
+          onCalc();
+        }}
+        onClose={() => setLoadingOpen(false)}
+      />
       <IdeaAnalysisDialog
         open={analysisOpen}
         onOpenChange={setAnalysisOpen}
@@ -555,6 +616,120 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     <section className="relative">
       <div className="max-w-3xl mx-auto px-6 -mt-10 pb-10">{card}</div>
     </section>
+  );
+}
+
+function AnalysisLoadingDialog({
+  open,
+  error,
+  onRetry,
+  onClose,
+}: {
+  open: boolean;
+  error: string | null;
+  onRetry: () => void;
+  onClose: () => void;
+}) {
+  const { t } = useT();
+  const steps = [
+    t("est.loader.step1"),
+    t("est.loader.step2"),
+    t("est.loader.step3"),
+    t("est.loader.step4"),
+  ];
+  const [stepIdx, setStepIdx] = useState(0);
+  const [progress, setProgress] = useState(8);
+
+  useEffect(() => {
+    if (!open) {
+      setStepIdx(0);
+      setProgress(8);
+      return;
+    }
+    const stepTimer = window.setInterval(() => {
+      setStepIdx((i) => Math.min(i + 1, steps.length - 1));
+    }, 350);
+    const progTimer = window.setInterval(() => {
+      setProgress((p) => (p >= 92 ? 92 : p + 7));
+    }, 120);
+    return () => {
+      window.clearInterval(stepTimer);
+      window.clearInterval(progTimer);
+    };
+  }, [open, steps.length]);
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o && error) onClose();
+      }}
+    >
+      <DialogContent
+        className="sm:max-w-md border-primary/30"
+        style={{
+          background:
+            "linear-gradient(160deg, color-mix(in oklab, var(--primary) 10%, hsl(222 47% 6%)) 0%, hsl(222 47% 5%) 100%)",
+          boxShadow:
+            "0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 30px 80px -40px color-mix(in oklab, var(--primary) 70%, transparent)",
+        }}
+      >
+        {error ? (
+          <>
+            <DialogHeader>
+              <DialogTitle className="font-display">
+                <span className="inline-flex items-center gap-2">
+                  <AlertTriangle className="size-5 text-amber-400" />
+                  Ops…
+                </span>
+              </DialogTitle>
+              <DialogDescription>{t(error)}</DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="glass" size="sm" onClick={onClose}>
+                Chiudi
+              </Button>
+              <Button variant="hero" size="sm" onClick={onRetry}>
+                Riprova
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl tracking-tight">
+                <span className="inline-flex items-center gap-2.5">
+                  <span
+                    className="grid size-9 place-items-center rounded-xl"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, hsl(220 90% 60%), hsl(280 80% 60%))",
+                      boxShadow:
+                        "0 0 20px -4px hsl(265 85% 60% / 0.6), inset 0 1px 0 hsl(0 0% 100% / 0.2)",
+                    }}
+                  >
+                    <Sparkles className="size-4 text-white animate-pulse" />
+                  </span>
+                  {t("est.loader.title")}
+                </span>
+              </DialogTitle>
+              <DialogDescription className="pt-1">
+                {t("est.loader.desc")}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 pt-2">
+              <Progress value={progress} className="h-1.5" />
+              <div className="text-xs text-muted-foreground inline-flex items-center gap-2">
+                <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+                <span key={stepIdx} className="animate-in fade-in duration-300">
+                  {steps[stepIdx]}…
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 

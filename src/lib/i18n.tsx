@@ -181,6 +181,13 @@ const it: Dict = {
   "est.btn.calcInProgress": "Analisi in corso…",
   "est.btn.review": "Rivedi analisi",
   "est.btn.note": "Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.",
+  "est.loader.title": "Stiamo analizzando la tua idea",
+  "est.loader.desc": "Il tuo agente IA sta trasformando la tua descrizione in una prima analisi operativa.",
+  "est.loader.step1": "Analisi idea",
+  "est.loader.step2": "Stima funzionalità",
+  "est.loader.step3": "Calcolo costi e budget",
+  "est.loader.step4": "Preparazione risultati",
+  "est.loader.error": "C'è stato un problema durante l'elaborazione. Riprova tra qualche secondo.",
 
   // Estimator — result card
   "est.res.firstHours": "Prima versione stimata",
@@ -597,6 +604,13 @@ const en: Dict = {
   "est.btn.calcInProgress": "Analyzing…",
   "est.btn.review": "Review analysis",
   "est.btn.note": "Rough estimate based on your description. It's not a promise: it's meant to give you a sense of scale.",
+  "est.loader.title": "Analyzing your idea",
+  "est.loader.desc": "Your AI agent is turning your description into a first operational analysis.",
+  "est.loader.step1": "Analyzing idea",
+  "est.loader.step2": "Estimating features",
+  "est.loader.step3": "Calculating costs and budget",
+  "est.loader.step4": "Preparing results",
+  "est.loader.error": "Something went wrong. Please try again in a few seconds.",
 
   // Estimator — result card
   "est.res.firstHours": "Estimated first version",
