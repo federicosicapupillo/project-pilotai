@@ -19,7 +19,7 @@ import {
   Sparkles, ArrowRight, Wand2, Gauge, Clock, Activity, Layers, Wallet,
   TrendingUp, Calculator, Wrench, AlertCircle, Repeat, Target, Info,
   Euro, CheckCircle2, AlertTriangle, XCircle, Lightbulb, Eye,
-  BarChart3, Rocket, Zap, Gem, HelpCircle, Check,
+  BarChart3, Rocket, Zap, Gem, HelpCircle, Check, FileText, LogIn,
 } from "lucide-react";
 import { trackEvent } from "@/lib/tracking";
 import { useT } from "@/lib/i18n";
@@ -33,6 +33,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { saveIdeaRun } from "@/lib/idea-runs.functions";
 import { hashIdea, normalizeIdea } from "@/lib/idea-deterministic";
 import { getAnonSessionId } from "@/lib/anon-session";
+import { useAuth } from "@/hooks/use-auth";
 import {
   getBudgetScope, PRICING_VERSION, PROMPT_VERSION,
   type BudgetScope,
