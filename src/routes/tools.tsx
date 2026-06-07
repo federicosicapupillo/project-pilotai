@@ -7,6 +7,7 @@ import { OperativeCircuit } from "@/components/OperativeCircuit";
 import { Button } from "@/components/ui/button";
 import { useAcademyAccess } from "@/components/AcademyLock";
 import { useActivateTeam } from "@/hooks/use-activate-team";
+import { TeamAiEarlyAccessMicro } from "@/components/TeamAiEarlyAccess";
 
 const AGENT_OVERRIDES: Record<string, { role: string; when: string }> = {
   Idea:        { role: "Lo stratega che dà forma all'idea grezza",          when: "Entra in gioco appena hai un'intuizione" },
@@ -111,9 +112,13 @@ function ToolsPage() {
           footerNote="Ogni agente ha un compito specifico. Insieme non sono solo strumenti: sono il tuo team operativo AI."
           hideTools={!hasAccess}
           lockCta={!hasAccess ? (
-            <Button variant="hero" size="sm" onClick={handleActivate}>
-              Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
-            </Button>
+            <button
+              type="button"
+              onClick={handleActivate}
+              className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 underline-offset-4 hover:underline"
+            >
+              Sblocca gli strumenti <ArrowRight className="size-3.5" />
+            </button>
           ) : undefined}
         />
       </div>
@@ -177,10 +182,11 @@ function ToolsPage() {
               <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
                 Porta la tua idea. Guarda cosa preparano. Approva solo ciò che ti convince.
               </p>
-              <div className="mt-5">
+              <div className="mt-5 flex flex-col items-center gap-2">
                 <Button variant="hero" size="lg" onClick={handleActivate}>
-                  Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+                  <Sparkles className="size-4" /> Attiva il mio Team IA - 29€ <ArrowRight className="size-4" />
                 </Button>
+                <TeamAiEarlyAccessMicro align="center" className="max-w-md" />
               </div>
             </div>
           )}
@@ -212,19 +218,19 @@ function ToolsPage() {
               <Lock className="size-3" /> Strumenti operativi bloccati
             </div>
             <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-              Gli strumenti del team si sbloccano dopo l'attivazione
+              Gli strumenti si sbloccano con il Team IA
             </h2>
             <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Adesso vedi <strong className="text-foreground/90">chi fa cosa</strong> nel tuo team AI.
-              Attiva il Team AI per scoprire anche <strong className="text-foreground/90">con quali strumenti</strong> lavora ogni agente e sbloccare il motore operativo reale dietro al team.
+              Adesso vedi <strong className="text-foreground/90">chi fa cosa</strong> nel tuo team.
+              Dopo l'attivazione vedrai anche <strong className="text-foreground/90">con quali strumenti</strong> lavora ogni agente e potrai seguire il progetto passo dopo passo.
             </p>
             <div className="mt-6">
-              <Button variant="hero" size="lg" onClick={handleActivate}>
-                Attiva il mio Team AI - 29€ <ArrowRight className="size-4" />
+              <Button variant="glass" size="lg" onClick={handleActivate}>
+                <Sparkles className="size-4" /> Vedi cosa include il Team IA <ArrowRight className="size-4" />
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-3">
-              Accesso immediato dopo l'attivazione. Tutti gli strumenti assegnati ad ogni agente diventano visibili.
+              Disponibile dopo l'attivazione del Team IA.
             </p>
           </div>
         </div>
@@ -348,12 +354,12 @@ function ToolsPage() {
           <h2 className="text-3xl sm:text-4xl font-display font-semibold">
             {hasAccess
               ? "Il tuo Team AI è attivo"
-              : "Vuoi sbloccare gli strumenti del tuo Team AI?"}
+              : "Pronto a trasformare la tua idea nella prima versione?"}
           </h2>
           <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
             {hasAccess
               ? "Ora puoi usare strumenti, prompt e roadmap per portare avanti il progetto."
-              : "Ora vedi il metodo. Dopo l'attivazione vedrai anche gli strumenti reali, l'ordine operativo completo e come usarli nel tuo progetto."}
+              : "Attiva il Team IA e inizia a costruire il progetto partendo dal report che hai appena generato."}
           </p>
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
             {hasAccess ? (
@@ -364,12 +370,14 @@ function ToolsPage() {
               </Button>
             ) : (
               <Button variant="hero" size="lg" onClick={handleActivate}>
-                <Sparkles className="size-4" /> Attiva il mio Team AI - 29€
+                <Sparkles className="size-4" /> Attiva Team IA - 29€ <ArrowRight className="size-4" />
               </Button>
             )}
           </div>
           {!hasAccess && (
-            <p className="text-xs text-muted-foreground mt-3">Accesso immediato dopo il pagamento.</p>
+            <div className="mt-3 flex justify-center">
+              <TeamAiEarlyAccessMicro align="center" className="max-w-md" />
+            </div>
           )}
         </div>
       </section>
