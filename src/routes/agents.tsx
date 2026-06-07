@@ -499,6 +499,7 @@ function _LegacyUnused() {
                       <Sparkles className="size-3.5" /> Attiva Team AI - 29€ <ArrowRight className="size-3.5" />
                     </Link>
                   </Button>
+                  <TeamAiEarlyAccessMicro className="mt-2" />
                 </div>
               </div>
             )}

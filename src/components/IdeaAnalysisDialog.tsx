@@ -408,6 +408,7 @@ export function IdeaAnalysisDialog({
                   <span className="text-[11px] text-muted-foreground">
                     {t("iad.cta.activateHint")}
                   </span>
+                  <TeamAiEarlyAccessMicro align="right" className="max-w-xs" />
                 </div>
               )}
             </div>

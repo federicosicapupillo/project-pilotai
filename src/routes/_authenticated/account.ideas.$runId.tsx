@@ -5,6 +5,7 @@ import { claimAnonIdeaRuns, getIdeaRun } from "@/lib/idea-runs.functions";
 import { getAnonSessionId } from "@/lib/anon-session";
 import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { TeamAiEarlyAccessMicro, TeamAiEarlyAccessBox } from "@/components/TeamAiEarlyAccess";
 import {
   singleMonthlyPotential,
   singleTraditionalCost,
