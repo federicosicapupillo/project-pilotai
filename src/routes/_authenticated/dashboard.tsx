@@ -1,10 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, Folder, ArrowRight, Sparkles, Bot, Lock, CheckCircle2, Trash2, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { claimAnonIdeaRuns } from "@/lib/idea-runs.functions";
+import { getAnonSessionId } from "@/lib/anon-session";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,6 +72,40 @@ function DashboardPage() {
   const { activate, hasAccess } = useActivateTeam();
   const { activeId, setActiveId } = useActiveProject();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const claimRuns = useServerFn(claimAnonIdeaRuns);
+
+  // If the user just signed up with a pending anonymous idea report,
+  // claim it and redirect them to the report page instead of an empty dashboard.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const pendingId = localStorage.getItem("pending_idea_run_id");
+    const sessionId = getAnonSessionId();
+    if (!pendingId && !sessionId) return;
+    let cancelled = false;
+    (async () => {
+      let target: string | null = pendingId;
+      if (sessionId) {
+        try {
+          const res = await claimRuns({
+            data: { sessionId, preferredRunId: pendingId ?? undefined },
+          });
+          if (cancelled) return;
+          target = res?.runId ?? pendingId;
+        } catch (err) {
+          console.error("[dashboard] claim failed", err);
+        }
+      }
+      if (cancelled) return;
+      if (target) {
+        try { localStorage.removeItem("pending_idea_run_id"); } catch { /* ignore */ }
+        navigate({ to: "/account/ideas/$runId", params: { runId: target } });
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
