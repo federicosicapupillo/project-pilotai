@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Copy, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen, MessageSquare, ArrowRight } from "lucide-react";
+import { ArrowLeft, Copy, Users, Sparkles, ClipboardList, ListChecks, Layers, BookOpen, MessageSquare, ArrowRight, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { ToolBadge } from "@/components/ToolBadge";
 import { OperativeCircuit } from "@/components/OperativeCircuit";
@@ -117,6 +117,21 @@ function ProjectPage() {
             ? "segui la roadmap e inizia a lavorare con il tuo Team AI."
             : "attiva il Team AI e fai partire il lavoro sulla tua idea."}
         </p>
+        {project?.idea_run_id && (
+          <div className="mt-4">
+            <Button variant="outline" size="lg" asChild>
+              <Link
+                to="/account/ideas/$runId"
+                params={{ runId: project.idea_run_id as string }}
+              >
+                <FileText className="size-4" /> Rivedi report e potenziale stimato
+              </Link>
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2">
+              Puoi tornare quando vuoi a rivedere la stima, il potenziale e i prossimi step della tua app.
+            </p>
+          </div>
+        )}
         {hasAccess && (
           <div className="mt-4">
             <Button variant="hero" size="lg" asChild>
