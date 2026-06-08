@@ -17,6 +17,7 @@ import {
 } from "@/lib/project-templates";
 import { generateProjectContent } from "@/lib/ai-generation.functions";
 import { generateAppRoadmap } from "@/lib/app-roadmap.functions";
+import { getAgentAccess } from "@/lib/payments.functions";
 import { buildFallbackRoadmap } from "@/lib/app-roadmap";
 import { toast } from "sonner";
 import { Sparkles, ArrowLeft } from "lucide-react";
@@ -37,6 +38,7 @@ function NewProjectPage() {
   const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
   const generate = useServerFn(generateProjectContent);
   const generateRoadmap = useServerFn(generateAppRoadmap);
+  const fetchAccess = useServerFn(getAgentAccess);
   const [form, setForm] = useState({
     title: "",
     idea_description: "",
@@ -97,6 +99,16 @@ function NewProjectPage() {
     try {
       const { data: userRes } = await supabase.auth.getUser();
       if (!userRes.user) throw new Error("Non autenticato");
+      // Status promotion depends on real paid access — never on UI actions
+      // or on the mere existence of a project row.
+      let hasAccess = false;
+      try {
+        const access = await fetchAccess();
+        hasAccess = !!access?.hasAccess;
+      } catch {
+        hasAccess = false;
+      }
+      const targetStatus = hasAccess ? "in_progress" : "to_create";
       // Idempotency: if a project with the same idea description already exists
       // for this user (e.g. claimed from an anonymous report), reuse it instead
       // of creating a duplicate.
@@ -105,7 +117,7 @@ function NewProjectPage() {
       if (normalizedIdea) {
         const { data: existing } = await supabase
           .from("projects")
-          .select("id")
+          .select("id, status")
           .eq("user_id", userRes.user.id)
           .ilike("idea_description", normalizedIdea)
           .is("deleted_at", null)
@@ -113,28 +125,32 @@ function NewProjectPage() {
           .limit(1)
           .maybeSingle();
         if (existing) {
-          // Promote the existing "to_create" card to "in_progress" with the
-          // submitted form values so we don't end up with a stale "DA CREARE"
-          // card alongside an active project.
+          // Reuse the existing project. Only promote to in_progress when the
+          // user already has paid Team IA access; otherwise keep it as
+          // "to_create" so the dashboard label stays "DA CREARE".
+          const nextStatus = hasAccess
+            ? "in_progress"
+            : (existing.status === "in_progress" ? "in_progress" : "to_create");
           const { data: updated, error: updErr } = await supabase
             .from("projects")
-            .update({ ...form, status: "in_progress", updated_at: new Date().toISOString() })
+            .update({ ...form, status: nextStatus, updated_at: new Date().toISOString() })
             .eq("id", existing.id)
             .select("id, title, idea_description")
             .single();
           if (updErr || !updated) throw updErr ?? new Error("Errore aggiornamento progetto");
           project = updated;
-          console.info("[new-project] reused existing project", existing.id);
+          console.info("[new-project] reused existing project", existing.id, { hasAccess, nextStatus });
         }
       }
       if (!project) {
         const { data: inserted, error } = await supabase
           .from("projects")
-          .insert({ ...form, user_id: userRes.user.id, status: "in_progress" })
+          .insert({ ...form, user_id: userRes.user.id, status: targetStatus })
           .select("id, title, idea_description")
           .single();
         if (error || !inserted) throw error ?? new Error("Errore creazione");
         project = inserted;
+        console.info("[new-project] created project", project.id, { hasAccess, targetStatus });
       }
       setCreatedProjectId(project.id);
 
