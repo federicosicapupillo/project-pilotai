@@ -710,6 +710,24 @@ const en: Dict = {
   "home.proof.projectsSaved.desc": "Reports turned into projects available in the user dashboard.",
   "home.proof.micro": "Aggregated early access data. Economic estimates are indicative and do not guarantee results.",
 
+  // Home — demo case studies
+  "home.cases.eyebrow": "Demo examples",
+  "home.cases.title": "Examples of apps born from an idea",
+  "home.cases.subtitle": "Demo scenarios showing how an idea can become a concrete project with estimated potential, features and next steps.",
+  "home.cases.micro": "Demo examples. Economic estimates are indicative and not guaranteed.",
+  "home.cases.metric.users": "potential users",
+  "home.cases.metric.leads": "potential leads/month",
+  "home.cases.metric.business": "potential businesses",
+  "home.cases.metric.features": "recommended MVP features",
+  "home.cases.metric.hours": "estimated hours for the first version",
+  "home.cases.metric.revenue": "Revenue model",
+  "home.cases.potential": "estimated monthly potential",
+  "home.cases.cta": "View example report",
+  "home.cases.outro.title": "The next idea could be yours",
+  "home.cases.outro.text": "Describe your idea and get a first operational report with costs, hours, potential and features to build.",
+  "home.cases.outro.cta": "Analyze my idea for free",
+  "home.cases.outro.micro": "The full report is saved to your account after free sign up.",
+
   // Home — example report
   "home.demo.eyebrow": "Example report",
   "home.demo.title": "See what your report will look like",
