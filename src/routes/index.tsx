@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { IdeaEstimator } from "@/components/IdeaEstimator";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
 import { SocialProofStats } from "@/components/SocialProofStats";
+import { DemoCaseStudies } from "@/components/DemoCaseStudies";
 import { useT } from "@/lib/i18n";
 import {
   Sparkles, ArrowRight, Users, Wand2, ListChecks, BookOpen,
