@@ -101,11 +101,11 @@ function NewProjectPage() {
       // for this user (e.g. claimed from an anonymous report), reuse it instead
       // of creating a duplicate.
       const normalizedIdea = (form.idea_description ?? "").trim();
-      let project: { id: string } | null = null;
+      let project: { id: string; title: string; idea_description: string | null } | null = null;
       if (normalizedIdea) {
         const { data: existing } = await supabase
           .from("projects")
-          .select("id, status")
+          .select("id")
           .eq("user_id", userRes.user.id)
           .ilike("idea_description", normalizedIdea)
           .is("deleted_at", null)
@@ -113,13 +113,17 @@ function NewProjectPage() {
           .limit(1)
           .maybeSingle();
         if (existing) {
-          project = { id: existing.id };
-          // Promote the existing "to_create" card to "in_progress" so we don't
-          // end up with a stale "DA CREARE" alongside an active project.
-          await supabase
+          // Promote the existing "to_create" card to "in_progress" with the
+          // submitted form values so we don't end up with a stale "DA CREARE"
+          // card alongside an active project.
+          const { data: updated, error: updErr } = await supabase
             .from("projects")
             .update({ ...form, status: "in_progress", updated_at: new Date().toISOString() })
-            .eq("id", existing.id);
+            .eq("id", existing.id)
+            .select("id, title, idea_description")
+            .single();
+          if (updErr || !updated) throw updErr ?? new Error("Errore aggiornamento progetto");
+          project = updated;
           console.info("[new-project] reused existing project", existing.id);
         }
       }
@@ -127,10 +131,10 @@ function NewProjectPage() {
         const { data: inserted, error } = await supabase
           .from("projects")
           .insert({ ...form, user_id: userRes.user.id, status: "in_progress" })
-          .select("id")
+          .select("id, title, idea_description")
           .single();
         if (error || !inserted) throw error ?? new Error("Errore creazione");
-        project = { id: inserted.id };
+        project = inserted;
       }
       setCreatedProjectId(project.id);
 
