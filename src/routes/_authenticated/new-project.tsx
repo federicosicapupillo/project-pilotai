@@ -97,12 +97,45 @@ function NewProjectPage() {
     try {
       const { data: userRes } = await supabase.auth.getUser();
       if (!userRes.user) throw new Error("Non autenticato");
-      const { data: project, error } = await supabase
-        .from("projects")
-        .insert({ ...form, user_id: userRes.user.id, status: "in_progress" })
-        .select("*")
-        .single();
-      if (error || !project) throw error ?? new Error("Errore creazione");
+      // Idempotency: if a project with the same idea description already exists
+      // for this user (e.g. claimed from an anonymous report), reuse it instead
+      // of creating a duplicate.
+      const normalizedIdea = (form.idea_description ?? "").trim();
+      let project: { id: string; title: string; idea_description: string | null } | null = null;
+      if (normalizedIdea) {
+        const { data: existing } = await supabase
+          .from("projects")
+          .select("id")
+          .eq("user_id", userRes.user.id)
+          .ilike("idea_description", normalizedIdea)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+        if (existing) {
+          // Promote the existing "to_create" card to "in_progress" with the
+          // submitted form values so we don't end up with a stale "DA CREARE"
+          // card alongside an active project.
+          const { data: updated, error: updErr } = await supabase
+            .from("projects")
+            .update({ ...form, status: "in_progress", updated_at: new Date().toISOString() })
+            .eq("id", existing.id)
+            .select("id, title, idea_description")
+            .single();
+          if (updErr || !updated) throw updErr ?? new Error("Errore aggiornamento progetto");
+          project = updated;
+          console.info("[new-project] reused existing project", existing.id);
+        }
+      }
+      if (!project) {
+        const { data: inserted, error } = await supabase
+          .from("projects")
+          .insert({ ...form, user_id: userRes.user.id, status: "in_progress" })
+          .select("id, title, idea_description")
+          .single();
+        if (error || !inserted) throw error ?? new Error("Errore creazione");
+        project = inserted;
+      }
       setCreatedProjectId(project.id);
 
       // Try AI generation; fall back to templates on any failure.

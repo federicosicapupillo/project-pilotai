@@ -117,7 +117,24 @@ function DashboardPage() {
         .is("deleted_at", null)
         .order("updated_at", { ascending: false });
       if (error) throw error;
-      return data;
+      // Secondary UI safety: collapse accidental duplicates so the dashboard
+      // never shows two cards for the same idea. Prefer the row that's
+      // linked to a report (idea_run_id) or, failing that, the most recently
+      // updated row. Backend uniqueness is enforced separately.
+      const seen = new Map<string, typeof data[number]>();
+      for (const p of data ?? []) {
+        const key =
+          p.idea_run_id ??
+          `idea:${(p.idea_description ?? p.title ?? "").trim().toLowerCase()}`;
+        const prev = seen.get(key);
+        if (!prev) { seen.set(key, p); continue; }
+        const prevScore = (prev.idea_run_id ? 2 : 0) + (prev.status === "in_progress" ? 1 : 0);
+        const curScore = (p.idea_run_id ? 2 : 0) + (p.status === "in_progress" ? 1 : 0);
+        if (curScore > prevScore) seen.set(key, p);
+      }
+      return Array.from(seen.values()).sort((a, b) =>
+        (b.updated_at ?? "").localeCompare(a.updated_at ?? ""),
+      );
     },
     staleTime: 60_000,
   });
