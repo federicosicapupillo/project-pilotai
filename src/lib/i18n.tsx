@@ -678,6 +678,20 @@ const en: Dict = {
   "home.receive.6.t": "Roadmap and next steps",
   "home.receive.6.d": "Get a clear direction to turn the idea into an operational project.",
 
+  // Home — social proof (early access)
+  "home.proof.eyebrow": "Early access community",
+  "home.proof.title": "Already chosen by 1,000+ early users",
+  "home.proof.subtitle": "Creators, freelancers, entrepreneurs and founders use IdeaPilot AI to analyze ideas, generate reports and turn them into concrete projects.",
+  "home.proof.earlyUsers.label": "Early users",
+  "home.proof.earlyUsers.desc": "People who joined the platform's first phase.",
+  "home.proof.ideasAnalyzed.label": "Ideas analyzed",
+  "home.proof.ideasAnalyzed.desc": "Ideas submitted and evaluated with the smart calculator.",
+  "home.proof.reportsGenerated.label": "Reports generated",
+  "home.proof.reportsGenerated.desc": "First operational analyses created with hours, budget and potential.",
+  "home.proof.projectsSaved.label": "Projects saved",
+  "home.proof.projectsSaved.desc": "Reports turned into projects available in the user dashboard.",
+  "home.proof.micro": "Aggregated early access data. Economic estimates are indicative and do not guarantee results.",
+
   // Home — example report
   "home.demo.eyebrow": "Example report",
   "home.demo.title": "See what your report will look like",
