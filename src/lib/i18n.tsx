@@ -121,6 +121,7 @@ const it: Dict = {
 
   // Home — cosa ricevi nel report
   "home.receive.eyebrow": "Cosa ricevi",
+  // injected above; see below for proof keys
   "home.receive.title": "Cosa ricevi dal tuo primo report",
   "home.receive.subtitle": "Una prima analisi chiara per capire se la tua idea può diventare un progetto costruibile.",
   "home.receive.1.t": "Analisi dell'idea",
@@ -135,6 +136,20 @@ const it: Dict = {
   "home.receive.5.d": "Capisci cosa ha senso sviluppare subito e cosa rimandare.",
   "home.receive.6.t": "Roadmap e prossimi step",
   "home.receive.6.d": "Ricevi una direzione chiara per trasformare l'idea in un progetto operativo.",
+
+  // Home — social proof (early access)
+  "home.proof.eyebrow": "Community early access",
+  "home.proof.title": "Già scelto da oltre 1.000 early user",
+  "home.proof.subtitle": "Creator, freelance, imprenditori e founder stanno usando IdeaPilot IA per analizzare idee, generare report e trasformarle in progetti concreti.",
+  "home.proof.earlyUsers.label": "Early user",
+  "home.proof.earlyUsers.desc": "Utenti entrati nella prima fase della piattaforma.",
+  "home.proof.ideasAnalyzed.label": "Idee analizzate",
+  "home.proof.ideasAnalyzed.desc": "Idee inserite e valutate con il calcolatore intelligente.",
+  "home.proof.reportsGenerated.label": "Report generati",
+  "home.proof.reportsGenerated.desc": "Prime analisi operative create con ore, budget e potenziale.",
+  "home.proof.projectsSaved.label": "Progetti salvati",
+  "home.proof.projectsSaved.desc": "Report trasformati in progetti ritrovabili nella dashboard utente.",
+  "home.proof.micro": "Dati aggregati della fase early access. Le stime economiche restano orientative e non garantiscono risultati.",
 
   // Home — report esempio (demo)
   "home.demo.eyebrow": "Report di esempio",
@@ -662,6 +677,20 @@ const en: Dict = {
   "home.receive.5.d": "Understand what makes sense to ship now and what to postpone.",
   "home.receive.6.t": "Roadmap and next steps",
   "home.receive.6.d": "Get a clear direction to turn the idea into an operational project.",
+
+  // Home — social proof (early access)
+  "home.proof.eyebrow": "Early access community",
+  "home.proof.title": "Already chosen by 1,000+ early users",
+  "home.proof.subtitle": "Creators, freelancers, entrepreneurs and founders use IdeaPilot AI to analyze ideas, generate reports and turn them into concrete projects.",
+  "home.proof.earlyUsers.label": "Early users",
+  "home.proof.earlyUsers.desc": "People who joined the platform's first phase.",
+  "home.proof.ideasAnalyzed.label": "Ideas analyzed",
+  "home.proof.ideasAnalyzed.desc": "Ideas submitted and evaluated with the smart calculator.",
+  "home.proof.reportsGenerated.label": "Reports generated",
+  "home.proof.reportsGenerated.desc": "First operational analyses created with hours, budget and potential.",
+  "home.proof.projectsSaved.label": "Projects saved",
+  "home.proof.projectsSaved.desc": "Reports turned into projects available in the user dashboard.",
+  "home.proof.micro": "Aggregated early access data. Economic estimates are indicative and do not guarantee results.",
 
   // Home — example report
   "home.demo.eyebrow": "Example report",
