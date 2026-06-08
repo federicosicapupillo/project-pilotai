@@ -49,12 +49,13 @@ const it: Dict = {
 
   // Home / Hero
   "home.badge": "Metodo IA per non tecnici",
-  "home.hero.title": "Hai un'idea per un'app? Scopri ore, costi e potenziale economico.",
+  "home.hero.eyebrow": "Calcolatore intelligente per app e web app",
+  "home.hero.title": "Hai un'idea per un'app? Scopri se può diventare un progetto reale.",
   "home.hero.subtitle":
-    "Scrivi la tua idea. La nostra IA ti aiuta a stimare ore, difficoltà, costi, strumenti necessari e possibile modello di ricavo per creare la prima versione funzionante.",
-  "home.cta.primary": "Calcola ore, costi e potenziale",
-  "home.cta.secondary": "Scopri il metodo",
-  "home.hero.note": "Niente promesse magiche: tu resti il regista, gli agenti IA ti aiutano passo passo.",
+    "IdeaPilot IA analizza la tua idea, stima ore, costi, budget e potenziale economico, e ti mostra cosa puoi costruire davvero.",
+  "home.cta.primary": "Analizza gratis la mia idea",
+  "home.cta.secondary": "Guarda un esempio di report",
+  "home.hero.note": "Il report completo verrà salvato nel tuo account dopo la registrazione gratuita.",
 
   // Home — steps
   "home.steps.eyebrow": "Come funziona",
@@ -118,17 +119,62 @@ const it: Dict = {
   "home.target.list.4": "Coach e formatori",
   "home.target.list.5": "Founder alla prima versione dell'app",
 
-  // Home — deliverables
-  "home.deliv.eyebrow": "Deliverable",
-  "home.deliv.title": "Cosa ottieni",
-  "home.deliv.1.t": "Scheda progetto strutturata",
-  "home.deliv.1.d": "Target, prima versione dell'app (MVP), schermate, dati, rischi, cosa NON costruire.",
-  "home.deliv.2.t": "Squadra di 7 agenti IA",
-  "home.deliv.2.d": "Stratega, PM, UX, Prompt Engineer, Tester, Marketing, Documentazione.",
-  "home.deliv.3.t": "Libreria di prompt pronti",
-  "home.deliv.3.d": "Per ogni fase: strategia, ricerca, design, debug, marketing, lancio.",
-  "home.deliv.4.t": "Roadmap operativa",
-  "home.deliv.4.d": "10 step con stato Da fare / In corso / Completato.",
+  // Home — cosa ricevi nel report
+  "home.receive.eyebrow": "Cosa ricevi",
+  "home.receive.title": "Cosa ricevi dal tuo primo report",
+  "home.receive.subtitle": "Una prima analisi chiara per capire se la tua idea può diventare un progetto costruibile.",
+  "home.receive.1.t": "Analisi dell'idea",
+  "home.receive.1.d": "Capisci se l'idea è chiara, realistica e trasformabile in un primo progetto.",
+  "home.receive.2.t": "Ore e difficoltà stimate",
+  "home.receive.2.d": "Vedi quanto lavoro potrebbe servire per creare una prima versione funzionante.",
+  "home.receive.3.t": "Budget consigliato",
+  "home.receive.3.d": "Scopri quale fascia di budget è più coerente con quello che vuoi costruire.",
+  "home.receive.4.t": "Potenziale economico stimato",
+  "home.receive.4.d": "Ottieni una prima ipotesi prudente del possibile fatturato mensile.",
+  "home.receive.5.t": "Funzioni da costruire ora",
+  "home.receive.5.d": "Capisci cosa ha senso sviluppare subito e cosa rimandare.",
+  "home.receive.6.t": "Roadmap e prossimi step",
+  "home.receive.6.d": "Ricevi una direzione chiara per trasformare l'idea in un progetto operativo.",
+
+  // Home — report esempio (demo)
+  "home.demo.eyebrow": "Report di esempio",
+  "home.demo.title": "Guarda cosa riceverai nel tuo report",
+  "home.demo.subtitle": "Un esempio concreto di analisi: idea, ore, costi, potenziale, funzioni consigliate e prossimi step.",
+  "home.demo.cta": "Guarda report esempio",
+  "home.demo.idea.label": "Idea analizzata",
+  "home.demo.idea.text": "Piattaforma per aiutare freelance e piccoli team a gestire clienti, attività e scadenze in un unico posto.",
+  "home.demo.hours": "Ore stimate",
+  "home.demo.difficulty": "Difficoltà",
+  "home.demo.budget": "Budget consigliato",
+  "home.demo.potential": "Potenziale economico stimato",
+  "home.demo.traditional": "Costo sviluppo tradizionale",
+  "home.demo.savings": "Risparmio stimato con Team IA",
+  "home.demo.inScope": "Funzioni da costruire ora",
+  "home.demo.outScope": "Funzioni da rimandare",
+  "home.demo.nextStep": "Prossimo step consigliato",
+  "home.demo.nextStep.text": "Attivare il Team IA per trasformare l'analisi in una roadmap operativa e iniziare la prima versione.",
+  "home.demo.note": "Esempio illustrativo. Stima orientativa, non una promessa di guadagno.",
+
+  // Home — da idea confusa a progetto
+  "home.flow.eyebrow": "Il percorso",
+  "home.flow.title": "Da idea confusa a progetto operativo",
+  "home.flow.intro": "IdeaPilot IA non promette app magiche in un click. Ti aiuta a mettere ordine: cosa costruire, quanto potrebbe costare, quali funzioni sviluppare per prime e quale passo fare dopo.",
+  "home.flow.1.t": "Scrivi la tua idea",
+  "home.flow.1.d": "Racconta cosa vuoi creare, anche se è ancora confusa.",
+  "home.flow.2.t": "Ricevi il report",
+  "home.flow.2.d": "IdeaPilot IA genera una prima analisi con costi, ore, budget, potenziale e funzioni.",
+  "home.flow.3.t": "Decidi se costruirla",
+  "home.flow.3.d": "Se il progetto ti convince, puoi attivare il Team IA e iniziare la prima versione.",
+
+  // Home — fiducia
+  "home.trust.eyebrow": "Trasparenza",
+  "home.trust.title": "Non è una promessa magica. È un primo piano operativo.",
+  "home.trust.body": "IdeaPilot IA non ti dice che la tua app avrà successo automaticamente. Ti aiuta a capire se l'idea è costruibile, quali sono i primi passi realistici e quanto potrebbe valere se validata dal mercato.",
+  "home.trust.b1": "Nessuna promessa di guadagno garantito",
+  "home.trust.b2": "Stime orientative e prudenti",
+  "home.trust.b3": "Report salvato nel tuo account",
+  "home.trust.b4": "Budget e funzioni coerenti con quello che scegli",
+  "home.trust.b5": "Team IA attivabile solo se vuoi proseguire",
 
   // Home — toolkit
   "home.kit.eyebrow": "La tua infrastruttura",
@@ -148,36 +194,37 @@ const it: Dict = {
     "Non stai pagando strumenti per una sola idea. Stai costruendo il tuo laboratorio personale per trasformare più idee in progetti reali.",
 
   // Home — final CTA
-  "home.final.title.a": "La tua idea merita una ",
-  "home.final.title.b": "prima versione",
+  "home.final.title.a": "Hai un'idea in testa? ",
+  "home.final.title.b": "Mettila alla prova.",
   "home.final.desc":
-    "Tu guidi la visione, gli agenti IA ti accompagnano passo passo: scheda progetto, prompt e roadmap personalizzata in pochi minuti.",
-  "home.final.cta": "Inizia il tuo progetto",
+    "Scrivi la tua idea e ricevi una prima analisi operativa con costi, ore, budget, potenziale e prossimi step.",
+  "home.final.cta": "Analizza gratis la mia idea",
+  "home.final.micro": "Registrazione gratuita richiesta solo per vedere e salvare il report completo.",
 
   // Footer
   "footer.copy": "— metodo, agenti, prompt.",
 
   // Estimator
   "est.eyebrow": "Calcolatore intelligente",
-  "est.title.a": "Scopri se la tua ",
-  "est.title.b": "idea può diventare un'app vera.",
+  "est.title.a": "Metti alla prova la tua idea. ",
+  "est.title.b": "Scopri cosa può diventare, quanto può costare e da dove partire.",
   "est.desc":
-    "Una prima valutazione di fattibilità, ore stimate, costi potenziali e potenziale economico — prima di investire sul serio.",
-  "est.label.idea": "Raccontami la tua idea",
+    "Scrivi la tua idea e ricevi una prima analisi operativa con ore stimate, budget consigliato, potenziale economico e funzioni realizzabili.",
+  "est.label.idea": "Descrivi la tua idea",
   "est.placeholder.idea":
-    "Esempio: voglio creare un'app che aiuti freelance, creator o piccoli team a organizzare attività, clienti e scadenze in modo semplice.",
+    "Esempio: voglio creare una piattaforma per aiutare freelance, creator o piccoli team a gestire clienti, attività e scadenze in modo semplice.",
   "est.hint.idea": "Più sei chiaro, più la stima sarà precisa.",
   "est.hint.privacy": "Salviamo la tua richiesta per mantenere coerenti le stime e permetterti di ritrovare la tua idea in futuro.",
   "est.budget.title": "Inserisci il tuo budget",
   "est.budget.desc":
-    "Indica il budget operativo per la prima versione funzionante. Non includere il costo del corso.",
+    "Indica solo il budget operativo per costruire la prima versione.",
   "est.optional.toggle": "Aggiungi dettagli facoltativi per una stima più precisa",
   "est.optional.target": "A chi vuoi venderla?",
   "est.optional.revenue": "Come pensi di guadagnarci?",
   "est.optional.price": "Quanto vorresti far pagare?",
   "est.optional.targetSpecify": "Specifica il target",
   "est.optional.targetSpecifyPh": "Scrivi il target a cui vuoi vendere l'app",
-  "est.btn.calc": "Calcola ore, costi e budget consigliato",
+  "est.btn.calc": "Analizza la mia idea",
   "est.btn.calcInProgress": "Analisi in corso…",
   "est.btn.review": "Rivedi analisi",
   "est.btn.note": "Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.",
