@@ -151,6 +151,24 @@ const it: Dict = {
   "home.proof.projectsSaved.desc": "Report trasformati in progetti ritrovabili nella dashboard utente.",
   "home.proof.micro": "Dati aggregati della fase early access. Le stime economiche restano orientative e non garantiscono risultati.",
 
+  // Home — casi studio dimostrativi
+  "home.cases.eyebrow": "Esempi dimostrativi",
+  "home.cases.title": "Esempi di app nate da un'idea",
+  "home.cases.subtitle": "Alcuni scenari dimostrativi di come un'idea può diventare un progetto concreto, con potenziale economico, funzioni e primi step operativi.",
+  "home.cases.micro": "Esempi dimostrativi: i risultati economici sono stime orientative e non garantite.",
+  "home.cases.metric.users": "utenti potenziali",
+  "home.cases.metric.leads": "lead potenziali/mese",
+  "home.cases.metric.business": "attività potenziali",
+  "home.cases.metric.features": "funzioni MVP consigliate",
+  "home.cases.metric.hours": "ore stimate per la prima versione",
+  "home.cases.metric.revenue": "Modello ricavo",
+  "home.cases.potential": "potenziale economico stimato",
+  "home.cases.cta": "Guarda esempio report",
+  "home.cases.outro.title": "La prossima idea potrebbe essere la tua",
+  "home.cases.outro.text": "Scrivi la tua idea e ricevi un primo report operativo con costi, ore, potenziale economico e funzioni da costruire.",
+  "home.cases.outro.cta": "Analizza gratis la mia idea",
+  "home.cases.outro.micro": "Il report completo verrà salvato nel tuo account dopo la registrazione gratuita.",
+
   // Home — report esempio (demo)
   "home.demo.eyebrow": "Report di esempio",
   "home.demo.title": "Guarda cosa riceverai nel tuo report",
