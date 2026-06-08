@@ -177,9 +177,14 @@ export function DashboardRoadmap({
           {current && (
             <p className="text-sm text-muted-foreground mt-1">{current.micro}</p>
           )}
+          {!hasAccess && (
+            <p className="text-xs text-muted-foreground/80 mt-2 italic">
+              Il prossimo step è decidere se attivare il Team IA e iniziare la costruzione guidata.
+            </p>
+          )}
         </div>
-        <div className="shrink-0">
-          {hasAccess ? (
+        {hasAccess && (
+          <div className="shrink-0">
             <Button variant="hero" size="lg" asChild>
               <Link
                 to="/project-manager"
@@ -189,12 +194,8 @@ export function DashboardRoadmap({
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
-          ) : (
-            <Button variant="hero" size="lg" onClick={onActivate}>
-              <Lock className="size-4" /> Attiva il Team AI
-            </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
