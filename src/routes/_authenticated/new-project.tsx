@@ -97,12 +97,41 @@ function NewProjectPage() {
     try {
       const { data: userRes } = await supabase.auth.getUser();
       if (!userRes.user) throw new Error("Non autenticato");
-      const { data: project, error } = await supabase
-        .from("projects")
-        .insert({ ...form, user_id: userRes.user.id, status: "in_progress" })
-        .select("*")
-        .single();
-      if (error || !project) throw error ?? new Error("Errore creazione");
+      // Idempotency: if a project with the same idea description already exists
+      // for this user (e.g. claimed from an anonymous report), reuse it instead
+      // of creating a duplicate.
+      const normalizedIdea = (form.idea_description ?? "").trim();
+      let project: { id: string } | null = null;
+      if (normalizedIdea) {
+        const { data: existing } = await supabase
+          .from("projects")
+          .select("id, status")
+          .eq("user_id", userRes.user.id)
+          .ilike("idea_description", normalizedIdea)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+        if (existing) {
+          project = { id: existing.id };
+          // Promote the existing "to_create" card to "in_progress" so we don't
+          // end up with a stale "DA CREARE" alongside an active project.
+          await supabase
+            .from("projects")
+            .update({ ...form, status: "in_progress", updated_at: new Date().toISOString() })
+            .eq("id", existing.id);
+          console.info("[new-project] reused existing project", existing.id);
+        }
+      }
+      if (!project) {
+        const { data: inserted, error } = await supabase
+          .from("projects")
+          .insert({ ...form, user_id: userRes.user.id, status: "in_progress" })
+          .select("id")
+          .single();
+        if (error || !inserted) throw error ?? new Error("Errore creazione");
+        project = { id: inserted.id };
+      }
       setCreatedProjectId(project.id);
 
       // Try AI generation; fall back to templates on any failure.
