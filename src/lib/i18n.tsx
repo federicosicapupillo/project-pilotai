@@ -576,12 +576,13 @@ const en: Dict = {
 
   // Home / Hero
   "home.badge": "AI method for non-technical founders",
-  "home.hero.title": "Turn your app idea into a real project in minutes.",
+  "home.hero.eyebrow": "Smart calculator for apps and web apps",
+  "home.hero.title": "Have an app idea? Find out if it can become a real project.",
   "home.hero.subtitle":
-    "IdeaPilot AI helps you analyze your app idea, understand its potential, estimate costs, define features, and get a clear roadmap before you start building.",
-  "home.cta.primary": "Analyze your idea for free",
-  "home.cta.secondary": "See how it works",
-  "home.hero.note": "No magic promises: you stay in charge, the AI agents support you step by step.",
+    "IdeaPilot AI analyzes your idea, estimates hours, costs, budget and economic potential, and shows what you can realistically build.",
+  "home.cta.primary": "Analyze my idea for free",
+  "home.cta.secondary": "See an example report",
+  "home.hero.note": "Your full report will be saved to your account after a free sign-up.",
 
   // Home — steps
   "home.steps.eyebrow": "How it works",
@@ -645,17 +646,62 @@ const en: Dict = {
   "home.target.list.4": "Coaches and trainers",
   "home.target.list.5": "First-time app founders",
 
-  // Home — deliverables
-  "home.deliv.eyebrow": "Deliverables",
-  "home.deliv.title": "What you get",
-  "home.deliv.1.t": "Structured project brief",
-  "home.deliv.1.d": "Target, MVP, screens, data, risks, what NOT to build.",
-  "home.deliv.2.t": "Team of 7 AI agents",
-  "home.deliv.2.d": "Strategist, PM, UX, Prompt Engineer, Tester, Marketing, Documentation.",
-  "home.deliv.3.t": "Library of ready prompts",
-  "home.deliv.3.d": "For every phase: strategy, research, design, debug, marketing, launch.",
-  "home.deliv.4.t": "Operational roadmap",
-  "home.deliv.4.d": "10 steps with To do / In progress / Done status.",
+  // Home — what you receive
+  "home.receive.eyebrow": "What you get",
+  "home.receive.title": "See what your report will include",
+  "home.receive.subtitle": "A clear first analysis to understand if your idea can become a buildable project.",
+  "home.receive.1.t": "Idea analysis",
+  "home.receive.1.d": "Understand if the idea is clear, realistic and can be turned into a first project.",
+  "home.receive.2.t": "Estimated hours and difficulty",
+  "home.receive.2.d": "See how much work it could take to ship a first working version.",
+  "home.receive.3.t": "Recommended budget",
+  "home.receive.3.d": "Find out which budget range fits what you want to build.",
+  "home.receive.4.t": "Estimated economic potential",
+  "home.receive.4.d": "Get a first prudent hypothesis of possible monthly revenue.",
+  "home.receive.5.t": "Features to build now",
+  "home.receive.5.d": "Understand what makes sense to ship now and what to postpone.",
+  "home.receive.6.t": "Roadmap and next steps",
+  "home.receive.6.d": "Get a clear direction to turn the idea into an operational project.",
+
+  // Home — example report
+  "home.demo.eyebrow": "Example report",
+  "home.demo.title": "See what your report will look like",
+  "home.demo.subtitle": "A concrete example: idea, hours, costs, potential, recommended features and next steps.",
+  "home.demo.cta": "View example report",
+  "home.demo.idea.label": "Analyzed idea",
+  "home.demo.idea.text": "A platform to help freelancers and small teams manage clients, tasks and deadlines in one place.",
+  "home.demo.hours": "Estimated hours",
+  "home.demo.difficulty": "Difficulty",
+  "home.demo.budget": "Recommended budget",
+  "home.demo.potential": "Estimated economic potential",
+  "home.demo.traditional": "Traditional development cost",
+  "home.demo.savings": "Estimated savings with AI Team",
+  "home.demo.inScope": "Features to build now",
+  "home.demo.outScope": "Features to postpone",
+  "home.demo.nextStep": "Suggested next step",
+  "home.demo.nextStep.text": "Activate the AI Team to turn the analysis into an operational roadmap and start your first version.",
+  "home.demo.note": "Illustrative example. Indicative estimate, not a promise of earnings.",
+
+  // Home — from confused idea to project
+  "home.flow.eyebrow": "The path",
+  "home.flow.title": "From a confused idea to an operational project",
+  "home.flow.intro": "IdeaPilot AI doesn't promise magic apps in one click. It helps you bring order: what to build, what it could cost, which features to ship first and what step to take next.",
+  "home.flow.1.t": "Write down your idea",
+  "home.flow.1.d": "Tell us what you want to create, even if it's still messy.",
+  "home.flow.2.t": "Get the report",
+  "home.flow.2.d": "IdeaPilot AI generates a first analysis with costs, hours, budget, potential and features.",
+  "home.flow.3.t": "Decide if you want to build it",
+  "home.flow.3.d": "If the project convinces you, activate the AI Team and start the first version.",
+
+  // Home — trust
+  "home.trust.eyebrow": "Transparency",
+  "home.trust.title": "No magic promises. Just a first operational plan.",
+  "home.trust.body": "IdeaPilot AI doesn't tell you your app will succeed automatically. It helps you understand whether the idea is buildable, what the first realistic steps are and how much it could be worth if validated by the market.",
+  "home.trust.b1": "No guaranteed earnings promise",
+  "home.trust.b2": "Indicative, prudent estimates",
+  "home.trust.b3": "Report saved in your account",
+  "home.trust.b4": "Budget and features consistent with your choices",
+  "home.trust.b5": "AI Team activated only if you want to continue",
 
   // Home — toolkit
   "home.kit.eyebrow": "Your stack",
@@ -675,36 +721,37 @@ const en: Dict = {
     "You're not paying for tools for a single idea. You're building your personal lab to turn more ideas into real projects.",
 
   // Home — final CTA
-  "home.final.title.a": "Your idea deserves a ",
-  "home.final.title.b": "first version",
+  "home.final.title.a": "Got an idea in mind? ",
+  "home.final.title.b": "Put it to the test.",
   "home.final.desc":
-    "You lead the vision, the AI agents support you step by step: project brief, prompts and a personalized roadmap in minutes.",
-  "home.final.cta": "Start your project",
+    "Write down your idea and get a first operational analysis with costs, hours, budget, potential and next steps.",
+  "home.final.cta": "Analyze my idea for free",
+  "home.final.micro": "Free sign-up only required to view and save your full report.",
 
   // Footer
   "footer.copy": "— method, agents, prompts.",
 
   // Estimator
   "est.eyebrow": "Smart calculator",
-  "est.title.a": "Find out if your ",
-  "est.title.b": "idea can become a real app.",
+  "est.title.a": "Put your idea to the test. ",
+  "est.title.b": "See what it can become, what it could cost and where to start.",
   "est.desc":
-    "A first evaluation of feasibility, estimated hours, potential costs and revenue potential — before investing seriously.",
-  "est.label.idea": "Tell me about your idea",
+    "Write down your idea and get a first operational analysis with estimated hours, recommended budget, economic potential and feasible features.",
+  "est.label.idea": "Describe your idea",
   "est.placeholder.idea":
-    "Example: I want to create an app that helps freelancers, creators or small teams organize tasks, clients and deadlines in a simple way.",
+    "Example: I want to create a platform that helps freelancers, creators or small teams manage clients, tasks and deadlines in a simple way.",
   "est.hint.idea": "The clearer you are, the more accurate the estimate.",
   "est.hint.privacy": "We save your request to keep estimates consistent and let you find your idea again later.",
   "est.budget.title": "Enter your budget",
   "est.budget.desc":
-    "Set the operational budget for the first working version. Do not include the cost of the course.",
+    "Only set the operational budget needed to build the first version.",
   "est.optional.toggle": "Add optional details for a more accurate estimate",
   "est.optional.target": "Who are you selling it to?",
   "est.optional.revenue": "How do you plan to make money?",
   "est.optional.price": "How much would you charge?",
   "est.optional.targetSpecify": "Specify the target",
   "est.optional.targetSpecifyPh": "Describe the audience you want to sell the app to",
-  "est.btn.calc": "Calculate hours, costs and recommended budget",
+  "est.btn.calc": "Analyze my idea",
   "est.btn.calcInProgress": "Analyzing…",
   "est.btn.review": "Review analysis",
   "est.btn.note": "Rough estimate based on your description. It's not a promise: it's meant to give you a sense of scale.",
