@@ -33,6 +33,7 @@ import { Route as AuthenticatedAgenteAiRouteImport } from './routes/_authenticat
 import { Route as ApiPublicTestErrorEmailRouteImport } from './routes/api/public/test-error-email'
 import { Route as AuthenticatedWorkbookProjectIdRouteImport } from './routes/_authenticated/workbook.$projectId'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as AuthenticatedAccountIdeasRunIdRouteImport } from './routes/_authenticated/account.ideas.$runId'
 import { Route as AuthenticatedAcademyModulesIdRouteImport } from './routes/_authenticated/academy.modules.$id'
@@ -161,6 +162,11 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   path: '/projects/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -207,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/project-manager': typeof AuthenticatedProjectManagerRoute
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/new-project': typeof AuthenticatedNewProjectRoute
   '/project-manager': typeof AuthenticatedProjectManagerRoute
   '/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/_authenticated/new-project': typeof AuthenticatedNewProjectRoute
   '/_authenticated/project-manager': typeof AuthenticatedProjectManagerRoute
   '/_authenticated/roadmap-success': typeof AuthenticatedRoadmapSuccessRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/workbook/$projectId': typeof AuthenticatedWorkbookProjectIdRoute
   '/api/public/test-error-email': typeof ApiPublicTestErrorEmailRoute
@@ -298,6 +307,7 @@ export interface FileRouteTypes {
     | '/new-project'
     | '/project-manager'
     | '/roadmap-success'
+    | '/admin/users'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/api/public/test-error-email'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/new-project'
     | '/project-manager'
     | '/roadmap-success'
+    | '/admin/users'
     | '/projects/$id'
     | '/workbook/$projectId'
     | '/api/public/test-error-email'
@@ -357,6 +368,7 @@ export interface FileRouteTypes {
     | '/_authenticated/new-project'
     | '/_authenticated/project-manager'
     | '/_authenticated/roadmap-success'
+    | '/_authenticated/admin/users'
     | '/_authenticated/projects/$id'
     | '/_authenticated/workbook/$projectId'
     | '/api/public/test-error-email'
@@ -555,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -594,6 +613,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNewProjectRoute: typeof AuthenticatedNewProjectRoute
   AuthenticatedProjectManagerRoute: typeof AuthenticatedProjectManagerRoute
   AuthenticatedRoadmapSuccessRoute: typeof AuthenticatedRoadmapSuccessRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedWorkbookProjectIdRoute: typeof AuthenticatedWorkbookProjectIdRoute
   AuthenticatedAcademyLessonsIdRoute: typeof AuthenticatedAcademyLessonsIdRoute
@@ -609,6 +629,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNewProjectRoute: AuthenticatedNewProjectRoute,
   AuthenticatedProjectManagerRoute: AuthenticatedProjectManagerRoute,
   AuthenticatedRoadmapSuccessRoute: AuthenticatedRoadmapSuccessRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedWorkbookProjectIdRoute: AuthenticatedWorkbookProjectIdRoute,
   AuthenticatedAcademyLessonsIdRoute: AuthenticatedAcademyLessonsIdRoute,
