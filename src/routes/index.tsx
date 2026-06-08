@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { IdeaEstimator } from "@/components/IdeaEstimator";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
+import { SocialProofStats } from "@/components/SocialProofStats";
 import { useT } from "@/lib/i18n";
 import {
   Sparkles, ArrowRight, Users, Wand2, ListChecks, BookOpen,
@@ -64,6 +65,9 @@ function Index() {
         {/* IDEA → ORE / COSTI / POTENZIALE — calcolatore interattivo subito sotto la hero */}
         <div id="calcolatore" />
         <IdeaEstimator />
+
+        {/* SOCIAL PROOF — early access stats */}
+        <SocialProofStats />
 
         {/* STEPS — 4 card subito sotto la hero */}
         <Section title={t("home.steps.title")} eyebrow={t("home.steps.eyebrow")}>
