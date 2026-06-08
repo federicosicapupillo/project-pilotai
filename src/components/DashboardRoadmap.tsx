@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   Check,
   Play,
-  Lock,
   MessageSquare,
   ArrowRight,
   type LucideIcon,
