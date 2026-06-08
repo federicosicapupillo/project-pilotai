@@ -188,6 +188,8 @@ function Index() {
         </Section>
 
         {/* REPORT ESEMPIO — preview demo */}
+        <DemoCaseStudies />
+
         <section id="report-esempio" className="max-w-6xl mx-auto px-6 py-16">
           <p className="text-xs uppercase tracking-wider text-primary font-semibold">{t("home.demo.eyebrow")}</p>
           <h2 className="text-3xl sm:text-4xl font-display font-semibold mt-2 mb-3">{t("home.demo.title")}</h2>
