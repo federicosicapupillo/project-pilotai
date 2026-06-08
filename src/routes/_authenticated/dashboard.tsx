@@ -447,17 +447,30 @@ function ProjectCard({
           >
             Dettagli
           </Link>
-          <Link
-            to="/project-manager"
-            search={{ projectId: p.id } as never}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect();
-            }}
-            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-primary/40 bg-primary/10 hover:bg-primary/20 text-foreground font-medium transition-colors"
-          >
-            Continua costruzione <ArrowRight className="size-3" />
-          </Link>
+          {hasAccess ? (
+            <Link
+              to="/project-manager"
+              search={{ projectId: p.id } as never}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect();
+              }}
+              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-primary/40 bg-primary/10 hover:bg-primary/20 text-foreground font-medium transition-colors"
+            >
+              Continua costruzione <ArrowRight className="size-3" />
+            </Link>
+          ) : (
+            <Link
+              to="/prezzi"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect();
+              }}
+              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-primary/40 bg-primary/10 hover:bg-primary/20 text-foreground font-medium transition-colors"
+            >
+              Continua costruzione <ArrowRight className="size-3" />
+            </Link>
+          )}
         </div>
       </div>
       <AlertDialog open={confirmOpen} onOpenChange={(o) => !deleteMutation.isPending && setConfirmOpen(o)}>
