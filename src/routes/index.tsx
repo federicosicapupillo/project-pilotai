@@ -49,12 +49,9 @@ function Index() {
             <p className="mt-6 text-lg text-foreground/80 max-w-2xl mx-auto">
               {t("home.hero.subtitle")}
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-8 flex items-center justify-center">
               <a href="#calcolatore">
                 <Button variant="hero" size="xl" className="glow-primary hover:glow-primary">{t("home.cta.primary")} <ArrowRight className="size-4" /></Button>
-              </a>
-              <a href="#report-esempio">
-                <Button variant="glass" size="xl">{t("home.cta.secondary")}</Button>
               </a>
             </div>
             <p className="mt-6 text-xs text-muted-foreground">
@@ -361,16 +358,16 @@ function HeroTitle({ locale }: { locale: "it" | "en" }) {
   if (locale === "it") {
     return (
       <>
-        Hai un'<HL tone="indigo">idea</HL> per un'app?{" "}
-        Scopri se può diventare un{" "}
-        <HL tone="rainbow">progetto reale</HL>.
+        Scopri se la tua <HL tone="indigo">idea</HL> può diventare un{" "}
+        <HL tone="rainbow">progetto reale</HL>,{" "}
+        prima di spendere soldi.
       </>
     );
   }
   return (
     <>
-      Have an app <HL tone="indigo">idea</HL>? Find out if it can become a{" "}
-      <HL tone="rainbow">real project</HL>.
+      Find out if your <HL tone="indigo">idea</HL> can become a{" "}
+      <HL tone="rainbow">real project</HL> — before you spend any money.
     </>
   );
 }
