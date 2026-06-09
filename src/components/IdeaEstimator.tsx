@@ -246,8 +246,13 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
     <div className="glass-card rounded-2xl p-6 sm:p-8 border border-primary/20 glow-soft">
       {!embed && (
         <>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/85">
-            <Gauge className="size-3.5 text-primary" /> {t("est.eyebrow")}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/85">
+              <Gauge className="size-3.5 text-primary" /> {t("est.eyebrow")}
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-primary/30 bg-primary/10 text-[11px] font-semibold text-primary">
+              <Clock className="size-3" /> {t("est.timeBadge")}
+            </div>
           </div>
           <h2 className="font-display font-semibold text-[1.75rem] sm:text-4xl lg:text-[2.5rem] mt-4 leading-[1.12] tracking-tight text-balance max-w-3xl">
             <EstimatorTitle locale={locale} />
@@ -566,6 +571,9 @@ export function IdeaEstimator({ embed = false }: IdeaEstimatorProps) {
               <Wand2 className="size-4" />
               {loadingOpen ? t("est.btn.calcInProgress") : t("est.btn.calc")}
             </Button>
+            <span className="inline-flex items-center gap-1.5 text-xs text-primary/90 font-medium">
+              <Clock className="size-3.5" /> {t("est.timeBadge")}
+            </span>
             {analysisParams && !loadingOpen && result && (
               <Button
                 variant="glass"
