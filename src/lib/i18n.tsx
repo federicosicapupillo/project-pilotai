@@ -53,7 +53,7 @@ const it: Dict = {
   "home.hero.title": "Scopri se la tua idea può diventare un progetto reale, prima di spendere soldi.",
   "home.hero.subtitle":
     "Descrivi la tua idea in una frase: IdeaPilot IA stima ore, costi, budget e potenziale economico, e ti dice cosa puoi costruire davvero — senza agenzie e senza buttare via mesi.",
-  "home.cta.primary": "Inizia il tuo progetto",
+  "home.cta.primary": "Analizza gratis la mia idea",
   "home.cta.secondary": "Guarda un esempio di report",
   "home.hero.note": "Gratis, senza registrazione. Il report si genera in meno di un minuto.",
 
@@ -613,7 +613,7 @@ const en: Dict = {
   "home.hero.title": "Find out if your idea can become a real project — before you spend any money.",
   "home.hero.subtitle":
     "Describe your idea in one sentence: IdeaPilot AI estimates hours, costs, budget and economic potential, and shows you what you can actually build — no agencies, no wasted months.",
-  "home.cta.primary": "Start your project",
+  "home.cta.primary": "Analyze my idea for free",
   "home.cta.secondary": "See an example report",
   "home.hero.note": "Free, no sign-up. Your report is ready in under a minute.",
 
