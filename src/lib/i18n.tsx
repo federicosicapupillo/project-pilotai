@@ -49,13 +49,13 @@ const it: Dict = {
 
   // Home / Hero
   "home.badge": "Metodo IA per non tecnici",
-  "home.hero.eyebrow": "Calcolatore intelligente per app e web app",
-  "home.hero.title": "Hai un'idea per un'app? Scopri se può diventare un progetto reale.",
+  "home.hero.eyebrow": "Validazione idee app — gratis, in 60 secondi",
+  "home.hero.title": "Scopri se la tua idea può diventare un progetto reale, prima di spendere soldi.",
   "home.hero.subtitle":
-    "IdeaPilot IA analizza la tua idea, stima ore, costi, budget e potenziale economico, e ti mostra cosa puoi costruire davvero.",
-  "home.cta.primary": "Analizza gratis la mia idea",
+    "Descrivi la tua idea in una frase: IdeaPilot IA stima ore, costi, budget e potenziale economico, e ti dice cosa puoi costruire davvero — senza agenzie e senza buttare via mesi.",
+  "home.cta.primary": "Inizia il tuo progetto",
   "home.cta.secondary": "Guarda un esempio di report",
-  "home.hero.note": "Il report completo verrà salvato nel tuo account dopo la registrazione gratuita.",
+  "home.hero.note": "Gratis, senza registrazione. Il report si genera in meno di un minuto.",
 
   // Home — steps
   "home.steps.eyebrow": "Come funziona",
@@ -609,13 +609,13 @@ const en: Dict = {
 
   // Home / Hero
   "home.badge": "AI method for non-technical founders",
-  "home.hero.eyebrow": "Smart calculator for apps and web apps",
-  "home.hero.title": "Have an app idea? Find out if it can become a real project.",
+  "home.hero.eyebrow": "App idea validation — free, in 60 seconds",
+  "home.hero.title": "Find out if your idea can become a real project — before you spend any money.",
   "home.hero.subtitle":
-    "IdeaPilot AI analyzes your idea, estimates hours, costs, budget and economic potential, and shows what you can realistically build.",
-  "home.cta.primary": "Analyze my idea for free",
+    "Describe your idea in one sentence: IdeaPilot AI estimates hours, costs, budget and economic potential, and shows you what you can actually build — no agencies, no wasted months.",
+  "home.cta.primary": "Start your project",
   "home.cta.secondary": "See an example report",
-  "home.hero.note": "Your full report will be saved to your account after a free sign-up.",
+  "home.hero.note": "Free, no sign-up. Your report is ready in under a minute.",
 
   // Home — steps
   "home.steps.eyebrow": "How it works",
