@@ -5,6 +5,7 @@ import { IdeaEstimator } from "@/components/IdeaEstimator";
 import { ReusableToolkitBox } from "@/components/ReusableToolkitBox";
 import { SocialProofStats } from "@/components/SocialProofStats";
 import { DemoCaseStudies } from "@/components/DemoCaseStudies";
+import { MobileStickyCta } from "@/components/MobileStickyCta";
 import { useT } from "@/lib/i18n";
 import {
   Sparkles, ArrowRight, Users, Wand2, ListChecks, BookOpen,
@@ -340,6 +341,7 @@ function Index() {
           © {new Date().getFullYear()} IdeaPilot {t("brand.ai")} {t("footer.copy")}
         </footer>
       </main>
+      <MobileStickyCta targetId="calcolatore" />
     </div>
   );
 }
@@ -358,16 +360,15 @@ function HeroTitle({ locale }: { locale: "it" | "en" }) {
   if (locale === "it") {
     return (
       <>
-        Scopri se la tua <HL tone="indigo">idea</HL> può diventare un{" "}
-        <HL tone="rainbow">progetto reale</HL>,{" "}
-        prima di spendere soldi.
+        Hai un'<HL tone="indigo">idea</HL> per un'app?<br />
+        Scopri se può diventare un <HL tone="rainbow">progetto reale</HL>.
       </>
     );
   }
   return (
     <>
-      Find out if your <HL tone="indigo">idea</HL> can become a{" "}
-      <HL tone="rainbow">real project</HL> — before you spend any money.
+      Got an <HL tone="indigo">idea</HL> for an app?<br />
+      Find out if it can become a <HL tone="rainbow">real project</HL>.
     </>
   );
 }
