@@ -49,13 +49,13 @@ const it: Dict = {
 
   // Home / Hero
   "home.badge": "Metodo IA per non tecnici",
-  "home.hero.eyebrow": "Validazione idee app — gratis, in ~10 secondi",
+  "home.hero.eyebrow": "Validazione idee app — gratis, in circa 60 secondi",
   "home.hero.title": "Scopri se la tua idea può diventare un progetto reale, prima di spendere soldi.",
   "home.hero.subtitle":
     "Descrivi la tua idea in una frase: IdeaPilot IA stima ore, costi, budget e potenziale economico, e ti dice cosa puoi costruire davvero — senza agenzie e senza buttare via mesi.",
   "home.cta.primary": "Analizza gratis la mia idea",
   "home.cta.secondary": "Guarda un esempio di report",
-  "home.hero.note": "Gratis, senza registrazione. Prima analisi in circa 10 secondi.",
+  "home.hero.note": "Gratis, senza registrazione. Prima analisi in circa 60 secondi.",
 
   // Home — steps
   "home.steps.eyebrow": "Come funziona",
@@ -238,11 +238,11 @@ const it: Dict = {
   "footer.copy": "— metodo, agenti, prompt.",
 
   // Estimator
-  "est.eyebrow": "Calcolatore intelligente · 10s",
+  "est.eyebrow": "Calcolatore intelligente · ~60s",
   "est.title.a": "Metti alla prova la tua idea. ",
   "est.title.b": "Scopri cosa può diventare, quanto può costare e da dove partire.",
   "est.desc":
-    "Scrivi la tua idea: in circa 10 secondi ricevi una prima analisi operativa con ore stimate, budget consigliato, potenziale economico e funzioni realizzabili.",
+    "Scrivi la tua idea: in circa 60 secondi inizi a capire se ha senso, con ore stimate, budget consigliato, potenziale economico e funzioni realizzabili.",
   "est.label.idea": "Descrivi la tua idea",
   "est.placeholder.idea":
     "Esempio: voglio creare una piattaforma per aiutare freelance, creator o piccoli team a gestire clienti, attività e scadenze in modo semplice.",
@@ -261,7 +261,7 @@ const it: Dict = {
   "est.btn.calcInProgress": "Analisi in corso…",
   "est.btn.review": "Rivedi analisi",
   "est.btn.note": "Stima orientativa basata sulla tua descrizione. Non è una promessa: serve a capire l'ordine di grandezza.",
-  "est.timeBadge": "~10s per la prima analisi",
+  "est.timeBadge": "Prima analisi in circa 60 secondi",
   "est.loader.title": "Stiamo analizzando la tua idea",
   "est.loader.desc": "Il tuo agente IA sta trasformando la tua descrizione in una prima analisi operativa.",
   "est.loader.step1": "Analisi idea",
@@ -610,13 +610,13 @@ const en: Dict = {
 
   // Home / Hero
   "home.badge": "AI method for non-technical founders",
-  "home.hero.eyebrow": "App idea validation — free, in ~10 seconds",
+  "home.hero.eyebrow": "App idea validation — free, in about 60 seconds",
   "home.hero.title": "Find out if your idea can become a real project — before you spend any money.",
   "home.hero.subtitle":
     "Describe your idea in one sentence: IdeaPilot AI estimates hours, costs, budget and economic potential, and shows you what you can actually build — no agencies, no wasted months.",
   "home.cta.primary": "Analyze my idea for free",
   "home.cta.secondary": "See an example report",
-  "home.hero.note": "Free, no sign-up. First analysis in about 10 seconds.",
+  "home.hero.note": "Free, no sign-up. First analysis in about 60 seconds.",
 
   // Home — steps
   "home.steps.eyebrow": "How it works",
@@ -798,11 +798,11 @@ const en: Dict = {
   "footer.copy": "— method, agents, prompts.",
 
   // Estimator
-  "est.eyebrow": "Smart calculator · 10s",
+  "est.eyebrow": "Smart calculator · ~60s",
   "est.title.a": "Put your idea to the test. ",
   "est.title.b": "See what it can become, what it could cost and where to start.",
   "est.desc":
-    "Write your idea: in about 10 seconds you get a first operational analysis with estimated hours, recommended budget, economic potential and feasible features.",
+    "Write your idea: in about 60 seconds you start understanding if it makes sense, with estimated hours, recommended budget, economic potential and feasible features.",
   "est.label.idea": "Describe your idea",
   "est.placeholder.idea":
     "Example: I want to create a platform that helps freelancers, creators or small teams manage clients, tasks and deadlines in a simple way.",
@@ -821,7 +821,7 @@ const en: Dict = {
   "est.btn.calcInProgress": "Analyzing…",
   "est.btn.review": "Review analysis",
   "est.btn.note": "Rough estimate based on your description. It's not a promise: it's meant to give you a sense of scale.",
-  "est.timeBadge": "~10s for your first analysis",
+  "est.timeBadge": "First analysis in about 60 seconds",
   "est.loader.title": "Analyzing your idea",
   "est.loader.desc": "Your AI agent is turning your description into a first operational analysis.",
   "est.loader.step1": "Analyzing idea",
